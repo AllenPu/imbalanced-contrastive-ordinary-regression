@@ -56,16 +56,16 @@ def Ranked_Contrastive_Loss(z, g, temp):
     zeros = torch.zeros(bsz, bsz)
     #
     l1_matrix = torch.zeros(bsz, bsz)
-    for i in range(len(bsz)):
-        for j in range(len(bsz)):
+    for i in range(bsz):
+        for j in range(bsz):
             l1_matrix[i][j] = torch.abs(g[i] - g[j])
     #        
     #slice = len(uni) - 1
     #
-    for i in range(len(bsz)):
-        uni, cnt = torch.unique(l1_matrix[i], return_counts = True, sorted = True)
+    for i in range(bsz):
+        _, cnt = torch.unique(l1_matrix[i], return_counts = True, sorted = True)
         #
-        srt = torch.argsort(l1_matrix[i], 0 ,descending=False)
+        srt = torch.argsort(l1_matrix[i], 0, descending=False)
         #index = cnt[0]
         if len(cnt) == 1:
             continue # return self
@@ -77,12 +77,12 @@ def Ranked_Contrastive_Loss(z, g, temp):
             j = srt[index].item()
             nominator = torch.exp(sim_matrix[i][j]/temp)
             # find which cnt section is in
-            for s in range(1,len(cnt)):
-                if torch.sum(cnt[:s]).item() >= index:
-                    slice = s 
+            for s in range(1,len(cnt)+1):
+                if torch.sum(cnt[:s]).item() > index:
+                    slice = s
                     break
             # how much shift in denominator 
-            deno_head = cnt[:s-1]
+            deno_head = torch.sum(cnt[:slice-1])
             # the index of the denomnator in matrix
             deno_index = srt[deno_head : ]
             # 
@@ -97,10 +97,4 @@ def Ranked_Contrastive_Loss(z, g, temp):
                 
                 
             
-            
-
-           
-    
-    
-    
 
