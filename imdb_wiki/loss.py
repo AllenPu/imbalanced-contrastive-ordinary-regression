@@ -51,9 +51,9 @@ def Ranked_Contrastive_Loss(z, g, temp):
     #
     sim_matrix = F.cosine_similarity(z.unsqueeze(1), z.unsqueeze(0), dim = -1)
     #
-    eye_mask = ~torch.eye(bsz, bsz, dtype = bool)
-    triu_mask = torch.triu(eye_mask, diagonal=1)
-    zeros = torch.zeros(bsz, bsz)
+    #eye_mask = ~torch.eye(bsz, bsz, dtype = bool)
+    #triu_mask = torch.triu(eye_mask, diagonal=1)
+    #zeros = torch.zeros(bsz, bsz)
     #
     l1_matrix = torch.zeros(bsz, bsz)
     for i in range(bsz):
