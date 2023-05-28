@@ -22,12 +22,13 @@ from loss import LAloss
 from network import ResNet_regression
 from datasets.IMDBWIKI import IMDBWIKI
 from utils import AverageMeter, accuracy, adjust_learning_rate, shot_metric, shot_metric_balanced, shot_metric_cls, setup_seed, balanced_metrics
-from datasets.datasets_utils import group_df
+#from datasets.datasets_utils import group_df
 from tqdm import tqdm
 # additional for focal
 from focal_loss.focal_loss import FocalLoss
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
+from loss import Ranked_Contrastive_Loss
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -72,6 +73,7 @@ parser.add_argument('--g_dis', type=bool, default=False,
 parser.add_argument('--gamma', type=float, default=5, help='tradeoff rate')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
+parser.add_argument('--temp', type=int, help='temperature for contrastive loss', default=1)
 
 
 def tolerance(g_pred, g, ranges):
@@ -102,9 +104,9 @@ def get_dataset(args):
     print('=====> Preparing data...')
     print(f"File (.csv): {args.dataset}.csv")
     df = pd.read_csv(os.path.join(args.data_dir, f"{args.dataset}.csv"))
-    if args.group_mode == 'b_g':
-        nb_groups = int(args.groups)
-        df = group_df(df, nb_groups)
+    #if args.group_mode == 'b_g':
+    #    nb_groups = int(args.groups)
+    #    df = group_df(df, nb_groups)
     df_train, df_val, df_test = df[df['split'] ==
                                    'train'], df[df['split'] == 'val'], df[df['split'] == 'test']
     ##### how to orgnize the datastes
@@ -133,7 +135,7 @@ def get_dataset(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
-    sigma, la, fl, g_dis, gamma = args.sigma, args.la, args.fl, args.g_dis, args.gamma
+    sigma, la, g_dis, gamma, temp = args.sigma, args.la, args.g_dis, args.gamma, args.temp
     ranges = int(100/args.groups)
     model.train()
     mse_y = 0
@@ -142,8 +144,6 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
     tol = 0
     tole = []
     #
-    if fl:
-        m = torch.nn.Softmax(-1)
     if g_dis:
         l1 = nn.MSELoss()
     #
@@ -181,10 +181,10 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         else:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
-
-        if fl:
-            fl_g = ce_loss(m(g_hat), g.squeeze().long())
-            loss_list.append(fl_g)
+        #
+        ranked_contrastive_loss = Ranked_Contrastive_Loss(z, g, temp=temp)
+        loss_list.append(ranked_contrastive_loss)
+        #
         if g_dis:
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
             tol = tolerance(g_index.cpu(), g.cpu(), ranges)
