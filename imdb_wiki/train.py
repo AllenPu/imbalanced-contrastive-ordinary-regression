@@ -73,6 +73,7 @@ parser.add_argument('--g_dis', type=bool, default=False,
 parser.add_argument('--gamma', type=float, default=5, help='tradeoff rate')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
+parser.add_argument('--ranked_contra', type=bool, default=False)
 parser.add_argument('--temp', type=int, help='temperature for contrastive loss', default=1)
 
 
@@ -135,7 +136,7 @@ def get_dataset(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
-    sigma, la, g_dis, gamma, temp = args.sigma, args.la, args.g_dis, args.gamma, args.temp
+    sigma, la, g_dis, gamma, ranked_contra, temp = args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.temp
     ranges = int(100/args.groups)
     model.train()
     mse_y = 0
@@ -182,8 +183,9 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
         #
-        ranked_contrastive_loss = Ranked_Contrastive_Loss(z, g, temp=temp)
-        loss_list.append(ranked_contrastive_loss)
+        if ranked_contra :
+            ranked_contrastive_loss = Ranked_Contrastive_Loss(z, g, temp=temp)
+            loss_list.append(ranked_contrastive_loss)
         #
         if g_dis:
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
