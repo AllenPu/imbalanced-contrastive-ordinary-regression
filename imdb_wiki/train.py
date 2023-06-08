@@ -356,7 +356,7 @@ def validate(model, val_loader, train_labels):
     return g_cls_acc.avg, y_gt_mae.avg, mean_L1_pred,  mean_L1_gt, shot_dict_pred, shot_dict_pred_gt
 
 
-def write_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dict_cls, args):
+def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dict_cls, args):
     with open(store_name, 'a+') as f:
         [acc_gt, acc_pred, g_pred, mae_gt, mae_pred] = results
         f.write('---------------------------------------------------------------------')
@@ -375,6 +375,21 @@ def write_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dict_cls
                                                                          shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
         #
         f.write('---------------------------------------------------------------------')
+        f.close()
+
+
+def write_val_log(cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt):
+    with open(store_name, 'a+') as f:
+        f.write('---------------------------------------------------------------------\n')
+        f.write(' In epoch {} cls acc is {} regression mae is {} best bMAE is {} tol is {}'.format(
+                    e, cls_acc, reg_mae, best_bMAE, tol) + '\n')
+        f.write(' Val bMAE is pred {}, bMAE is gt {}'.format(
+                    mean_L1_pred,  mean_L1_gt) + '\n')
+        f.write(' Val Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_val_pred['many']['l1'],
+                    shot_dict_val_pred['median']['l1'], shot_dict_val_pred['low']['l1']) + "\n")
+        f.write(' Val Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_val_pred_gt['many']['l1'],
+                    shot_dict_val_pred_gt['median']['l1'], shot_dict_val_pred_gt['low']['l1']) + "\n")
+        f.write('---------------------------------------------------------------------\n')
         f.close()
 
 
@@ -428,21 +443,6 @@ if __name__ == '__main__':
                 best_bMAE = mean_L1_pred
                 torch.save(model.state_dict(),
                            './models/model_{}.pth'.format(store_names))
-            with open(store_name, 'a+') as f:
-                f.write(
-                    '---------------------------------------------------------------------\n')
-                f.write(' In epoch {} cls acc is {} regression mae is {} best bMAE is {} tol is {}'.format(
-                    e, cls_acc, reg_mae, best_bMAE, tol) + '\n')
-                f.write(' Val bMAE is pred {}, bMAE is gt {}'.format(
-                    mean_L1_pred,  mean_L1_gt) + '\n')
-                f.write(' Val Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_val_pred['many']['l1'],
-                                                                                         shot_dict_val_pred['median']['l1'], shot_dict_val_pred['low']['l1']) + "\n")
-                f.write(' Val Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_val_pred_gt['many']['l1'],
-                                                                                 shot_dict_val_pred_gt['median']['l1'], shot_dict_val_pred_gt['low']['l1']) + "\n")
-                f.write(
-                    '---------------------------------------------------------------------\n')
-                f.close()
-    #
     #load the best model
     model_test.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
@@ -455,7 +455,7 @@ if __name__ == '__main__':
     # val best model
     #
     results_val = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred]
-    write_loggs(store_name, results_val, shot_dict_pred,
+    write_test_loggs(store_name, results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
     # test train model
@@ -465,5 +465,5 @@ if __name__ == '__main__':
     print(' Test model mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred))
     results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred]
-    write_loggs(store_name, results_test, shot_dict_pred,
+    write_test_loggs(store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
