@@ -20,7 +20,7 @@ from utils import AverageMeter, accuracy, adjust_learning_rate, shot_metric, sho
 #from datasets.datasets_utils import group_df
 from tqdm import tqdm
 # additional for focal
-from focal_loss.focal_loss import FocalLoss
+#from focal_loss.focal_loss import FocalLoss
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from loss import Ranked_Contrastive_Loss
