@@ -1,12 +1,9 @@
 import argparse
 from symbol import parameters
-import random
 import numpy as np
-import json
 import os
 import torch
 import sys
-import torchvision
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.models as models
@@ -15,8 +12,6 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as transforms
 from PIL import Image
 import argparse
-import time
-import math
 import pandas as pd
 from loss import LAloss
 from network import ResNet_regression
@@ -420,8 +415,8 @@ if __name__ == '__main__':
     #
     opt = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)
     # focal loss
-    if args.fl:
-        loss_ce = FocalLoss(gamma=0.75)
+    #if args.fl:
+    #    loss_ce = FocalLoss(gamma=0.75)
     #
     print(" tau is {} group is {} lr is {} model depth {}".format(
         args.tau, args.groups, args.lr, args.model_depth))
