@@ -203,7 +203,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #   print(" tolerance ", tol)
         #
     if not g_dis:
-        tol_avg = 0
+        tole = [0]
     
     tol_avg = int(np.mean(tole))
 
