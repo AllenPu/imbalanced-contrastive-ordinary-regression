@@ -35,7 +35,7 @@ parser.add_argument('--epoch', default=100, type=int)
 parser.add_argument('--dataset', type=str, default='imdb_wiki',
                     choices=['imdb_wiki'], help='dataset name')
 parser.add_argument('--data_dir', type=str,
-                    default='./data', help='data directory')
+                    default='/home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data', help='data directory')
 parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
 parser.add_argument('--groups', type=int, default=10,
