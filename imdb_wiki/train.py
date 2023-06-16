@@ -202,6 +202,9 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #    tol= tolerance(g_index.cpu() , g.cpu(), ranges)
         #   print(" tolerance ", tol)
         #
+    if not g_dis:
+        tol_avg = 0
+    
     tol_avg = int(np.mean(tole))
 
     return model, tol_avg
