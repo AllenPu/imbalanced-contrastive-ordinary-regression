@@ -85,7 +85,9 @@ def Ranked_Contrastive_Loss(z, g, temp):
             deno_head = torch.sum(cnt[:slice-1])
             # the index of the denomnator in matrix
             deno_index = srt[deno_head : ]
-            deno_index = deno_index.cuda()
+            #
+            device = "cuda:{}".format(sim_matrix.get_device())
+            deno_index = deno_index.to(device)
             # 
             denominator_matirx = torch.gather(sim_matrix[i], index=deno_index, dim=0)
             #
