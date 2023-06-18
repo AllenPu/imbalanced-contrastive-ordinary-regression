@@ -376,7 +376,7 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         f.close()
 
 
-def write_val_log(cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt):
+def write_val_log(store_name, cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt):
     with open(store_name, 'a+') as f:
         f.write('---------------------------------------------------------------------\n')
         f.write(' In epoch {} cls acc is {} regression mae is {} best bMAE is {} tol is {}'.format(
@@ -437,6 +437,8 @@ if __name__ == '__main__':
             cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
                 model, val_loader, train_labels)
             #
+            write_val_log(store_names, cls_acc, reg_mae,  mean_L1_pred,
+                          mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt)
             if best_bMAE > mean_L1_pred and e > 40:
                 best_bMAE = mean_L1_pred
                 torch.save(model.state_dict(),
