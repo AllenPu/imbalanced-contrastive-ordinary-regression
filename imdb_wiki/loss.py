@@ -51,6 +51,8 @@ def Ranked_Contrastive_Loss(z, g, temp):
     #
     sim_matrix = F.cosine_similarity(z.unsqueeze(1), z.unsqueeze(0), dim = -1)
     #
+    device = "cuda:{}".format(sim_matrix.get_device())
+    #
     #eye_mask = ~torch.eye(bsz, bsz, dtype = bool)
     #triu_mask = torch.triu(eye_mask, diagonal=1)
     #zeros = torch.zeros(bsz, bsz)
@@ -86,7 +88,6 @@ def Ranked_Contrastive_Loss(z, g, temp):
             # the index of the denomnator in matrix
             deno_index = srt[deno_head : ]
             #
-            device = "cuda:{}".format(sim_matrix.get_device())
             deno_index = deno_index.to(device)
             # 
             denominator_matirx = torch.gather(sim_matrix[i], index=deno_index, dim=0)
