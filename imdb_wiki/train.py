@@ -437,7 +437,7 @@ if __name__ == '__main__':
             cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
                 model, val_loader, train_labels)
             #
-            write_val_log(store_names, cls_acc, reg_mae,  mean_L1_pred,
+            write_val_log(store_name, cls_acc, reg_mae,  mean_L1_pred,
                           mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt)
             if best_bMAE > mean_L1_pred and e > 40:
                 best_bMAE = mean_L1_pred
