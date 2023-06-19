@@ -70,6 +70,7 @@ parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
 parser.add_argument('--ranked_contra', type=bool, default=False)
 parser.add_argument('--temp', type=int, help='temperature for contrastive loss', default=1)
+parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 
 
 def tolerance(g_pred, g, ranges):
@@ -131,7 +132,7 @@ def get_dataset(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
-    sigma, la, g_dis, gamma, ranked_contra, temp = args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.temp
+    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, temp = args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.temp
     ranges = int(100/args.groups)
     model.train()
     mse_y = 0
@@ -179,7 +180,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
             loss_list.append(ce_g)
         #
         if ranked_contra :
-            ranked_contrastive_loss = Ranked_Contrastive_Loss(z, g, temp=temp)
+            ranked_contrastive_loss = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
             loss_list.append(ranked_contrastive_loss)
         #
         if g_dis:
