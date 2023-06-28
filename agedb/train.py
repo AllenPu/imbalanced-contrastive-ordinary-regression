@@ -135,7 +135,7 @@ def get_data_loader(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
-    sigma = args.sigma
+    sigma, ranked_contra, contra_ratio, temp = args.sigma, args.ranked_contra, args.contra_ratio, args.temp
     model.train()
     ranges = int(100/args.groups)
     #
@@ -148,7 +148,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         y_output = model(x)
         #
-        y_chunk = torch.chunk(y_output, 2, dim=1)
+        y_chunk, z = torch.chunk(y_output, 2, dim=1)
         g_hat, y_pred = y_chunk[0], y_chunk[1]
         #
         g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
@@ -162,7 +162,13 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         ce_g = ce_loss(g_hat, g.squeeze().long())
         #
-        loss = tol*mse_y + ce_g
+        #
+        if ranked_contra:
+            loss_contra = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
+            loss = tol*mse_y + ce_g + loss_contra
+        else:
+        #
+            loss = tol*mse_y + ce_g
         #
         loss.backward()
         opt.step()
