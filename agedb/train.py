@@ -250,12 +250,12 @@ def validate(model, val_loader, train_labels, args):
 
 def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args):
     with open(store_name, 'a+') as f:
-        [acc_gt, acc_pred, g_pred, mae_gt, mae_pred] = results
+        [ g_pred, mae_gt, mae_pred] = results
         f.write('---------------------------------------------------------------------')
         f.write(' tau is {} group is {} lr is {} model depth {} epoch {}'.format(
             args.tau, args.groups, args.lr, args.model_depth, args.epoch) + "\n")
-        f.write(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
-            mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred)+"\n")
+        f.write(' acc of the group assinment is {}, \
+            mae of gt is {}, mae of pred is {}'.format( g_pred, mae_gt, mae_pred)+"\n")
         #
         f.write(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_pred['many']['l1'],
                                                                              shot_dict_pred['median']['l1'], shot_dict_pred['low']['l1']) + "\n")
@@ -320,12 +320,12 @@ if __name__ == '__main__':
                 f.close()
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt = test(
         model, test_loader, train_labels, args)
-    results = [0, 0, acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg]
+    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg]
     write_log(store_name, results, shot_pred, shot_pred_gt, args)
     #
     model_val.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
     acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val, shot_pred_val, shot_pred_gt_val = \
                                                                                 test(model_val, test_loader, train_labels, args)
-    results_test = [0, 0, acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
+    results_test = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
     write_log(store_name, results_test, shot_pred_val, shot_pred_gt_val, args)
