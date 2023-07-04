@@ -69,7 +69,7 @@ parser.add_argument('--gamma', type=float, default=5, help='tradeoff rate')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
 parser.add_argument('--ranked_contra', type=bool, default=False)
-parser.add_argument('--temp', type=int, help='temperature for contrastive loss', default=1)
+parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=1)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 
 
