@@ -19,4 +19,4 @@ echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 
 
-python train.py --groups 25 --sigma 0.5 --la True --tau 0.5 --lr 0.0001 --ranked_contra True --temp 0.07 --epoch 150 --g_dis True --data_dir /home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data 
+python train.py --groups 25 --sigma 0.5 --la True --tau 0.5 --lr 0.0001 --ranked_contra True --temp 0.01 --epoch 150 --data_dir /home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data 
