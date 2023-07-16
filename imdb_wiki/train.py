@@ -312,7 +312,7 @@ def test_step(model, test_loader, train_labels, args):
     return mse_gt.avg,  mse_pred.avg, acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_dict_pred, shot_dict_gt, shot_dict_cls
 
 
-def validate(model, val_loader, train_labels):
+def validate(model, val_loader, train_labels, e):
     model.eval()
     g_cls_acc = AverageMeter()
     y_gt_mae = AverageMeter()
@@ -346,6 +346,8 @@ def validate(model, val_loader, train_labels):
         g_cls_acc.update(acc[0].item(), bsz)
         y_gt_mae.update(mae.item(), bsz)
         #
+    torch.save(preds, './pred_{}.pt'.format(e))
+    torch.save(labels, './labels_{}.pt'.format(e))
     _, mean_L1_pred = balanced_metrics(np.hstack(preds), np.hstack(labels))
     _, mean_L1_gt = balanced_metrics(np.hstack(preds_gt), np.hstack(labels))
     #
@@ -436,7 +438,7 @@ if __name__ == '__main__':
         tole.append(tol)
         if e % 20 == 0 or e == (args.epoch - 1):
             cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
-                model, val_loader, train_labels)
+                model, val_loader, train_labels, e)
             #
             write_val_log(store_name, cls_acc, reg_mae,  mean_L1_pred,
                           mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt)
