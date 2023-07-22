@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .fds import FDS
+#from .fds import FDS
 
 
 class _UpProjection(nn.Sequential):
@@ -148,10 +148,10 @@ class R(nn.Module):
 
         self.args = args
 
-        if args is not None and args.fds:
-            self.FDS = FDS(feature_dim=num_features, bucket_num=args.bucket_num, bucket_start=args.bucket_start,
-                           start_update=args.start_update, start_smooth=args.start_smooth, kernel=args.fds_kernel,
-                           ks=args.fds_ks, sigma=args.fds_sigma, momentum=args.fds_mmt)
+        #if args is not None and args.fds:
+        #    self.FDS = FDS(feature_dim=num_features, bucket_num=args.bucket_num, bucket_start=args.bucket_start,
+        #                   start_update=args.start_update, start_smooth=args.start_smooth, kernel=args.fds_kernel,
+        #                   ks=args.fds_ks, sigma=args.fds_sigma, momentum=args.fds_mmt)
 
 
     def forward(self, x, depth=None, epoch=None):
@@ -165,9 +165,9 @@ class R(nn.Module):
 
         x1_s = x1
 
-        if self.training and self.args.fds:
-            if epoch >= self.args.start_smooth:
-                x1_s = self.FDS.smooth(x1_s, depth, epoch)
+        #if self.training and self.args.fds:
+        ##   if epoch >= self.args.start_smooth:
+        #       x1_s = self.FDS.smooth(x1_s, depth, epoch)
 
         x2 = self.conv2(x1_s)
 
