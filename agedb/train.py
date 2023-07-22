@@ -5,11 +5,11 @@ from tqdm import tqdm
 import pandas as pd
 from collections import defaultdict
 from scipy.stats import gmean
-from utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
-from datasets.AgeDB import *
+from agedb.datasets.agedb import *
+from agedb.utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced
 import torch
 from loss import *
 from network import *
@@ -57,8 +57,6 @@ parser.add_argument('--workers', type=int, default=32,
 parser.add_argument('--sigma', default=0.5, type=float)
 parser.add_argument('--la', type=bool, default=False,
                     help='if use logit adj to train the imbalance')
-parser.add_argument('--fl', type=bool, default=False,
-                    help='if use focal loss to train the imbalance')
 parser.add_argument('--model_depth', type=int, default=50,
                     help='resnet 18 or resnnet 50')
 parser.add_argument('--init_noise_sigma', type=float,
@@ -76,6 +74,9 @@ parser.add_argument('--groups', type=int, default=10,
 #
 parser.add_argument('--tau', default=1, type=float,
                     help=' tau for logit adjustment ')
+parser.add_argument('--ranked_contra', type=bool, default=False)
+parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
+parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -135,7 +136,7 @@ def get_data_loader(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
-    sigma, ranked_contra, contra_ratio, temp = args.sigma, args.ranked_contra, args.contra_ratio, args.temp
+    sigma, ranked_contra, contra_ratio, temp, g_dis, gamma = args.sigma, args.ranked_contra, args.contra_ratio, args.temp, args.g_dis, args.gamma
     model.train()
     ranges = int(100/args.groups)
     #
@@ -158,17 +159,21 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         mse_y = mse_loss(y_hat, y)
         #
-        tol = 5/tolerance(g_index.cpu(), g.cpu(), ranges)
+        if g_dis:
+            tol = 5/tolerance(g_index.cpu(), g.cpu(), ranges)
+            tole = gamma/tol
+        else:
+            tole = sigma
         #
         ce_g = ce_loss(g_hat, g.squeeze().long())
         #
         #
         if ranked_contra:
             loss_contra = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
-            loss = tol*mse_y + ce_g + loss_contra
+            loss = tole*mse_y + ce_g + loss_contra
         else:
         #
-            loss = tol*mse_y + ce_g
+            loss = tole*mse_y + ce_g
         #
         loss.backward()
         opt.step()
