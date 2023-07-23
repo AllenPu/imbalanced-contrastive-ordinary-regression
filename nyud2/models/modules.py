@@ -148,6 +148,8 @@ class R(nn.Module):
 
         self.args = args
 
+        self.input_shape = 0
+
         if self.args.group_mode :
             for i in range(self.args.groups-1):
                 exec('self.conv{} = \
@@ -183,14 +185,18 @@ class R(nn.Module):
                 regression_list = [x2]
                 exec('out = self.conv{}(x1_s)'.format(i))
                 exec('regression_list.append(out)')
+                if self.input_shape == 0:
+                    self.input_shape = x1.view(x1.shape[0], -1).shape[-1]
+                else:
+                    pass
             return regression_list
         else:
             return x2
         
 
-        
+
 class classifier_Regressor(nn.Module):
-    def __init__(self, args, x_shape : torch.Tensor):
+    def __init__(self, args, x_shape = 0):
         self.groups = args.groups
         self.input_shape = x_shape
         self.model_cls = nn.Sequential(
