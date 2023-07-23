@@ -148,6 +148,11 @@ class R(nn.Module):
 
         self.args = args
 
+        if self.args.group_mode :
+            for i in range(self.args.groups-1):
+                exec('self.conv{} = \
+                      nn.Conv2d({}, 1, kernel_size=5, stride=1, padding=2, bias=True)'.format(i, num_features))
+
         #if args is not None and args.fds:
         #    self.FDS = FDS(feature_dim=num_features, bucket_num=args.bucket_num, bucket_start=args.bucket_start,
         #                   start_update=args.start_update, start_smooth=args.start_smooth, kernel=args.fds_kernel,
@@ -173,5 +178,27 @@ class R(nn.Module):
 
         if self.training and self.args.fds:
             return x2, x1
+        elif self.args.group_mode:
+            for i in range(self.args.groups):
+                regression_list = [x2]
+                exec('out = self.conv{}(x1_s)'.format(i))
+                exec('regression_list.append(out)')
+            return regression_list
         else:
             return x2
+        
+
+        
+class classifier_Regressor(nn.Module):
+    def __init__(self, args, x_shape : torch.Tensor):
+        self.groups = args.groups
+        self.input_shape = x_shape
+        self.model_cls = nn.Sequential(
+            nn.MaxPool2d(kernel_size=2),
+            nn.Flatten(),
+            nn.Linear(self.input_shape, self.groups)
+        )
+
+    def forward(self, x):
+        x = self.model_cls(x)
+        return x
