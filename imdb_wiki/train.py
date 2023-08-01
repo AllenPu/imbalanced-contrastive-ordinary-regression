@@ -131,7 +131,7 @@ def get_dataset(args):
     return train_loader, test_loader, val_loader, train_group_cls_num, train_labels
 
 
-def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
+def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
     sigma, la, g_dis, gamma, ranked_contra, contra_ratio, temp = args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.temp
     ranges = int(100/args.groups)
     model.train()
@@ -207,7 +207,9 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         tole = [0]
     
     tol_avg = int(np.mean(tole))
-
+    if tol_avg == 0:
+        print(" current epoch is ", e)
+        print(tole)
     return model, tol_avg
 
 
@@ -379,7 +381,7 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         f.close()
 
 
-def write_val_log(store_name, cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt):
+def write_val_log(store_name, cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt, tol):
     with open(store_name, 'a+') as f:
         f.write('---------------------------------------------------------------------\n')
         f.write(' In epoch {} cls acc is {} regression mae is {} best bMAE is {} tol is {}'.format(
@@ -434,14 +436,14 @@ if __name__ == '__main__':
     for e in tqdm(range(args.epoch)):
         #adjust_learning_rate(opt, e, args)
         model, tol = train_one_epoch(
-            model, train_loader, loss_ce, loss_mse, opt, args)
+            model, train_loader, loss_ce, loss_mse, opt, args, e)
         tole.append(tol)
         if e % 20 == 0 or e == (args.epoch - 1):
             cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
                 model, val_loader, train_labels, e)
             #
             write_val_log(store_name, cls_acc, reg_mae,  mean_L1_pred,
-                          mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt)
+                          mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt, tol)
             if best_bMAE > mean_L1_pred and e > 40:
                 best_bMAE = mean_L1_pred
                 torch.save(model.state_dict(),
