@@ -188,6 +188,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             tol = tolerance(g_index.cpu(), g.cpu(), ranges)
             sigma = gamma/tol
             tole.append(tol)
+            print(tol)
         #
         loss_list.append(sigma*mse_y)
 
@@ -207,9 +208,9 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         tole = [0]
     
     tol_avg = int(np.mean(tole))
-    if tol_avg == 1:
-        print(" current epoch is ", e)
-        print(tole)
+    #if tol_avg == 1:
+    #    print(" current epoch is ", e)
+    #    print(tole)
     return model, tol_avg
 
 
