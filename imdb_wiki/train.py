@@ -207,7 +207,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         tole = [0]
     
     tol_avg = int(np.mean(tole))
-    if tol_avg == 0:
+    if tol_avg == 1:
         print(" current epoch is ", e)
         print(tole)
     return model, tol_avg
