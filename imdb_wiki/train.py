@@ -190,6 +190,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             tole.append(tol)
         if idx % 50 == 0:
             print(int(np.mean(tole)))
+            print(tole)
         #
         loss_list.append(sigma*mse_y)
 
