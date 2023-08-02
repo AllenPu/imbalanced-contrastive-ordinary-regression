@@ -188,8 +188,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             tol = tolerance(g_index.cpu(), g.cpu(), ranges)
             sigma = gamma/tol
             tole.append(tol)
-        if idx % 100 == 0:
-            print(np.mean(tole))
+        #if idx % 100 == 0:
+        #    print(np.mean(tole))
             #print(tole)
         #
         loss_list.append(sigma*mse_y)
