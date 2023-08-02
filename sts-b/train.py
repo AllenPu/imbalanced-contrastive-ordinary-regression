@@ -91,6 +91,11 @@ def main(arguments):
     parser.add_argument('--evaluate', action='store_true', default=False, help='evaluate only flag')
     parser.add_argument('--eval_model', type=str, default='', help='the model to evaluate on; if not specified, '
                                                                    'use the default best model in store_dir')
+    # group-wise
+    parser.add_argument('--group_mode', action='store_true')
+    parser.add_argument("--ranked_contra", action='store_true', help='use contastive loss or not')
+    parser.add_argument('--groups', type=int, default=10)
+    parser.add_argument('--sigma', type=float, default=0.5)
 
     args = parser.parse_args(arguments)
 
