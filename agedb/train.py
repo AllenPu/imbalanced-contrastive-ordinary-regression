@@ -8,8 +8,8 @@ from scipy.stats import gmean
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
-from agedb.datasets.agedb import *
-from agedb.utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced
+from datasets.agedb import *
+from utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced
 import torch
 from loss import *
 from network import *
