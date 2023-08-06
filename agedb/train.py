@@ -200,7 +200,7 @@ def test(model, test_loader, train_labels, args):
         #
         with torch.no_grad():
             #
-            y_output = model(x)
+            y_output, _ = model(x)
             #
             y_chunk = torch.chunk(y_output, 2, dim=1)
             g_hat, y_pred = y_chunk[0], y_chunk[1]
