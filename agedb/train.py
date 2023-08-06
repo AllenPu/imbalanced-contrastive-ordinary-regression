@@ -226,7 +226,7 @@ def test(model, test_loader, train_labels, args):
     return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt
 
 
-def validate(model, val_loader, train_labels, args):
+def validate(model, val_loader, train_labels):
     model.eval()
     mae_pred = AverageMeter()
     preds, labels, preds_gt = [], [], []
