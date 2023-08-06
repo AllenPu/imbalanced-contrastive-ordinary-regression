@@ -165,7 +165,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         else:
             loss_mse = sigma*loss_mse
         #
-        ce_g = ce_loss(g_hat, g.squeeze().long())
+        loss_ce = ce_loss(g_hat, g.squeeze().long())
         #
         if ranked_contra:
             loss_contra = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
