@@ -148,7 +148,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         y_output, z = model(x)
         #
-        y_chunk, z = torch.chunk(y_output, 2, dim=1)
+        y_chunk = torch.chunk(y_output, 2, dim=1)
         g_hat, y_pred = y_chunk[0], y_chunk[1]
         #
         g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
