@@ -140,14 +140,13 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
     model.train()
     ranges = int(100/args.groups)
     #
-    #
     for idx, (x, y, g) in enumerate(train_loader):
         #print('shape is', x.shape, y.shape, g.shape)
         #
         opt.zero_grad()
         x, y, g = x.to(device), y.to(device), g.to(device)
         #
-        y_output = model(x)
+        y_output, z = model(x)
         #
         y_chunk, z = torch.chunk(y_output, 2, dim=1)
         g_hat, y_pred = y_chunk[0], y_chunk[1]
@@ -157,23 +156,24 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         y_hat = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
         #
-        mse_y = mse_loss(y_hat, y)
+        loss_mse = mse_loss(y_hat, y)
         #
         if g_dis:
             tol = 5/tolerance(g_index.cpu(), g.cpu(), ranges)
-            tole = gamma/tol
+            sigma = gamma/tol
+            loss_mse = sigma*loss_mse
         else:
-            tole = sigma
+            loss_mse = sigma*loss_mse
         #
         ce_g = ce_loss(g_hat, g.squeeze().long())
         #
-        #
         if ranked_contra:
             loss_contra = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
-            loss = tole*mse_y + ce_g + loss_contra
+            loss = loss_ce + loss_contra + loss_mse
         else:
+            loss = loss_ce + loss_mse
         #
-            loss = tole*mse_y + ce_g
+
         #
         loss.backward()
         opt.step()
