@@ -234,7 +234,7 @@ def validate(model, val_loader, train_labels):
         bsz = x.shape[0]
         x, y, g = x.to(device), y.to(device), g.to(device)
         with torch.no_grad():
-            y_output = model(x.to(torch.float32))
+            y_output,_ = model(x.to(torch.float32))
             y_chunk = torch.chunk(y_output, 2, dim=1)
             g_hat, y_hat = y_chunk[0], y_chunk[1]
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
