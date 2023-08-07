@@ -177,6 +177,9 @@ class HeadlessPairEncoder(Model):
         initializer(self)
 
     def forward(self, s1, s2, m1=None, m2=None):
+        #
+        s1, s2 = s1.cuda(), s2.cuda()
+        #
         s1_embs = self._highway_layer(self._text_field_embedder(s1) if m1 is None else s1)
         s2_embs = self._highway_layer(self._text_field_embedder(s2) if m2 is None else s2)
 
