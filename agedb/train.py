@@ -63,7 +63,7 @@ parser.add_argument('--init_noise_sigma', type=float,
                     default=1., help='initial scale of the noise')
 parser.add_argument('--tsne', type=bool, default=False,
                     help='draw tsne or not')
-parser.add_argument('--g_dis', type=bool, default=False,
+parser.add_argument('--g_dis', action='store_true',
                     help='if dynamically adjust the tradeoff')
 parser.add_argument('--gamma', type=float, default=5, help='tradeoff rate')
 parser.add_argument('--reweight', type=str, default=None,
@@ -74,7 +74,7 @@ parser.add_argument('--groups', type=int, default=10,
 #
 parser.add_argument('--tau', default=1, type=float,
                     help=' tau for logit adjustment ')
-parser.add_argument('--ranked_contra', type=bool, default=False)
+parser.add_argument('--ranked_contra', action='store_true')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 
