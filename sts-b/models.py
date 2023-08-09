@@ -98,7 +98,8 @@ class MultiTaskModel(nn.Module):
 
 
     def forward(self, task=None, epoch=None, input1=None, input2=None, mask1=None, mask2=None, label=None, weight=None):
-        pred_layer = getattr(self, '%s_pred_layer' % task.name)
+        if not self.args.group_wise:
+            pred_layer = getattr(self, '%s_pred_layer' % task.name)
         #
         # move tensor to cuda
         #
