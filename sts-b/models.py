@@ -120,8 +120,11 @@ class MultiTaskModel(nn.Module):
             for i in range(bsz):
                 pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
                 pred_list.append(pred_layer_(pair_emb_s[i]))
+            #
             logits = torch.cat(pred_list)
-            print(" logits shape ", logits.shape, " label shape ", label.shape )
+            #
+            logits = logits.unsqueeze(-1)
+            #print(" logits shape ", logits.shape, " label shape ", label.shape )
             assert logits.shape == label.shape
             # ce
             cls_layer = getattr(self, 'classifier' )
