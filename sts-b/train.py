@@ -26,7 +26,8 @@ def main(arguments):
     parser.add_argument('--store_root', help='store root path', type=str, default='checkpoint')
     parser.add_argument('--store_name', help='store name prefix for current experiment', type=str, default='sts')
     parser.add_argument('--suffix', help='store name suffix for current experiment', type=str, default='')
-    parser.add_argument('--word_embs_file', help='file containing word embs', type=str, default='glove/glove.840B.300d.txt')
+    parser.add_argument('--word_embs_file', help='file containing word embs', \
+                        type=str, default='/home/ruizhipu/scratch/regression/imbalanced-regression/sts-b-dir/glove/glove.840B.300d.txt')
 
     # Training resuming flag
     parser.add_argument('--resume', help='whether to resume training', action='store_true', default=False)
