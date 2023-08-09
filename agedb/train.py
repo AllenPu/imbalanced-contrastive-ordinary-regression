@@ -46,7 +46,7 @@ parser.add_argument('--weight_decay', type=float,
                     default=1e-4, help='optimizer weight decay')
 parser.add_argument('--schedule', type=int, nargs='*',
                     default=[60, 80], help='lr schedule (when to drop lr by 10x)')
-parser.add_argument('--batch_size', type=int, default=256, help='batch size')
+parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--print_freq', type=int,
                     default=10, help='logging frequency')
 parser.add_argument('--img_size', type=int, default=224,
