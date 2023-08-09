@@ -298,6 +298,8 @@ if __name__ == '__main__':
     #
     opt = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)
     #
+    best_bMAE = 100
+    #
     for e in tqdm(range(args.epoch)):
         model = train_one_epoch(model, train_loader,
                                 loss_ce, loss_mse, opt, args)
