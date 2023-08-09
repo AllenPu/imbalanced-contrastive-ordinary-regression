@@ -132,6 +132,7 @@ class MultiTaskModel(nn.Module):
             group_ = cls_layer(pair_emb_s)
             print(" before ce cal, group _shape is ", group_.shape, " group_gt ", group_gt.shape)
             loss_ce = self.lce(group_, group_gt.squeeze().long())
+            print(" ce done ")
         else:
             if self.training and self.FDS is not None:
                 if epoch >= self.start_smooth:
