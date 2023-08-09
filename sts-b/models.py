@@ -130,6 +130,7 @@ class MultiTaskModel(nn.Module):
             # ce
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
+            print(" before ce cal, group _shape is ", group_.shape, " group_gt ", group_gt.shape)
             loss_ce = self.lce(group_, group_gt)
         else:
             if self.training and self.FDS is not None:
