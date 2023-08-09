@@ -133,7 +133,7 @@ class MultiTaskModel(nn.Module):
             print(" before ce cal, group _shape is ", group_.shape, " group_gt ", group_gt.shape)
             if group_.shape[0] == 1:
                 torch.save(group_, './group_.pt')
-                torch.save(group_gt,'./group_gt' )
+                torch.save(group_gt,'./group_gt.pt' )
             loss_ce = self.lce(group_, group_gt.squeeze().long())
             print(" ce done ")
         else:
