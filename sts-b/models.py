@@ -131,6 +131,9 @@ class MultiTaskModel(nn.Module):
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
             print(" before ce cal, group _shape is ", group_.shape, " group_gt ", group_gt.shape)
+            if group_.shape[0] == 1:
+                torch.svae(group_, './group_.pt')
+                torch.save(group_gt,'./group_gt' )
             loss_ce = self.lce(group_, group_gt.squeeze().long())
             print(" ce done ")
         else:
