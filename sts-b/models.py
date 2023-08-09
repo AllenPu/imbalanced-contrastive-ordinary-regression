@@ -118,7 +118,7 @@ class MultiTaskModel(nn.Module):
             # regression
             pred_list = []
             for i in range(bsz):
-                pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % i)
+                pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
                 pred_list.append(pred_layer_(pair_emb_s[i]))
             logits = torch.cat(pred_list)
             assert logits.shape == label.shape
