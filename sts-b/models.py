@@ -134,7 +134,7 @@ class MultiTaskModel(nn.Module):
             if group_.shape[0] == 1:
                 torch.save(group_, './group_.pt')
                 torch.save(group_gt,'./group_gt.pt' )
-            loss_ce = self.lce(group_, group_gt.squeeze().long())
+            loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
             print(" ce done ")
         else:
             if self.training and self.FDS is not None:
