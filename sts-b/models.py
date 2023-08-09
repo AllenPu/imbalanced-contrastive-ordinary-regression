@@ -141,7 +141,6 @@ class MultiTaskModel(nn.Module):
         if self.training and self.FDS is not None:
             out['embs'] = pair_emb
             out['labels'] = label
-
         if self.args.loss == 'huber':
             loss = globals()[f"weighted_{self.args.loss}_loss"](
                 inputs=logits, targets=label / torch.tensor(5.).cuda(), weights=weight,
@@ -151,14 +150,17 @@ class MultiTaskModel(nn.Module):
             loss = globals()[f"weighted_{self.args.loss}_loss"](
                 inputs=logits, targets=label / torch.tensor(5.).cuda(), weights=weight
             )
+        print( ' In 153 ' )
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
         logits = logits.squeeze(-1).data.cpu().numpy()
         task.scorer(logits, label)
+        print(' In 158 ')
         if self.args.group_wise:
             out['loss'] = loss + self.args.sigma*loss_ce
         else:
             out['loss'] = loss
+        print( ' In 162 ' )
 
         return out
     
