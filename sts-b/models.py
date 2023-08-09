@@ -105,6 +105,8 @@ class MultiTaskModel(nn.Module):
         #
         input1 = {key : input1[key].cuda() for key in input1}
         input2 = {key : input2[key].cuda() for key in input2}
+        #label = {key: input2[key].cuda() for key in input2}
+        print(label)
         #
         pair_emb = self.pair_encoder(input1, input2, mask1, mask2)
         pair_emb_s = pair_emb
@@ -150,17 +152,14 @@ class MultiTaskModel(nn.Module):
             loss = globals()[f"weighted_{self.args.loss}_loss"](
                 inputs=logits, targets=label / torch.tensor(5.).cuda(), weights=weight
             )
-        print( ' In 153 ' )
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
         logits = logits.squeeze(-1).data.cpu().numpy()
         task.scorer(logits, label)
-        print(' In 158 ')
         if self.args.group_wise:
             out['loss'] = loss + self.args.sigma*loss_ce
         else:
             out['loss'] = loss
-        print( ' In 162 ' )
 
         return out
     
