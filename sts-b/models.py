@@ -99,7 +99,12 @@ class MultiTaskModel(nn.Module):
 
     def forward(self, task=None, epoch=None, input1=None, input2=None, mask1=None, mask2=None, label=None, weight=None):
         pred_layer = getattr(self, '%s_pred_layer' % task.name)
-
+        #
+        # move tensor to cuda
+        #
+        input1 = {key : input1[key].cuda() for key in input1}
+        input2 = {key : input2[key].cuda() for key in input2}
+        #
         pair_emb = self.pair_encoder(input1, input2, mask1, mask2)
         pair_emb_s = pair_emb
 
@@ -177,8 +182,6 @@ class HeadlessPairEncoder(Model):
         initializer(self)
 
     def forward(self, s1, s2, m1=None, m2=None):
-        #
-        s1, s2 = s1.cuda(), s2.cuda()
         #
         s1_embs = self._highway_layer(self._text_field_embedder(s1) if m1 is None else s1)
         s2_embs = self._highway_layer(self._text_field_embedder(s2) if m2 is None else s2)
