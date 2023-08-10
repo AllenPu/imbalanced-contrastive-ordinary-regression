@@ -96,7 +96,7 @@ def main(arguments):
     parser.add_argument('--total_groups', type=float, default=50)
     parser.add_argument('--group_wise', action='store_true')
     parser.add_argument("--ranked_contra", action='store_true', help='use contastive loss or not')
-    parser.add_argument('--groups', type=int, default=10)
+    parser.add_argument('--groups', type=int, default=5)
     parser.add_argument('--sigma', type=float, default=0.5)
 
     args = parser.parse_args(arguments)

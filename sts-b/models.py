@@ -115,12 +115,23 @@ class MultiTaskModel(nn.Module):
         if self.args.group_wise:
             logit_out = []
             group_gt = (label/self.group_range).to(torch.int)
-
+            #
+            cls_layer = getattr(self, 'classifier' )
+            group_ = cls_layer(pair_emb_s)
+            loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
             # regression
             pred_list = []
-            for i in range(bsz):
-                pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
-                pred_list.append(pred_layer_(pair_emb_s[i]))
+            if self.training :
+                for i in range(bsz):
+                    pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
+                    pred_list.append(pred_layer_(pair_emb_s[i]))
+            else:
+                group_hat = torch.argmax(group_, dim=1).unsqueeze(-1)
+                for i in range(bsz):
+                    pred_layer_ = getattr(
+                        self, 'regressor_%s_pred_layer' % group_hat[i].item())
+                    pred_list.append(pred_layer_(pair_emb_s[i]))
+            
             #
             logits = torch.cat(pred_list)
             #
@@ -128,13 +139,7 @@ class MultiTaskModel(nn.Module):
             #print(" logits shape ", logits.shape, " label shape ", label.shape )
             assert logits.shape == label.shape
             # ce
-            cls_layer = getattr(self, 'classifier' )
-            group_ = cls_layer(pair_emb_s)
-            #print(" before ce cal, group _shape is ", group_.shape, " group_gt ", group_gt.shape)
-            if group_.shape[0] == 1:
-                torch.save(group_, './group_.pt')
-                torch.save(group_gt,'./group_gt.pt' )
-            loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
+
         else:
             if self.training and self.FDS is not None:
                 if epoch >= self.start_smooth:
@@ -160,7 +165,7 @@ class MultiTaskModel(nn.Module):
         logits = logits.squeeze(-1).data.cpu().numpy()
         task.scorer(logits, label)
         if self.args.group_wise:
-            out['loss'] = loss + self.args.sigma*loss_ce
+            out['loss'] = self.args.sigma*loss + loss_ce
         else:
             out['loss'] = loss
 
