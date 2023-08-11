@@ -85,6 +85,9 @@ class STSBTask:
         self.val_metric = 'mse'
         self.scorer = STSShotAverage(metric=['mse', 'l1', 'gmean', 'pearsonr', 'spearmanr'])
         self.load_data(path, max_seq_len)
+        if args.group_wise:
+            self.scorer_gt = STSShotAverage(
+                metric=['mse', 'l1', 'gmean', 'pearsonr', 'spearmanr'])
 
     def load_data(self, path, max_seq_len):
         ''' '''

@@ -168,6 +168,8 @@ class MultiTaskModel(nn.Module):
                 loss_gt = globals()[f"weighted_{self.args.loss}_loss"](
                     inputs=logits_gt, targets=label / torch.tensor(5.).cuda(), weights=weight
                 )
+                out['loss_gt'] = loss_gt
+                out['logits_gt'] = logits_gt
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
         logits = logits.squeeze(-1).data.cpu().numpy()
