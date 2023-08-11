@@ -133,9 +133,9 @@ class MultiTaskModel(nn.Module):
                         self, 'regressor_%s_pred_layer' % group_hat[i].item())
                     pred_list.append(pred_layer_(pair_emb_s[i]))
                     # gt
-                    pred_lsyer_gt = getattr(
+                    pred_layer_gt = getattr(
                         self, 'regressor_%s_pred_layer' % group_gt[i].item())
-                    pred_list_gt.append(pred_lsyer_gt)
+                    pred_list_gt.append(pred_layer_gt(pair_emb_s[i]))
                 logits_gt = torch.cat(pred_list_gt)
 
             #
