@@ -269,7 +269,7 @@ class SamplingMultiTaskTrainer():
         for task in tasks:
             n_examples = 0.0
             task_info = task_infos[task.name]
-            val_generator = iterator(task.val_data, num_epochs=1, shuffle=False, cuda_device=self._cuda_device)
+            val_generator = iterator(task.val_data, num_epochs=1, shuffle=False)
             n_val_batches = iterator.get_num_batches(task.val_data)
             all_val_metrics["%s_loss" % task.name] = 0.0
             batch_num = 0
