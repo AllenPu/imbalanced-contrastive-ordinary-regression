@@ -208,7 +208,7 @@ def main(arguments):
     assert os.path.isfile(model_path), f"No checkpoint found at '{model_path}'"
     logging.info(f'Evaluating {model_path}...')
     model_state = torch.load(model_path, map_location=device_mapping(args.cuda))
-    model = resume_checkpoint(model, model_state)
+    model = resume_checkpoint(model, model_state, args.group_wise, args.groups)
     te_preds, te_labels, _ = evaluate(model, tasks, iterator, cuda_device=args.cuda, split="test")
     if not len(args.eval_model):
         np.savez_compressed(os.path.join(args.store_dir, f"{args.store_name}.npz"), preds=te_preds, labels=te_labels)

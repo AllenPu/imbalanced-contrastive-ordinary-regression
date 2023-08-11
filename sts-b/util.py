@@ -72,14 +72,20 @@ def calibrate_mean_var(matrix, m1, v1, m2, v2, clip_min=0.5, clip_max=2.):
     factor = torch.clamp(v2 / v1, clip_min, clip_max)
     return (matrix - m1) * torch.sqrt(factor) + m2
 
-def resume_checkpoint(model, model_state, backbone_only=False):
+def resume_checkpoint(model, model_state, backbone_only=False, group_wise=False, groups= 0):
     model.pair_encoder.load_state_dict(
         {k.split('.', 1)[1]: v for k, v in model_state.items() if 'pair_encoder' in k}
     )
-    if not backbone_only:
+    if not backbone_only and not group_wise:
         getattr(model, 'sts-b_pred_layer').load_state_dict(
             {k.split('.', 1)[1]: v for k, v in model_state.items() if 'sts-b_pred_layer' in k}
         )
+    if not backbone_only and group_wise:
+        for i in range(groups):
+            regressor_name = 'regressor_%s_pred_layer'%i
+            getattr(model, regressor_name).load_state_dict(
+                {k.split('.', 1)[1]: v for k, v in model_state.items() if regressor_name in k}
+            )
 
     return model
 

@@ -121,6 +121,7 @@ class MultiTaskModel(nn.Module):
             loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
             # regression
             pred_list = []
+            pred_list_gt = []
             if self.training :
                 for i in range(bsz):
                     pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
@@ -131,15 +132,18 @@ class MultiTaskModel(nn.Module):
                     pred_layer_ = getattr(
                         self, 'regressor_%s_pred_layer' % group_hat[i].item())
                     pred_list.append(pred_layer_(pair_emb_s[i]))
-            
+                    # gt
+                    pred_lsyer_gt = getattr(
+                        self, 'regressor_%s_pred_layer' % group_gt[i].item())
+                    pred_list_gt.append(pred_lsyer_gt)
+                logits_gt = torch.cat(pred_list_gt)
+
             #
-            logits = torch.cat(pred_list)
+            logits = torch.cat(pred_list) 
             #
             logits = logits.unsqueeze(-1)
             #print(" logits shape ", logits.shape, " label shape ", label.shape )
             assert logits.shape == label.shape
-            # ce
-
         else:
             if self.training and self.FDS is not None:
                 if epoch >= self.start_smooth:
@@ -160,6 +164,10 @@ class MultiTaskModel(nn.Module):
             loss = globals()[f"weighted_{self.args.loss}_loss"](
                 inputs=logits, targets=label / torch.tensor(5.).cuda(), weights=weight
             )
+            if not self.training:
+                loss_gt = globals()[f"weighted_{self.args.loss}_loss"](
+                    inputs=logits_gt, targets=label / torch.tensor(5.).cuda(), weights=weight
+                )
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
         logits = logits.squeeze(-1).data.cpu().numpy()
