@@ -27,7 +27,7 @@ def evaluate(model, tasks, iterator, cuda_device, split="val"):
             task_preds += list(preds.data.cpu().numpy())
             task_labels += list(batch['label'].squeeze().data.cpu().numpy())
 
-        task_metrics = task.get_metrics(reset=True)
+        task_metrics, task_metrics_gt = task.get_metrics(reset=True)
         logging.info('\n***** TEST RESULTS *****')
         for shot in ['Overall', 'Many', 'Medium', 'Few']:
             logging.info(f" * {shot}: MSE {task_metrics[shot.lower()]['mse']:.3f}\t"
@@ -36,6 +36,15 @@ def evaluate(model, tasks, iterator, cuda_device, split="val"):
                          f"Pearson {task_metrics[shot.lower()]['pearsonr']:.3f}\t"
                          f"Spearman {task_metrics[shot.lower()]['spearmanr']:.3f}\t"
                          f"Number {task_metrics[shot.lower()]['num_samples']}")
+        ##########################
+        logging.info('\n***** TEST RESULTS FOR GROUND TRUTH *****')
+        for shot in ['Overall_gt', 'Many_gt', 'Medium_gt', 'Few_gt']:
+            logging.info(f" * {shot}: MSE {task_metrics_gt[shot.lower()]['mse']:.3f}\t"
+                         f"L1 {task_metrics_gt[shot.lower()]['l1']:.3f}\t"
+                         f"G-Mean {task_metrics_gt[shot.lower()]['gmean']:.3f}\t"
+                         f"Pearson {task_metrics_gt[shot.lower()]['pearsonr']:.3f}\t"
+                         f"Spearman {task_metrics_gt[shot.lower()]['spearmanr']:.3f}\t"
+                         f"Number {task_metrics_gt[shot.lower()]['num_samples']}")
 
         n_overall_examples += n_examples
         task_preds = [min(max(np.float32(0.), pred * np.float32(5.)), np.float32(5.)) for pred in task_preds]

@@ -174,7 +174,7 @@ class SamplingMultiTaskTrainer():
 
             # Intermediate logging
             if time.time() - task_info['last_log'] > self._log_interval:
-                task_metrics = task.get_metrics(type='overall')
+                task_metrics, _ = task.get_metrics(type='overall')
                 task_metrics["%s_loss" % task.name] = tr_loss / n_batches_since_val
                 description = self._description_from_metrics(task_metrics)
                 logging.info("Iter %d (Epoch: %d): task %s, iter_since_val %d: %s", n_pass, real_epoch,
@@ -190,7 +190,7 @@ class SamplingMultiTaskTrainer():
                     task_info = task_infos[task.name]
                     n_batches_since_val = task_info['n_batches_since_val']
                     if n_batches_since_val > 0:
-                        task_metrics = task.get_metrics(reset=True)
+                        task_metrics, _ = task.get_metrics(reset=True)
                         all_tr_metrics["%s_loss" % task.name] = float(task_info['loss'] / n_batches_since_val)
                     else:
                         all_tr_metrics["%s_loss" % task.name] = 0.0
@@ -282,7 +282,7 @@ class SamplingMultiTaskTrainer():
             assert batch_num == n_val_batches, pdb.set_trace()
 
             # Get task validation metrics and store in all_val_metrics
-            task_metrics = task.get_metrics(reset=True)
+            task_metrics, _ = task.get_metrics(reset=True)
             for shot, dic in task_metrics.items():
                 all_val_metrics[shot] = dic
             all_val_metrics["%s_loss" % task.name] /= n_val_batches
