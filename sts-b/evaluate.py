@@ -38,7 +38,7 @@ def evaluate(model, tasks, iterator, cuda_device, split="val"):
                          f"Number {task_metrics[shot.lower()]['num_samples']}")
         ##########################
         logging.info('\n***** TEST RESULTS FOR GROUND TRUTH *****')
-        for shot in ['Overall_gt', 'Many_gt', 'Medium_gt', 'Few_gt']:
+        for shot in ['Overall', 'Many', 'Medium', 'Few']:
             logging.info(f" * {shot}: MSE {task_metrics_gt[shot.lower()]['mse']:.3f}\t"
                          f"L1 {task_metrics_gt[shot.lower()]['l1']:.3f}\t"
                          f"G-Mean {task_metrics_gt[shot.lower()]['gmean']:.3f}\t"
