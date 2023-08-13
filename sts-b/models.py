@@ -175,7 +175,7 @@ class MultiTaskModel(nn.Module):
         logits = logits.squeeze(-1).data.cpu().numpy()
         task.scorer(logits, label)
         if self.args.group_wise:
-            task.scorer_gt(logits, label)
+            task.scorer_gt(logits_gt, label)
             out['loss'] = self.args.sigma*loss + loss_ce
         else:
             out['loss'] = loss
