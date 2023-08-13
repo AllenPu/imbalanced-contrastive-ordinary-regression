@@ -169,13 +169,19 @@ class MultiTaskModel(nn.Module):
                     inputs=logits_gt, targets=label / torch.tensor(5.).cuda(), weights=weight
                 )
                 out['loss_gt'] = loss_gt
-                out['logits_gt'] = logits_gt
+                #out['logits_gt'] = logits_gt
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
         logits = logits.squeeze(-1).data.cpu().numpy()
         task.scorer(logits, label)
         if self.args.group_wise:
-            out['loss'] = self.args.sigma*loss + loss_ce
+            if not self.args.g_dis:
+                out['loss'] = self.args.sigma*loss + loss_ce
+            else:
+                current_loss = self.args.sigma*loss + loss_ce
+                if current_loss < 1:
+                    out['loss'] = loss + loss_ce
+
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)
