@@ -181,6 +181,8 @@ class MultiTaskModel(nn.Module):
                 current_loss = self.args.sigma*loss + loss_ce
                 if current_loss < 1:
                     out['loss'] = loss + loss_ce
+                else:
+                    out['loss'] = current_loss
 
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
