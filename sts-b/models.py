@@ -110,6 +110,9 @@ class MultiTaskModel(nn.Module):
         if mask1 and mask2 :
             mask1 = {key: mask1[key].cuda() for key in mask1}
             mask2 = {key : mask2[key].cuda() for key in mask2}
+        if weight:
+            weight = weight.cuda() 
+            #weight = {key: weight[key].cuda() for key in weight}
         #
         pair_emb = self.pair_encoder(input1, input2, mask1, mask2)
         pair_emb_s = pair_emb
