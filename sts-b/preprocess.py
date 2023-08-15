@@ -1,6 +1,7 @@
 '''Preprocessing functions and pipeline'''
 import nltk
-nltk.download('punkt')
+#nltk.download('punkt')
+nltk.word_tokenize("A pivot is the wpin or the central point")
 import torch
 import logging
 import numpy as np
