@@ -106,6 +106,9 @@ class MultiTaskModel(nn.Module):
         input1 = {key : input1[key].cuda() for key in input1}
         input2 = {key : input2[key].cuda() for key in input2}
         label = label.cuda()
+        if not mask1 and not mask2 :
+            mask1 = {key: mask1[key].cuda() for key in mask1}
+            imask2 = {key : mask2[key].cuda() for key in mask2}
         #
         pair_emb = self.pair_encoder(input1, input2, mask1, mask2)
         pair_emb_s = pair_emb
