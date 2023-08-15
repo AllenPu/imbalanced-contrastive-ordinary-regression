@@ -117,7 +117,7 @@ class SamplingMultiTaskTrainer():
 
         sample_weights = [task_infos[task.name]['n_tr_batches'] for task in tasks]
         samples = random.choices(tasks, weights=sample_weights, k=validation_interval)
-        print(samples)
+        #print(samples)
 
         logging.info("Beginning training.")
         all_tr_metrics = {}
@@ -135,6 +135,7 @@ class SamplingMultiTaskTrainer():
             n_batches_since_val = task_info['n_batches_since_val']
             tr_loss = task_info['loss']
             for batch in itertools.islice(tr_generator, 1):
+                print('batch', batch)
                 n_batches_since_val += 1
                 total_batches_trained += 1
                 optimizer.zero_grad()

@@ -182,7 +182,7 @@ def main(arguments):
     # Set up trainer
     iterator = BasicIterator(args.batch_size)
     trainer, train_params, opt_params = build_trainer(args, model, iterator)
-    print(tasks)
+    print('tasks', tasks)
     # Train
     if tasks and not args.evaluate:
         if args.retrain_fc and len(args.pretrained):
