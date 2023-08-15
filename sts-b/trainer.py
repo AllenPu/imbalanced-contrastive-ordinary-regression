@@ -117,6 +117,7 @@ class SamplingMultiTaskTrainer():
 
         sample_weights = [task_infos[task.name]['n_tr_batches'] for task in tasks]
         samples = random.choices(tasks, weights=sample_weights, k=validation_interval)
+        print(samples)
 
         logging.info("Beginning training.")
         all_tr_metrics = {}
