@@ -114,6 +114,7 @@ class MultiTaskModel(nn.Module):
             weight = weight.cuda() 
             #weight = {key: weight[key].cuda() for key in weight}
         #
+        print(' before pair encoder ')
         pair_emb = self.pair_encoder(input1, input2, mask1, mask2)
         pair_emb_s = pair_emb
 
@@ -121,6 +122,7 @@ class MultiTaskModel(nn.Module):
 
         if self.args.group_wise:
             logit_out = []
+            print('  in group wise ')
             group_gt = (label/self.group_range).to(torch.int)
             #
             cls_layer = getattr(self, 'classifier' )
