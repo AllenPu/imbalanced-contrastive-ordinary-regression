@@ -162,12 +162,12 @@ class MultiTaskModel(nn.Module):
                     pair_emb_s = self.FDS.smooth(pair_emb_s, label, epoch)
             logits = pred_layer(pair_emb_s)
         
-        #if not self.training:
-        #    print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
-        #    print(' logits ', logits[0])
-        #    print(' logits gt ', logits_gt[0])
-        #    print(' group_hat is ', group_hat[i], 'group_gt is ', group_gt[i])
-        #    print(' the gt and pred is equal ', torch.equal(group_gt, group_hat))
+        if not self.training:
+            print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
+            print(' logits ', logits[0])
+            print(' logits gt ', logits_gt[0])
+            print(' group_hat is ', group_hat[i], 'group_gt is ', group_gt[i])
+            print(' the gt and pred is equal ', torch.equal(group_gt, group_hat))
 
 
         out = {}
