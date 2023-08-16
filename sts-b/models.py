@@ -161,6 +161,8 @@ class MultiTaskModel(nn.Module):
         
         if not self.training:
             print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
+            print(' logits ', logits[0])
+            print(' logits gt ', logits_gt[0])
 
 
         out = {}
@@ -199,10 +201,13 @@ class MultiTaskModel(nn.Module):
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)
+                print('---------------------------')
                 print(' task scorer ', task.scorer)
                 print(' task scorer gt ', task.scorer)
                 print(' logits ', logits[0])
                 print(' logits gt ', logits_gt[0])
+                print(' the logits gt is equal with logits ? ',
+                      torch.equal(logits, logits_gt))
         else:
             out['loss'] = loss
         
