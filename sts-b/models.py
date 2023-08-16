@@ -113,6 +113,7 @@ class MultiTaskModel(nn.Module):
         print(' weight :' , weight)
         print('shape : ', weight.shape )
         if weight:
+            print(' after weight ')
             weight = weight.cuda() 
             #weight = {key: weight[key].cuda() for key in weight}
         #
