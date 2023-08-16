@@ -110,6 +110,8 @@ class MultiTaskModel(nn.Module):
         if mask1 and mask2 :
             mask1 = {key: mask1[key].cuda() for key in mask1}
             mask2 = {key : mask2[key].cuda() for key in mask2}
+        print(' weight :' , weight)
+        print('shape : ', weight.shape )
         if weight:
             weight = weight.cuda() 
             #weight = {key: weight[key].cuda() for key in weight}
