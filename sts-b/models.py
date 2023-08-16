@@ -142,11 +142,15 @@ class MultiTaskModel(nn.Module):
                 for i in range(bsz):
                     pred_layer_ = getattr(
                         self, 'regressor_%s_pred_layer' % group_hat[i].item())
-                    pred_list.append(pred_layer_(pair_emb_s[i]))
+                    output_ = pred_layer_(pair_emb_s[i])
+                    pred_list.append(output_)
                     # gt
                     pred_layer_gt = getattr(
                         self, 'regressor_%s_pred_layer' % group_gt[i].item())
-                    pred_list_gt.append(pred_layer_gt(pair_emb_s[i]))
+                    output_gt = pred_layer_gt(pair_emb_s[i])
+                    pred_list_gt.append(output_gt)
+                print(' current index for pred is {} for gt is'.format(group_hat[i].item(), group_gt[i].item()))
+                print(' current output for pred is {} for gt is {}'.format(output_.item(), output_gt.item()))
                 logits_gt = torch.cat(pred_list_gt)
             
 
@@ -161,12 +165,13 @@ class MultiTaskModel(nn.Module):
                 if epoch >= self.start_smooth:
                     pair_emb_s = self.FDS.smooth(pair_emb_s, label, epoch)
             logits = pred_layer(pair_emb_s)
-        
+        '''
         if not self.training:
             print(' the logits gt is equal with logits ? ', torch.sum(logits == logits_gt) - logits.shape[0])
             print(' logits ', logits[0], ' logits gt ', logits_gt[0])
             print(' group_hat is ', group_hat[i], 'group_gt is ', group_gt[i])
             print(' the gt and pred is equal ', torch.equal(group_gt, group_hat))
+        '''
 
 
         out = {}
