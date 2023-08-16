@@ -177,6 +177,7 @@ def main(arguments):
     logging.info('Building model...')
     start_time = time.time()
     model = build_model(args, vocab, word_embs, tasks)
+    print(model)
     logging.info('\tFinished building model in %.3fs', time.time() - start_time)
 
     # Set up trainer
