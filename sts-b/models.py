@@ -144,7 +144,6 @@ class MultiTaskModel(nn.Module):
                     pred_layer_gt = getattr(
                         self, 'regressor_%s_pred_layer' % group_gt[i].item())
                     pred_list_gt.append(pred_layer_gt(pair_emb_s[i]))
-                    print(' group_ is ', group_[i], 'group_gt is ', group_gt[i])
                 logits_gt = torch.cat(pred_list_gt)
             
 
@@ -164,6 +163,7 @@ class MultiTaskModel(nn.Module):
             print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
             print(' logits ', logits[0])
             print(' logits gt ', logits_gt[0])
+            print(' group_hat is ', group_hat, 'group_gt is ', group_gt[i])
 
 
         out = {}
