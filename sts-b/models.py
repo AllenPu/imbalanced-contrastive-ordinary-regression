@@ -199,6 +199,10 @@ class MultiTaskModel(nn.Module):
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)
+                print(' task scorer ', task.scorer)
+                print(' task scorer gt ', task.scorer)
+                print(' logits ', logits[0])
+                print(' logits gt ', logits_gt[0])
         else:
             out['loss'] = loss
         
