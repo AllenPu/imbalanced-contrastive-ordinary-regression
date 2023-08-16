@@ -115,7 +115,7 @@ class MultiTaskModel(nn.Module):
             weight = weight.cuda() 
             #weight = {key: weight[key].cuda() for key in weight}
         #
-        print(' before pair encoder ')
+        #print(' before pair encoder ')
         pair_emb = self.pair_encoder(input1, input2, mask1, mask2)
         pair_emb_s = pair_emb
 
