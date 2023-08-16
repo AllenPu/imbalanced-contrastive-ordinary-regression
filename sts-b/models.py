@@ -100,11 +100,6 @@ class MultiTaskModel(nn.Module):
     def forward(self, task=None, epoch=None, input1=None, input2=None, mask1=None, mask2=None, label=None, weight=None):
         if not self.args.group_wise:
             pred_layer = getattr(self, '%s_pred_layer' % task.name)
-        if epoch < 1:
-            self.labels = torch.cat((self.labels, label), dim = 0)
-        else:
-            torch.save(label, 'label.pt')
-            assert epoch < 1
         #
         # move tensor to cuda
         #
@@ -128,7 +123,7 @@ class MultiTaskModel(nn.Module):
 
         if self.args.group_wise:
             logit_out = []
-            group_gt = (label/self.group_range).to(torch.int)
+            group_gt = torch.floor(label).to(torch.int)
             #
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
