@@ -125,7 +125,7 @@ class MultiTaskModel(nn.Module):
         if self.args.group_wise:
             logit_out = []
             group_gt = torch.floor(label).to(torch.int)
-            group_pt = torch.clamp(group_pt, 0, self.max_group_index)
+            group_gt = torch.clamp(group_gt, 0, self.max_group_index)
             #
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
