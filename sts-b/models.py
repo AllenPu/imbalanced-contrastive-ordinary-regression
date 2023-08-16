@@ -151,8 +151,8 @@ class MultiTaskModel(nn.Module):
                     pred_list_gt.append(output_gt)
                 print(' current index for pred is {} for gt is {}'.format(group_hat[i].item(), group_gt[i].item()))
                 print(' current output for pred is {} for gt is {}'.format(output_.item(), output_gt.item()))
-                print('pred_layer_', pred_layer_)
-                print('pred_layer_gt', pred_layer_gt)
+                print('pred_layer_', pred_layer_ == pred_layer_gt)
+                #print('pred_layers equal', pred_layer_gt)
                 logits_gt = torch.cat(pred_list_gt)
             
 
