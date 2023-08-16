@@ -139,9 +139,9 @@ class SamplingMultiTaskTrainer():
                 n_batches_since_val += 1
                 total_batches_trained += 1
                 optimizer.zero_grad()
-                print(' before forward ')
+                #print(' before forward ')
                 output_dict = self._forward(batch, task=task, epoch=real_epoch)
-                print(' after forward ')
+                #print(' after forward ')
                 assert "loss" in output_dict, "Model must return a dict containing a 'loss' key"
                 loss = output_dict["loss"]
                 assert torch.isfinite(loss).all(), logging.info(f'Bad Loss: {loss}')
