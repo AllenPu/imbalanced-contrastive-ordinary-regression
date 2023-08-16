@@ -112,6 +112,7 @@ class MultiTaskModel(nn.Module):
             mask2 = {key : mask2[key].cuda() for key in mask2}
         print(' weight :' , weight)
         print('shape : ', weight.shape )
+        torch.save(weight, 'weight.pt')
         if weight:
             print(' after weight ')
             weight = weight.cuda() 
