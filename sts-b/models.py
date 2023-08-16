@@ -146,7 +146,7 @@ class MultiTaskModel(nn.Module):
                     pred_list.append(output_)
                     # gt
                     pred_layer_gt = getattr(
-                        self, 'regressor_%s_pred_layer' % group_gt[i].item())
+                        self, 'regressor_%s_pred_layer' % 10)
                     output_gt = pred_layer_gt(pair_emb_s[i])
                     pred_list_gt.append(output_gt)
                 print(' current index for pred is {} for gt is {}'.format(group_hat[i].item(), group_gt[i].item()))
