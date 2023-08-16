@@ -135,7 +135,7 @@ class SamplingMultiTaskTrainer():
             n_batches_since_val = task_info['n_batches_since_val']
             tr_loss = task_info['loss']
             for batch in itertools.islice(tr_generator, 1):
-                print('batch', batch)
+                #print('batch', batch)
                 n_batches_since_val += 1
                 total_batches_trained += 1
                 optimizer.zero_grad()
