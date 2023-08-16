@@ -79,7 +79,8 @@ class MultiTaskModel(nn.Module):
 
         self.FDS = FDS
         self.start_smooth = args.start_smooth
-        self.labels = torch.tensor([], dtype=torch.float)
+        self.max_group_index = int(args.groups - 1)
+        #self.labels = torch.tensor([], dtype=torch.float)
 
 
     def build_regressor(self, task, d_inp):
@@ -124,6 +125,7 @@ class MultiTaskModel(nn.Module):
         if self.args.group_wise:
             logit_out = []
             group_gt = torch.floor(label).to(torch.int)
+            group_pt = torch.clamp(group_pt, 0, self.max_group_index)
             #
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
