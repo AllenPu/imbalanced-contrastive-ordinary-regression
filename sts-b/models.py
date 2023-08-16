@@ -79,6 +79,7 @@ class MultiTaskModel(nn.Module):
 
         self.FDS = FDS
         self.start_smooth = args.start_smooth
+        self.labels = torch.tensor([], dtype=torch.float)
 
 
     def build_regressor(self, task, d_inp):
@@ -99,6 +100,11 @@ class MultiTaskModel(nn.Module):
     def forward(self, task=None, epoch=None, input1=None, input2=None, mask1=None, mask2=None, label=None, weight=None):
         if not self.args.group_wise:
             pred_layer = getattr(self, '%s_pred_layer' % task.name)
+        if epoch < 1:
+            self.labels = torch.cat((self.labels, label), dim = 0)
+        else:
+            torch.save(label, 'label.pt')
+            assert epoch < 1
         #
         # move tensor to cuda
         #
@@ -159,12 +165,12 @@ class MultiTaskModel(nn.Module):
                     pair_emb_s = self.FDS.smooth(pair_emb_s, label, epoch)
             logits = pred_layer(pair_emb_s)
         
-        if not self.training:
-            print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
-            print(' logits ', logits[0])
-            print(' logits gt ', logits_gt[0])
-            print(' group_hat is ', group_hat[i], 'group_gt is ', group_gt[i])
-            print(' the gt and pred is equal ', torch.equal(group_gt, group_hat))
+        #if not self.training:
+        #    print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
+        #    print(' logits ', logits[0])
+        #    print(' logits gt ', logits_gt[0])
+        #    print(' group_hat is ', group_hat[i], 'group_gt is ', group_gt[i])
+        #    print(' the gt and pred is equal ', torch.equal(group_gt, group_hat))
 
 
         out = {}
@@ -203,11 +209,11 @@ class MultiTaskModel(nn.Module):
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)
-                print('---------------------------')
-                print(' task scorer ', task.scorer)
-                print(' task scorer gt ', task.scorer)
-                print(' logits ', logits[0])
-                print(' logits gt ', logits_gt[0])
+            #    print('---------------------------')
+            #    print(' task scorer ', task.scorer)
+            #    print(' task scorer gt ', task.scorer)
+            #    print(' logits ', logits[0])
+            #    print(' logits gt ', logits_gt[0])
                 #print(' the logits gt is equal with logits ? ',
                 #      torch.equal(logits, logits_gt))
         else:
