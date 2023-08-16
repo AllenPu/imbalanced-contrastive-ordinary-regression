@@ -163,7 +163,8 @@ class MultiTaskModel(nn.Module):
             print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
             print(' logits ', logits[0])
             print(' logits gt ', logits_gt[0])
-            print(' group_hat is ', group_hat, 'group_gt is ', group_gt[i])
+            print(' group_hat is ', group_hat[i], 'group_gt is ', group_gt[i])
+            print(' the gt and pred is equal ', torch.equal(group_gt, group_hat))
 
 
         out = {}
