@@ -80,7 +80,6 @@ class MultiTaskModel(nn.Module):
         self.FDS = FDS
         self.start_smooth = args.start_smooth
 
-        self.args = args
 
     def build_regressor(self, task, d_inp):
         if self.args.group_wise:
@@ -131,7 +130,7 @@ class MultiTaskModel(nn.Module):
             # regression
             pred_list = []
             pred_list_gt = []
-            if self.training :
+            if self.training:
                 for i in range(bsz):
                     pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
                     pred_list.append(pred_layer_(pair_emb_s[i]))
@@ -146,6 +145,8 @@ class MultiTaskModel(nn.Module):
                         self, 'regressor_%s_pred_layer' % group_gt[i].item())
                     pred_list_gt.append(pred_layer_gt(pair_emb_s[i]))
                 logits_gt = torch.cat(pred_list_gt)
+            
+                print(' the logits gt is equal with logits ? ', torch.equal(logits, logits_gt))
 
             #
             logits = torch.cat(pred_list) 
@@ -178,6 +179,7 @@ class MultiTaskModel(nn.Module):
                     inputs=logits_gt, targets=label / torch.tensor(5.).cuda(), weights=weight
                 )
                 out['loss_gt'] = loss_gt
+                print(' task loss is ', loss.item(), ' gt loss is ', loss_gt.item())
                 #out['logits_gt'] = logits_gt
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
@@ -192,12 +194,12 @@ class MultiTaskModel(nn.Module):
                     out['loss'] = loss + loss_ce
                 else:
                     out['loss'] = current_loss
-
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)
         else:
             out['loss'] = loss
+        
 
         return out
     
