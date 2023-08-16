@@ -85,11 +85,11 @@ class MultiTaskModel(nn.Module):
 
     def build_regressor(self, task, d_inp):
         if self.args.group_wise:
-            layer = nn.Linear(d_inp, 1)
             groups = int(self.args.groups)
             self.groups = groups
             for i in range(groups):
-                setattr(self, 'regressor_%s_pred_layer' % i, layer)
+                layer_ = nn.Linear(d_inp, 1)
+                setattr(self, 'regressor_%s_pred_layer' % i, layer_)
             setattr(self, 'classifier' , nn.Linear(d_inp, groups) )
             self.lce = nn.CrossEntropyLoss()
             self.group_range = int(self.args.total_groups/self.args.groups)
@@ -123,7 +123,7 @@ class MultiTaskModel(nn.Module):
         bsz = pair_emb_s.shape[0]
 
         if self.args.group_wise:
-            logit_out = []
+            #
             group_gt = torch.floor(label).to(torch.int)
             group_gt = torch.clamp(group_gt, 0, self.max_group_index)
             #
@@ -146,7 +146,7 @@ class MultiTaskModel(nn.Module):
                     pred_list.append(output_)
                     # gt
                     pred_layer_gt = getattr(
-                        self, 'regressor_%s_pred_layer' % 10)
+                        self, 'regressor_%s_pred_layer' % group_gt[i].item())
                     output_gt = pred_layer_gt(pair_emb_s[i])
                     pred_list_gt.append(output_gt)
                 print(' current index for pred is {} for gt is {}'.format(group_hat[i].item(), group_gt[i].item()))
