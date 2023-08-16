@@ -107,14 +107,11 @@ class MultiTaskModel(nn.Module):
         input2 = {key : input2[key].cuda() for key in input2}
         label = label.cuda()
         #print(mask1)
-        if mask1 and mask2 :
+        if mask1 is not None and mask2 is not None:
             mask1 = {key: mask1[key].cuda() for key in mask1}
             mask2 = {key : mask2[key].cuda() for key in mask2}
-        print(' weight :' , weight)
-        print('shape : ', weight.shape )
-        torch.save(weight, 'weight.pt')
-        if weight:
-            print(' after weight ')
+        if weight is not None:
+            #print(' after weight ')
             weight = weight.cuda() 
             #weight = {key: weight[key].cuda() for key in weight}
         #
@@ -126,7 +123,6 @@ class MultiTaskModel(nn.Module):
 
         if self.args.group_wise:
             logit_out = []
-            print('  in group wise ')
             group_gt = (label/self.group_range).to(torch.int)
             #
             cls_layer = getattr(self, 'classifier' )
@@ -155,7 +151,7 @@ class MultiTaskModel(nn.Module):
             logits = torch.cat(pred_list) 
             #
             logits = logits.unsqueeze(-1)
-            print(" logits shape ", logits.shape, " label shape ", label.shape )
+            #print(" logits shape ", logits.shape, " label shape ", label.shape )
             assert logits.shape == label.shape
         else:
             if self.training and self.FDS is not None:
