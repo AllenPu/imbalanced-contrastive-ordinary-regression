@@ -99,6 +99,8 @@ def main(arguments):
     parser.add_argument('--groups', type=int, default=5)
     parser.add_argument('--sigma', type=float, default=0.5)
     parser.add_argument('--g_dis', action='store_true')
+    parser.add_argument('--la', action='store_true')
+    parser.add_argument('--tau', type=float, default=0.5)
 
     args = parser.parse_args(arguments)
 

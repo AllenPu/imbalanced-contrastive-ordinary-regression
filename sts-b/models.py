@@ -91,7 +91,11 @@ class MultiTaskModel(nn.Module):
                 layer_ = nn.Linear(d_inp, 1)
                 setattr(self, 'regressor_%s_pred_layer' % i, layer_)
             setattr(self, 'classifier' , nn.Linear(d_inp, groups) )
-            self.lce = nn.CrossEntropyLoss()
+            if self.args.la:
+                # TO DO: class_num_list
+                self.lce = LAloss(cls_num_list, tau=self.args.tau).cuda()
+            else:
+                self.lce = nn.CrossEntropyLoss()
             self.group_range = int(self.args.total_groups/self.args.groups)
         else:
             layer = nn.Linear(d_inp, 1)
