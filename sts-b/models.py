@@ -1,5 +1,6 @@
 import logging
 import torch.nn as nn
+import numpy
 
 from allennlp.common import Params
 from allennlp.models.model import Model
@@ -14,7 +15,25 @@ from fds import FDS
 from loss import *
 
 
+def get_cls_num_list(args, labels = None):
+    if labels is None:
+        labels = torch.load('labels.pt')
     
+    #labels = labels.numpy()
+    groups = labels/args.group_range
+    groups = groups.to(torch.int)
+    groups = torch.clamp(groups, 0, args.groups-1)
+    #
+    cls_num_dict = {}
+    for i in groups :
+        cls_num_dict[i] = cls_num_dict.get(i, 0)
+        cls_num_dict[i] += 1
+    cls_num_list = [cls_num_dict[key] for key in sorted(cls_num_dict.keys())]
+    #
+    return cls_num_list
+
+
+
 
 def build_model(args, vocab, pretrained_embs, tasks):
     '''
@@ -80,6 +99,7 @@ class MultiTaskModel(nn.Module):
         self.FDS = FDS
         self.start_smooth = args.start_smooth
         self.max_group_index = int(args.groups - 1)
+        self.group_range = args.total_group/args.groups
         #self.labels = torch.tensor([], dtype=torch.float)
 
 
@@ -93,6 +113,7 @@ class MultiTaskModel(nn.Module):
             setattr(self, 'classifier' , nn.Linear(d_inp, groups) )
             if self.args.la:
                 # TO DO: class_num_list
+                cls_num_list = get_cls_num_list(self.args)
                 self.lce = LAloss(cls_num_list, tau=self.args.tau).cuda()
             else:
                 self.lce = nn.CrossEntropyLoss()
@@ -128,7 +149,10 @@ class MultiTaskModel(nn.Module):
 
         if self.args.group_wise:
             #
-            group_gt = torch.floor(label).to(torch.int)
+            # divide groups
+            #group_gt = torch.floor(label).to(torch.int)
+            group_pt = label/self.group_range
+            group_pt = group_pt.to(torch.int)
             group_gt = torch.clamp(group_gt, 0, self.max_group_index)
             #
             cls_layer = getattr(self, 'classifier' )
