@@ -207,7 +207,7 @@ class MultiTaskModel(nn.Module):
                     inputs=logits_gt, targets=label / torch.tensor(5.).cuda(), weights=weight
                 )
                 out['loss_gt'] = loss_gt
-                print(' task loss is ', loss.item(), ' gt loss is ', loss_gt.item())
+                print(' task cls loss is ', loss_ce.item(),' task reg loss is ', loss.item(), ' gt reg loss is ', loss_gt.item())
                 #out['logits_gt'] = logits_gt
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
