@@ -151,8 +151,8 @@ class MultiTaskModel(nn.Module):
             #
             # divide groups
             #group_gt = torch.floor(label).to(torch.int)
-            group_pt = label/self.group_range
-            group_pt = group_pt.to(torch.int)
+            group_gt = label/self.group_range
+            group_gt = group_gt.to(torch.int)
             group_gt = torch.clamp(group_gt, 0, self.max_group_index)
             #
             cls_layer = getattr(self, 'classifier' )
