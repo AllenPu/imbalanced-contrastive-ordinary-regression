@@ -39,6 +39,7 @@ class SamplingMultiTaskTrainer():
         self._grad_norm = grad_norm
         self._grad_clipping = grad_clipping
         self._lr_decay = lr_decay
+        self.real_epoch = 0
 
         self._task_infos = None
         self._metric_infos = None
@@ -70,6 +71,13 @@ class SamplingMultiTaskTrainer():
 
         if best_so_far and out_of_patience:
             pdb.set_trace()
+        #
+        # force to train 200 epoch
+        #
+        if patience and self.real_epoch > 200 :
+            patience = True
+        else:
+            patience = False
 
         return best_so_far, out_of_patience
 
@@ -159,7 +167,7 @@ class SamplingMultiTaskTrainer():
             task_info['n_batches_since_val'] = n_batches_since_val
             task_info['total_batches_trained'] = total_batches_trained
             task_info['loss'] = tr_loss
-            print(' n_pass is ', n_pass, 'task_info[n_tr_batches] is ',task_info['n_tr_batches'], ' real epoch is ',real_epoch)
+            #print(' n_pass is ', n_pass, 'task_info[n_tr_batches] is ',task_info['n_tr_batches'], ' real epoch is ',real_epoch)
 
             if n_pass // task_info['n_tr_batches'] > real_epoch:
                 if self._model.args.fds and real_epoch >= self._model.args.start_update:
@@ -176,6 +184,7 @@ class SamplingMultiTaskTrainer():
                     self._model.FDS.update_running_stats(encodings, labels, real_epoch)
                     logging.info(f"Create Epoch [{real_epoch}] features of all training data...")
                 real_epoch += 1
+                self.real_epoch = real_epoch
 
             # Intermediate logging
             if time.time() - task_info['last_log'] > self._log_interval:
