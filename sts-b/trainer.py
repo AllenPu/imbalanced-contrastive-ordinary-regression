@@ -159,6 +159,7 @@ class SamplingMultiTaskTrainer():
             task_info['n_batches_since_val'] = n_batches_since_val
             task_info['total_batches_trained'] = total_batches_trained
             task_info['loss'] = tr_loss
+            print(' n_pass is ', n_pass, 'task_info[n_tr_batches] is ',task_info['n_tr_batches'], ' real epoch is ',real_epoch)
 
             if n_pass // task_info['n_tr_batches'] > real_epoch:
                 if self._model.args.fds and real_epoch >= self._model.args.start_update:
