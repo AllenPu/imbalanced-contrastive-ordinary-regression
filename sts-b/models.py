@@ -99,7 +99,7 @@ class MultiTaskModel(nn.Module):
         self.FDS = FDS
         self.start_smooth = args.start_smooth
         self.max_group_index = int(args.groups - 1)
-        self.group_range = args.total_group/args.groups
+        self.group_range = args.total_groups/args.groups
         #self.labels = torch.tensor([], dtype=torch.float)
 
 
