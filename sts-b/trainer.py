@@ -21,14 +21,14 @@ def build_trainer(args, model, iterator):
     opt_params = Params({'type': args.optimizer, 'lr': args.lr, 'weight_decay': 1e-5})
     train_params = Params({'max_vals': args.max_vals, 'cuda_device': args.cuda,
                            'patience': args.patience, 'grad_norm': args.max_grad_norm,
-                           'lr_decay': .99})
+                           'lr_decay': .99, 'patience_epoch': args.patience_epoch})
     trainer = SamplingMultiTaskTrainer.from_params(model, args.store_dir, iterator, copy.deepcopy(train_params))
     return trainer, train_params, opt_params
 
 class SamplingMultiTaskTrainer():
     def __init__(self, model, iterator, patience=2, max_vals=50,
                  serialization_dir=None, cuda_device=-1,
-                 grad_norm=None, grad_clipping=None, lr_decay=None):
+                 grad_norm=None, grad_clipping=None, lr_decay=None, patience_epoch=400):
         self._model = model
         self._iterator = iterator
 
@@ -39,7 +39,9 @@ class SamplingMultiTaskTrainer():
         self._grad_norm = grad_norm
         self._grad_clipping = grad_clipping
         self._lr_decay = lr_decay
+        #
         self.real_epoch = 0
+        self.patience_epoch = patience_epoch
 
         self._task_infos = None
         self._metric_infos = None
@@ -74,7 +76,7 @@ class SamplingMultiTaskTrainer():
         #
         # force to train 200 epoch
         #
-        if patience and self.real_epoch > 200 :
+        if patience and self.real_epoch > self.patience_epoch :
             patience = True
         else:
             patience = False
