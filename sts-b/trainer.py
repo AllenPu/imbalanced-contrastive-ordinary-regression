@@ -108,7 +108,7 @@ class SamplingMultiTaskTrainer():
 
 
     def train(self, tasks, validation_interval, train_params, optimizer_params, resume=False):
-
+        print(" at training the patience is ", self.patience_epoch)
         iterator = self._iterator
         task_infos, metric_infos = self._setup_training(tasks, train_params, optimizer_params, iterator)
 
