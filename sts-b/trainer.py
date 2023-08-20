@@ -431,6 +431,7 @@ class SamplingMultiTaskTrainer():
         grad_norm = params.pop("grad_norm", None)
         grad_clipping = params.pop("grad_clipping", None)
         lr_decay = params.pop("lr_decay", None)
+        patience_epoch = params.pop("patience_epoch", 400)
 
         params.assert_empty(cls.__name__)
         return SamplingMultiTaskTrainer(model,
@@ -441,4 +442,5 @@ class SamplingMultiTaskTrainer():
                                         cuda_device=cuda_device,
                                         grad_norm=grad_norm,
                                         grad_clipping=grad_clipping,
-                                        lr_decay=lr_decay)
+                                        lr_decay=lr_decay,
+                                        patience_epoch = patience_epoch)
