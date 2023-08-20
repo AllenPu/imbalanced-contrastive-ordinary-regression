@@ -71,15 +71,17 @@ class SamplingMultiTaskTrainer():
             else:
                 out_of_patience = min(metric_history[-patience:]) >= cur_score
 
+        if out_of_patience and self.real_epoch > self.patience_epoch :
+            out_of_patience = True
+        else:
+            out_of_patience = False
+
         if best_so_far and out_of_patience:
             pdb.set_trace()
         #
         # force to train 200 epoch
         #
-        if patience and self.real_epoch > self.patience_epoch :
-            patience = True
-        else:
-            patience = False
+
 
         return best_so_far, out_of_patience
 
