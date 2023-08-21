@@ -82,6 +82,7 @@ class MultiTaskModel(nn.Module):
         self.start_smooth = args.start_smooth
         self.max_group_index = int(args.groups - 1)
         self.group_range = args.total_groups/args.groups
+        self.tsne = args.tsne
         #self.labels = torch.tensor([], dtype=torch.float)
 
 
@@ -182,15 +183,7 @@ class MultiTaskModel(nn.Module):
                 if epoch >= self.start_smooth:
                     pair_emb_s = self.FDS.smooth(pair_emb_s, label, epoch)
             logits = pred_layer(pair_emb_s)
-        '''
-        if not self.training:
-            print(' the logits gt is equal with logits ? ', torch.sum(logits == logits_gt) - logits.shape[0])
-            print(' logits ', logits[0], ' logits gt ', logits_gt[0])
-            print(' group_hat is ', group_hat[i], 'group_gt is ', group_gt[i])
-            print(' the gt and pred is equal ', torch.equal(group_gt, group_hat))
-        '''
-
-
+        ###
         out = {}
         if self.training and self.FDS is not None:
             out['embs'] = pair_emb
@@ -227,17 +220,15 @@ class MultiTaskModel(nn.Module):
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)
-            #    print('---------------------------')
-            #    print(' task scorer ', task.scorer)
-            #    print(' task scorer gt ', task.scorer)
-            #    print(' logits ', logits[0])
-            #    print(' logits gt ', logits_gt[0])
-                #print(' the logits gt is equal with logits ? ',
-                #      torch.equal(logits, logits_gt))
         else:
             out['loss'] = loss
-        
-
+        #
+        if self.tsne :
+            if out.get('embs', 0) != 0:
+                out['embs'] = pair_emb
+            out['group_pred'] = group_hat
+            out['group_gt'] = group_gt 
+            
         return out
     
     def get_cls_num_list(self, args, labels = None):

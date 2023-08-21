@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from preprocess import build_tasks
 from models import build_model
 from trainer import build_trainer
-from evaluate import evaluate
+from extract_feature import extract_feature
 from util import device_mapping, query_yes_no, resume_checkpoint
 
 
@@ -164,6 +164,7 @@ def main(arguments):
     parser.add_argument('--la', action='store_true')
     parser.add_argument('--tau', type=float, default=0.5)
     parser.add_argument('--patience_epoch', type=int, default=400)
+    parser.add_argument('--tsne', type=bool, default=False)
 
     args = parser.parse_args(arguments)
 
@@ -288,13 +289,11 @@ def main(arguments):
     model_state = torch.load(
         model_path, map_location=device_mapping(args.cuda))
     model = resume_checkpoint(model, model_state, args.group_wise, args.groups)
-    te_preds, te_labels, _ = evaluate(
-        model, tasks, iterator, cuda_device=args.cuda, split="test")
-    if not len(args.eval_model):
-        np.savez_compressed(os.path.join(
-            args.store_dir, f"{args.store_name}.npz"), preds=te_preds, labels=te_labels)
+    tsne_z_pred, tsne_g_pred, tsne_g_gt = extract_feature(
+        model, tasks, iterator, cuda_device=args.cuda, args = args, split="test")
+    draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args)
 
-    logging.info("Done testing.")
+    logging.info("Done drawing.")
 
 
 if __name__ == '__main__':
