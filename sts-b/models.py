@@ -96,6 +96,8 @@ class MultiTaskModel(nn.Module):
             if self.args.la:
                 # TO DO: class_num_list
                 cls_num_list = self.get_cls_num_list(self.args)
+                print("+++++++++++++++")
+                print(len(cls_num_list))
                 self.lce = LAloss(cls_num_list, tau=self.args.tau).cuda()
             else:
                 self.lce = nn.CrossEntropyLoss()
