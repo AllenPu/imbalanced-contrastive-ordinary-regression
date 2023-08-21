@@ -253,7 +253,9 @@ class MultiTaskModel(nn.Module):
         for i in groups :
             cls_num_dict[i] = cls_num_dict.get(i, 0)
             cls_num_dict[i] += 1
-            print(i)
+        print(" key is ", cls_num_dict.keys())
+        print(" key len is ", len(cls_num_dict.keys()))
+
         cls_num_list = [cls_num_dict[key] for key in sorted(cls_num_dict.keys())]
         #
         return cls_num_list
