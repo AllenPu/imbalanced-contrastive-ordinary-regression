@@ -254,8 +254,8 @@ class MultiTaskModel(nn.Module):
             key = i.item()
             cls_num_dict[key] = cls_num_dict.get(key, 0)
             cls_num_dict[key] += 1
-        print(" key is ", cls_num_dict.keys())
-        print(" key len is ", len(cls_num_dict.keys()))
+        #print(" key is ", cls_num_dict.keys())
+        #print(" key len is ", len(cls_num_dict.keys()))
 
         cls_num_list = [cls_num_dict[key] for key in sorted(cls_num_dict.keys())]
         #
