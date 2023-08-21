@@ -20,3 +20,7 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     plt.legend()
     plt.savefig('./images/tsne_x_pred_{}_sigma_{}_group_{}_model_{}_pred_lael.png'.format(
         args.lr, args.sigma, args.groups, args.model_depth), dpi=120)
+
+
+if __name__ == '__main__':
+    

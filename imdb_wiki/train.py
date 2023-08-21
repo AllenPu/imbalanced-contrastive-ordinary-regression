@@ -352,7 +352,7 @@ def validate(model, val_loader, train_labels, e):
         y_gt_mae.update(mae.item(), bsz)
         #
     torch.save(preds, './val/pred_{}.pt'.format(e))
-    torch.save(labels, './val/abels_{}.pt'.format(e))
+    torch.save(labels, './val/labels_{}.pt'.format(e))
     _, mean_L1_pred = balanced_metrics(np.hstack(preds), np.hstack(labels))
     _, mean_L1_gt = balanced_metrics(np.hstack(preds_gt), np.hstack(labels))
     #
