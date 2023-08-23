@@ -128,18 +128,23 @@ def main(arguments):
         args.store_name += f'_{args.loss}'
 
     args.store_name += f'_seed_{args.random_seed}_valint_{args.val_interval}_patience_{args.patience}' \
-                       f'_{args.optimizer}_{args.lr}_{args.batch_size}'
+                       f'_{args.optimizer}_{args.lr}_{args.batch_size}_grouwise_{args.group_wise}_groups_{args.groups}' \
+                       f'_sigma_{args.sigma}'
     args.store_name += f'_{args.suffix}' if len(args.suffix) else ''
 
     args.store_dir = os.path.join(args.store_root, args.store_name)
 
     if not args.evaluate and not args.resume:
         if os.path.exists(args.store_dir):
+            shutil.rmtree(args.store_dir)
+            print(args.store_dir + ' removed.\n')
+            '''
             if query_yes_no('overwrite previous folder: {} ?'.format(args.store_dir)):
                 shutil.rmtree(args.store_dir)
                 print(args.store_dir + ' removed.\n')
             else:
                 raise RuntimeError('Output folder {} already exists'.format(args.store_dir))
+            '''
         logging.info(f"===> Creating folder: {args.store_dir}")
         os.makedirs(args.store_dir)
 
