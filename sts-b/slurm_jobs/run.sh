@@ -19,4 +19,4 @@ echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 echo "current lr status : " $1
 echo "current groups status : " $2
 
-python train.py --group_wise --lr $1  --groups $2
+python ../train.py --group_wise --lr $1  --groups $2
