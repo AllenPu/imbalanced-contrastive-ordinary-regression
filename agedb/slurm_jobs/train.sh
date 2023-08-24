@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=baselines
 #SBATCH --account=def-boyuwang
-#SBATCH --time=01-10:00
+#SBATCH --time=02-10:00
 #SBATCH --mem=32G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=6
@@ -18,4 +18,4 @@ echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 
-python train.py --ranked_contra --g_dis --la True --tau 0.5 --lr 0.0001  --groups 10 
+python train.py --ranked_contra --la True --tau 0.5 --lr $1  --groups $2 --epoch $3 --temp $4

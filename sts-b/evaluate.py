@@ -51,11 +51,11 @@ def evaluate(model, tasks, iterator, cuda_device, split="val", store_name=None):
         all_preds[task.name] = (task_preds, task_idxs)
         ##############################
         with open('./results.txt', "a") as f:
-            f.write('--------------------------------')
-            f.write(store_name)
+            f.write('--------------------------------\n')
+            f.write(store_name+'\t')
             for shot in ['Overall', 'Many', 'Medium', 'Few']:
-                f.write(f" * {shot}: MSE {task_metrics[shot.lower()]['mse']:.3f}\t")
-                f.write(f"L1 {task_metrics_gt[shot.lower()]['l1']:.3f}\t")
-            f.write('--------------------------------')
+                f.write(f" * {shot}: MSE {task_metrics[shot.lower()]['mse']:.3f}\n")
+                f.write(f"L1 {task_metrics_gt[shot.lower()]['l1']:.3f}\n")
+            f.write('--------------------------------\n')
 
     return task_preds, task_labels, task_metrics['overall']['mse']

@@ -53,7 +53,7 @@ parser.add_argument('--group_mode', default='i_g', type=str,
 parser.add_argument('--schedule', type=int, nargs='*',
                     default=[60, 80], help='lr schedule (when to drop lr by 10x)')
 #parser.add_argument('--regulize', type=bool, default=False, help='if to regulaize the previous classification results')
-parser.add_argument('--la', type=bool, default=False,
+parser.add_argument('--la', action='store_true',
                     help='if use logit adj to train the imbalance')
 parser.add_argument('--fl', type=bool, default=False,
                     help='if use focal loss to train the imbalance')
@@ -68,7 +68,7 @@ parser.add_argument('--g_dis', type=bool, default=False,
 parser.add_argument('--gamma', type=float, default=5, help='tradeoff rate')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
-parser.add_argument('--ranked_contra', type=bool, default=False)
+parser.add_argument('--ranked_contra', action='store_true')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 
@@ -362,10 +362,13 @@ def validate(model, val_loader, train_labels, e):
     return g_cls_acc.avg, y_gt_mae.avg, mean_L1_pred,  mean_L1_gt, shot_dict_pred, shot_dict_pred_gt
 
 
-def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dict_cls, args):
+def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dict_cls, args, current_task_name=None, mode = None):
     with open(store_name, 'a+') as f:
         [acc_gt, acc_pred, g_pred, mae_gt, mae_pred] = results
-        f.write('---------------------------------------------------------------------')
+        f.write('---------------------------------------------------------------------\n')
+        if current_task_name is not None and mode is not None:
+            f.write('  current task name is {}'.format(current_task_name) + "\n")
+            f.write(' current mode is {}'.format(mode) + "\n")
         f.write(' tau is {} group is {} lr is {} model depth {} epoch {}'.format(
             args.tau, args.groups, args.lr, args.model_depth, args.epoch) + "\n")
         f.write(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
@@ -380,7 +383,7 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
                                                                          shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
         #
-        f.write('---------------------------------------------------------------------')
+        f.write('---------------------------------------------------------------------\n')
         f.close()
 
 
@@ -466,6 +469,9 @@ if __name__ == '__main__':
     write_test_loggs(store_name, results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
+    write_test_loggs('./result.txt', results_val, shot_dict_pred,
+                shot_dict_gt, shot_dict_cls, args, store_name=store_names)
+    #
     # test train model
     #
     acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls = \
@@ -475,3 +481,9 @@ if __name__ == '__main__':
     results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred]
     write_test_loggs(store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
+    #
+    write_test_loggs('./result.txt', results_test, shot_dict_pred,
+                     shot_dict_gt, shot_dict_cls, args,store_name=store_names)
+    
+
+   

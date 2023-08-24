@@ -253,10 +253,13 @@ def validate(model, val_loader, train_labels):
     return mae_pred.avg, mean_L1_pred, mean_L1_gt, shot_pred, shot_pred_gt
 
 
-def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args):
+def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_task_name = None, mode = None ):
     with open(store_name, 'a+') as f:
         [ g_pred, mae_gt, mae_pred] = results
-        f.write('---------------------------------------------------------------------')
+        f.write('---------------------------------------------------------------------\n')
+        if current_task_name is not None and mode is not None:
+            f.write('  current task name is {}'.format(current_task_name)+"\n")
+            f.write(' current mode is {} '.format(mode) + "\n")
         f.write(' tau is {} group is {} lr is {} model depth {} epoch {}'.format(
             args.tau, args.groups, args.lr, args.model_depth, args.epoch) + "\n")
         f.write(' acc of the group assinment is {}, \
@@ -271,7 +274,7 @@ def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args):
         #f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'], \
         #                                                                       shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls'])+ "\n" )
         #
-        f.write('---------------------------------------------------------------------')
+        f.write('---------------------------------------------------------------------\n')
         f.close()
 
 
@@ -325,14 +328,20 @@ if __name__ == '__main__':
                 f.write(
                     '---------------------------------------------------------------------\n')
                 f.close()
+
+    # test final model
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg]
     write_log(store_name, results, shot_pred, shot_pred_gt, args)
+    write_log('./result.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
     #
+    # test val best model
     model_val.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
     acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val, shot_pred_val, shot_pred_gt_val = \
                                                                                 test(model_val, test_loader, train_labels, args)
     results_test = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
     write_log(store_name, results_test, shot_pred_val, shot_pred_gt_val, args)
+    write_log('./result.txt', results_test,
+              shot_pred_val, shot_pred_gt_val, args,current_task_name=store_names, mode = 'val')
