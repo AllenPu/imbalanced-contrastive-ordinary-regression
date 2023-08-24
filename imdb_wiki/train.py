@@ -425,7 +425,7 @@ if __name__ == '__main__':
     #
     model = ResNet_regression(args).to(device)
     #
-    model_test = ResNet_regression(args).to(device)
+    model_val = ResNet_regression(args).to(device)
     #
     opt = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)
     # focal loss
@@ -455,11 +455,11 @@ if __name__ == '__main__':
                 torch.save(model.state_dict(),
                            './models/model_{}.pth'.format(store_names))
     #load the best model
-    model_test.load_state_dict(torch.load(
+    model_val.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
     #
     acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls = \
-        test_step(model_test, test_loader, train_labels, args)
+        test_step(model_val, test_loader, train_labels, args)
     print(' Val model mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {} to_avg is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred, np.mean(tole)))
     #
@@ -470,7 +470,7 @@ if __name__ == '__main__':
                 shot_dict_gt, shot_dict_cls, args)
     #
     write_test_loggs('./result.txt', results_val, shot_dict_pred,
-                shot_dict_gt, shot_dict_cls, args, store_name=store_names)
+                shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode = 'val')
     #
     # test train model
     #
@@ -483,7 +483,7 @@ if __name__ == '__main__':
                 shot_dict_gt, shot_dict_cls, args)
     #
     write_test_loggs('./result.txt', results_test, shot_dict_pred,
-                     shot_dict_gt, shot_dict_cls, args,store_name=store_names)
+                     shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='test')
     
 
    
