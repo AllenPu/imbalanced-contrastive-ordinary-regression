@@ -55,7 +55,7 @@ parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
 #
 parser.add_argument('--sigma', default=0.5, type=float)
-parser.add_argument('--la', type=bool, default=False,
+parser.add_argument('--la', action='store_true',
                     help='if use logit adj to train the imbalance')
 parser.add_argument('--model_depth', type=int, default=50,
                     help='resnet 18 or resnnet 50')
@@ -284,7 +284,7 @@ if __name__ == '__main__':
     store_names = 'la_' + str(args.la) + '_tau_' + str(args.tau) + \
         '_lr_' + str(args.lr) + '_g_' + str(args.groups) + '_model_' + str(args.model_depth) + \
         '_epoch_' + str(args.epoch) + '_group_dis_' + str(args.g_dis) + '_sigma_' + str(args.sigma) + \
-        '_gamma_' + str(args.gamma) + str(args.reweight)
+        '_gamma_' + str(args.gamma) + str(args.reweight) + '_ranked_' + str(args.ranked_contra) + '_temp_' + str(args.temp)
     ####
     print(" store name is ", store_names)
     #
