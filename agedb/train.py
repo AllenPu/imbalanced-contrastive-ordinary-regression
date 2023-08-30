@@ -343,5 +343,5 @@ if __name__ == '__main__':
                                                                                 test(model_val, test_loader, train_labels, args)
     results_test = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
     write_log(store_name, results_test, shot_pred_val, shot_pred_gt_val, args)
-    write_log('./result.txt', results_test,
+    write_log('./results.txt', results_test,
               shot_pred_val, shot_pred_gt_val, args,current_task_name=store_names, mode = 'val')
