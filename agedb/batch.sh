@@ -10,7 +10,7 @@ for i in 0.0001 0.00005 0.0002; do
                             sbatch --job-name=${jobs} ./slurm_jobs/train.sh ${i} ${g} ${e} ${temp} ${sigma}
                         done
                     else
-                        jobs=+'lr'_${i}_'tau_0.5'_'group'_${g}_'epoch'_${e}
+                        jobs='lr'_${i}_'tau_0.5'_'group'_${g}_'epoch'_${e}
                         echo ${jobs}
                         sbatch --job-name=${jobs} ./slurm_jobs/train_contra.sh ${i} ${g} ${e} ${sigma}
                     fi 
