@@ -1,6 +1,6 @@
-for i in 0.0001 0.0005 0.00001; do
+for i in 0.0001 0.00005 0.0002; do
     for g in 10 20 25; do
-        for e in 100 150 200; do
+        for e in 200 250; do
             for sigma in 0.5 1 1.5;do
                 for contra in False; do
                     if contra;then
