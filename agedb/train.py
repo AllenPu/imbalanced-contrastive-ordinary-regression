@@ -345,7 +345,7 @@ if __name__ == '__main__':
     acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val, shot_pred_val, shot_pred_gt_val = \
                                                                                 test(model_val, test_loader, train_labels, args)
     results_val = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
-    write_log(store_name, results_val, shot_pred_val, shot_pred_gt_val, args)
+    write_log('./output/'+store_name, results_val, shot_pred_val, shot_pred_gt_val, args)
     if args.ranked_contra:
         write_log('./result_contra.txt', results_val,
               shot_pred_val, shot_pred_gt_val, args,current_task_name=store_names, mode = 'val')
