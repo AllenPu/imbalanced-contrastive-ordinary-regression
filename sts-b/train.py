@@ -221,7 +221,7 @@ def main(arguments):
     model_state = torch.load(model_path, map_location=device_mapping(args.cuda))
     model = resume_checkpoint(model, model_state, args.group_wise, args.groups)
     te_preds, te_labels, _ = evaluate(
-        model, tasks, iterator, cuda_device=args.cuda, split="test", store_name=args.store_name)
+        model, tasks, iterator, cuda_device=args.cuda, split="test", store_name=args.store_name, ranked_contra=args.ranked_contra)
     if not len(args.eval_model):
         np.savez_compressed(os.path.join(args.store_dir, f"{args.store_name}.npz"), preds=te_preds, labels=te_labels)
 
