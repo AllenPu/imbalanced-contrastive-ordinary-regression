@@ -469,7 +469,11 @@ if __name__ == '__main__':
     write_test_loggs(store_name, results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
-    write_test_loggs('./result.txt', results_val, shot_dict_pred,
+    if args.ranked_contra:
+        write_test_loggs('./result_contra.txt', results_val, shot_dict_pred,
+                shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode = 'val')
+    else:
+        write_test_loggs('./result_no_contra.txt', results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode = 'val')
     #
     # test train model
@@ -482,8 +486,12 @@ if __name__ == '__main__':
     write_test_loggs(store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
-    write_test_loggs('./result.txt', results_test, shot_dict_pred,
+    if args.ranked_contra:
+        write_test_loggs('./result_contra.txt', results_test, shot_dict_pred,
                      shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='test')
+    else:
+        write_test_loggs('./result_no_contra.txt', results_val, shot_dict_pred,
+                         shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='val')
     
 
    
