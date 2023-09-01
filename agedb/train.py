@@ -334,14 +334,22 @@ if __name__ == '__main__':
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg]
     write_log(store_name, results, shot_pred, shot_pred_gt, args)
-    write_log('./result.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
+    if args.ranked_contra:
+        write_log('./result_contra.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
+    else:
+        write_log('./result_no_contra.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
     #
     # test val best model
     model_val.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
     acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val, shot_pred_val, shot_pred_gt_val = \
                                                                                 test(model_val, test_loader, train_labels, args)
-    results_test = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
-    write_log(store_name, results_test, shot_pred_val, shot_pred_gt_val, args)
-    write_log('./results.txt', results_test,
+    results_val = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
+    write_log(store_name, results_val, shot_pred_val, shot_pred_gt_val, args)
+    if args.ranked_contra:
+        write_log('./result_contra.txt', results_val,
               shot_pred_val, shot_pred_gt_val, args,current_task_name=store_names, mode = 'val')
+    else:
+        write_log('./result_no_contra.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
+
+
