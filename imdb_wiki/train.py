@@ -491,7 +491,7 @@ if __name__ == '__main__':
                      shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='test')
     else:
         write_test_loggs('./result_no_contra.txt', results_val, shot_dict_pred,
-                         shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='val')
+                         shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='test')
     
 
    
