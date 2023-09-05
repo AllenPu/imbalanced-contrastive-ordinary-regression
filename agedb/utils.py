@@ -8,6 +8,7 @@ from scipy.signal.windows import triang
 from collections import defaultdict
 from scipy.stats import gmean
 import random
+from torch.distributions import Categorical, kl
 
 
 class AverageMeter(object):
@@ -287,3 +288,20 @@ def shot_metric_balanced(pred, labels, train_labels, many_shot_thr=100, low_shot
     #shot_dict['low']['gmean'] = gmean(np.hstack(low_shot_gmean), axis=None).astype(float)
 
     return shot_dict
+
+
+# calculate the entropy
+def cal_entropy(output, g, topk=3, mode = 'train'):
+    # output is the output prob
+    # g is the ground truth label
+    if mode == 'train':
+        sort = torch.sort(g, dim=-1)
+    else:
+        sort = torch.sort(output, dim=-1)
+    p_sort = sort.indices[:, : topk]
+    p = torch.gather(output, dim=-1, index=p_sort)
+    p_ent = Categorical(p).entropy()
+    #
+    return p_ent
+
+
