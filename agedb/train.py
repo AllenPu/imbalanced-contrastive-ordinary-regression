@@ -10,10 +10,12 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from datasets.agedb import *
 from utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced
+from utils import soft_labeling, SoftCrossEntropy
 import torch
 from loss import *
 from network import *
 import torch.optim as optim
+
 
 
 import os
@@ -77,6 +79,8 @@ parser.add_argument('--tau', default=1, type=float,
 parser.add_argument('--ranked_contra', action='store_true')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
+#
+parser.add_argument('--soft_label', action='store_true')
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -136,7 +140,8 @@ def get_data_loader(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
-    sigma, ranked_contra, contra_ratio, temp, g_dis, gamma = args.sigma, args.ranked_contra, args.contra_ratio, args.temp, args.g_dis, args.gamma
+    sigma, ranked_contra, contra_ratio, temp, g_dis, gamma = \
+            args.sigma, args.ranked_contra, args.contra_ratio, args.temp, args.g_dis, args.gamma
     model.train()
     ranges = int(100/args.groups)
     #
@@ -165,7 +170,13 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         else:
             loss_mse = sigma*loss_mse
         #
-        loss_ce = ce_loss(g_hat, g.squeeze().long())
+        if not args.soft_label:
+            loss_ce = ce_loss(g_hat, g.squeeze().long())
+        else:
+            g_soft_label = soft_labeling(g, args)
+            loss_ce = SoftCrossEntropy(g, g_soft_label)
+
+            
         #
         if ranked_contra:
             loss_contra = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
