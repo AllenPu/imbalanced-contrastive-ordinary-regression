@@ -307,6 +307,7 @@ def cal_entropy(output, g, topk=3, mode = 'train'):
     return p_entropy
 
 
+# for infer in test only
 def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
     #
     row, col, groups = output_cls.shape[0], output_cls.shape[1], args.groups-1
@@ -331,6 +332,15 @@ def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
     reg = torch.sum(torch.matmul(ens_reg, ens_cls_prob))
     #
     return reg
+
+
+#
+def soft_labeling(g, args):
+    groups = args.groups
+    soft_group = []
+    for i in g:
+        label = i.item()
+        soft_label = []
 
 
 
