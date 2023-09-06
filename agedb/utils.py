@@ -9,6 +9,7 @@ from collections import defaultdict
 from scipy.stats import gmean
 import random
 from torch.distributions import Categorical, kl
+import torch.nn as nn
 
 
 class AverageMeter(object):
@@ -301,7 +302,42 @@ def cal_entropy(output, g, topk=3, mode = 'train'):
     p_sort = sort.indices[:, : topk]
     p = torch.gather(output, dim=-1, index=p_sort)
     p_ent = Categorical(p).entropy()
+    p_entropy = torch.sum(p_ent)
     #
-    return p_ent
+    return p_entropy
 
+
+def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
+    #
+    row, col, groups = output_cls.shape[0], output_cls.shape[1], args.groups-1
+    #
+    largest_prob = torch.topk(output_cls, 1, largest=True)
+    #
+    topk_index = largest_prob.repeat(1,topk)
+    #
+    shift = torch.Tensor([-1,0,1]).repeat(row, 1).to(torch.int64)
+    #
+    ens_index = topk_index + shift
+    ens_index = torch.clamp(ens_index,0, groups)
+    #
+    ens_reg = torch.gather(output_reg, dim=1, index=ens_index)
+    #
+    ens_cls = torch.gather(output_cls, dim=1, index=ens_index)
+    #
+    softmax = nn.Softmax(dim=-1)
+    #
+    ens_cls_prob = softmax(ens_cls)
+    #
+    reg = torch.sum(torch.matmul(ens_reg, ens_cls_prob))
+    #
+    return reg
+
+
+
+
+
+
+    
+
+    
 
