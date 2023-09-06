@@ -10,6 +10,7 @@ from scipy.stats import gmean
 import random
 from torch.distributions import Categorical, kl
 import torch.nn as nn
+softmax = nn.Softmax(dim=-1)
 
 
 class AverageMeter(object):
@@ -325,7 +326,7 @@ def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
     #
     ens_cls = torch.gather(output_cls, dim=1, index=ens_index)
     #
-    softmax = nn.Softmax(dim=-1)
+    #softmax = nn.Softmax(dim=-1)
     #
     ens_cls_prob = softmax(ens_cls)
     #
@@ -335,15 +336,21 @@ def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
 
 
 #
-def soft_labeling(g, args):
-    groups = args.groups
+def soft_labeling(g, groups):
+    #groups = args.groups
     soft_group = []
     for i in g:
         label = i.item()
-        soft_label = []
-
-
-
+        soft_label = [0 for i in range(groups)]
+        soft_label[label] = groups-1
+        for j in range(0, label):
+            soft_label[j] = groups - 1 -  (label-j)
+        for j in range(1, groups-label):
+            soft_label[j+label] = groups - 1 - j
+        soft_group.append(soft_label)
+    soft_groups = torch.Tensor(soft_group)
+    soft_groups = softmax(soft_groups)
+    return soft_groups
 
 
 
