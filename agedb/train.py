@@ -81,7 +81,7 @@ parser.add_argument('--temp', type=float, help='temperature for contrastive loss
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 #
 parser.add_argument('--soft_label', action='store_true')
-parser.add_argument('--ce', type=bool, default=True, help='if use the cross_entropy /la or not')
+parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 parser.add_argument('--output_file', type=str, default='result_')
 
 
