@@ -175,7 +175,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         else:
             g_soft_label = soft_labeling(g, args)
             loss_ce = SoftCrossEntropy(g, g_soft_label)
-
+        #loss_ce = ce_loss(g_hat, g.squeeze().long())
             
         #
         if ranked_contra:
