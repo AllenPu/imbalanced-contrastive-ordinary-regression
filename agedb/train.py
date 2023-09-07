@@ -81,6 +81,9 @@ parser.add_argument('--temp', type=float, help='temperature for contrastive loss
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 #
 parser.add_argument('--soft_label', action='store_true')
+parser.add_argument('--ce', type=bool, default=True, help='if use the cross_entropy /la or not')
+parser.add_argument('--output_file', type=str, default='result_')
+
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -161,30 +164,35 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         y_hat = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
         #
+        loss = 0
+        #
         loss_mse = mse_loss(y_hat, y)
         #
         if g_dis:
             tol = 5/tolerance(g_index.cpu(), g.cpu(), ranges)
             sigma = gamma/tol
             loss_mse = sigma*loss_mse
+            
         else:
             loss_mse = sigma*loss_mse
+        # add mse loss
+        loss += loss_mse
         #
-        if not args.soft_label:
+        # add ce based loss
+        if args.ce:
             loss_ce = ce_loss(g_hat, g.squeeze().long())
-        else:
-            g_soft_label = soft_labeling(g, args)
-            loss_ce = SoftCrossEntropy(g, g_soft_label)
-        #loss_ce = ce_loss(g_hat, g.squeeze().long())
-            
+            loss += loss_ce       
         #
+        # add ranked contrastive loss
         if ranked_contra:
             loss_contra = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
-            loss = loss_ce + loss_contra + loss_mse
-        else:
-            loss = loss_ce + loss_mse
-        #
+            loss += loss_contra
 
+        # add soft label based loss
+        if args.soft_label:
+            g_soft_label = soft_labeling(g, args)
+            loss_ce_soft = SoftCrossEntropy(g_hat, g_soft_label)
+            loss += loss_ce_soft
         #
         loss.backward()
         opt.step()
@@ -346,9 +354,12 @@ if __name__ == '__main__':
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg]
     write_log(store_name, results, shot_pred, shot_pred_gt, args)
     if args.ranked_contra:
-        write_log('./result_contra.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
+        file_name = args.output_file + 'contra.txt'
+        write_log(file_name, results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
     else:
-        write_log('./result_no_contra.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
+        file_name = args.output_file + 'no_contra.txt'
+        write_log(file_name, results, shot_pred, shot_pred_gt,
+                  args, current_task_name=store_names, mode='test')
     #
     # test val best model
     model_val.load_state_dict(torch.load(
@@ -358,9 +369,11 @@ if __name__ == '__main__':
     results_val = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
     write_log('./output/'+store_name, results_val, shot_pred_val, shot_pred_gt_val, args)
     if args.ranked_contra:
-        write_log('./result_contra.txt', results_val,
+        file_name = args.output_file + 'contra.txt'
+        write_log(file_name, results_val,
               shot_pred_val, shot_pred_gt_val, args,current_task_name=store_names, mode = 'val')
     else:
-        write_log('./result_no_contra.txt', results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
+        file_name = args.output_file + 'no_contra.txt'
+        write_log(file_name, results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
 
 
