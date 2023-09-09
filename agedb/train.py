@@ -374,6 +374,6 @@ if __name__ == '__main__':
               shot_pred_val, shot_pred_gt_val, args,current_task_name=store_names, mode = 'val')
     else:
         file_name = args.output_file + 'no_contra.txt'
-        write_log(file_name, results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
+        write_log(file_name, results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'val')
 
 
