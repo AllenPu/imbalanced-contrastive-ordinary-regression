@@ -1,7 +1,7 @@
-for i in 0.0001 0.0002 0.00009; do
-    for g in 10 20; do
-        for e in 300 350 400; do
-            for sigma in 2 3 4 5;do
+for i in 0.0002 0.0003 0.00008; do
+    for g in 5 10 20; do
+        for e in 450; do
+            for sigma in 1 2 5 7;do
                 for contra in True; do
                     if [ $contra ];then
                         for temp in 0.02 0.03 0.04; do
