@@ -4,6 +4,9 @@ from collections import defaultdict
 from scipy.stats import gmean
 import os
 import random
+import torch.nn as nn
+softmax = nn.Softmax(dim=-1)
+import torch.nn.functional as F
 
 
 class AverageMeter(object):
@@ -266,3 +269,30 @@ def shot_metric_balanced(pred, labels, train_labels, many_shot_thr=100, low_shot
     #shot_dict['low']['gmean'] = gmean(np.hstack(low_shot_gmean), axis=None).astype(float)
 
     return shot_dict
+
+
+def soft_labeling(g, args):
+    groups = args.groups
+    soft_group = []
+    for i in g:
+        label = i.item()
+        soft_label = [0 for i in range(groups)]
+        soft_label[int(label)] = groups-1
+        for j in range(0, label):
+            soft_label[j] = groups - 1 - (label-j)
+        for j in range(1, groups-label):
+            soft_label[j+label] = groups - 1 - j
+        soft_group.append(soft_label)
+    soft_groups = torch.Tensor(soft_group)
+    soft_groups = softmax(soft_groups)
+    return soft_groups
+
+
+def SoftCrossEntropy(inputs, target, reduction='sum'):
+    log_likelihood = -F.log_softmax(inputs, dim=1)
+    batch = inputs.shape[0]
+    if reduction == 'average':
+        loss = torch.sum(torch.mul(log_likelihood, target)) / batch
+    else:
+        loss = torch.sum(torch.mul(log_likelihood, target))
+    return loss
