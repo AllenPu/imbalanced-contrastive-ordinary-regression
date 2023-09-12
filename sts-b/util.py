@@ -5,6 +5,9 @@ import torch
 from scipy.ndimage import gaussian_filter1d
 from scipy.signal.windows import triang
 from scipy.stats import pearsonr, spearmanr, gmean
+import torch.nn as nn
+softmax = nn.Softmax(dim=-1)
+import torch.nn.functional as F
 
 
 def get_text_field_mask(text_field_tensors: Dict[str, torch.Tensor]) -> torch.LongTensor:
@@ -176,3 +179,29 @@ class STSShotAverage:
         self._pred = []
         self._label = []
         self._count = 0
+
+def soft_labeling(g, args):
+    groups = args.groups
+    soft_group = []
+    for i in g:
+        label = i.item()
+        soft_label = [0 for i in range(groups)]
+        soft_label[int(label)] = groups-1
+        for j in range(0, label):
+            soft_label[j] = groups - 1 - (label-j)
+        for j in range(1, groups-label):
+            soft_label[j+label] = groups - 1 - j
+        soft_group.append(soft_label)
+    soft_groups = torch.Tensor(soft_group)
+    soft_groups = softmax(soft_groups)
+    return soft_groups
+
+
+def SoftCrossEntropy(inputs, target, reduction='sum'):
+    log_likelihood = -F.log_softmax(inputs, dim=1)
+    batch = inputs.shape[0]
+    if reduction == 'average':
+        loss = torch.sum(torch.mul(log_likelihood, target)) / batch
+    else:
+        loss = torch.sum(torch.mul(log_likelihood, target))
+    return loss
