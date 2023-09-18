@@ -341,7 +341,7 @@ def soft_labeling(g, args):
     groups = args.groups
     soft_group = []
     for i in g:
-        label = i.item()
+        label = int(i.item())
         soft_label = [0 for i in range(groups)]
         soft_label[int(label)] = groups-1
         for j in range(0, label):
