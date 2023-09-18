@@ -60,6 +60,7 @@ def main(arguments):
     parser.add_argument('--max_grad_norm', help='max grad norm', type=float, default=5.)
     parser.add_argument('--val_interval', help='number of iterations between validation checks', type=int, default=400)
     parser.add_argument('--max_vals', help='maximum number of validation checks', type=int, default=100)
+    #
     parser.add_argument('--patience', help='patience for early stopping', type=int, default=10)
 
     # imbalanced related
