@@ -276,7 +276,7 @@ def validate(model, val_loader, train_labels):
 def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_task_name = None, mode = None ):
     with open(store_name, 'a+') as f:
         [ g_pred, mae_gt, mae_pred] = results
-        f.write('---------------------------------------------------------------------\n')
+        f.write('=---------------------------------------------------------------------=\n')
         if current_task_name is not None and mode is not None:
             f.write('  new_current task name is {}'.format(current_task_name)+"\n")
             f.write(' new_current mode is {} '.format(mode) + "\n")
