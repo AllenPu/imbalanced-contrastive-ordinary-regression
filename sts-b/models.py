@@ -143,6 +143,9 @@ class MultiTaskModel(nn.Module):
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
             loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
+            if self.args.ranked_contra:
+                loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
+                loss_ce += loss_contra
             # regression
             pred_list = []
             pred_list_gt = []
