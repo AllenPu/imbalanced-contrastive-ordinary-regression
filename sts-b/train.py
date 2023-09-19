@@ -104,6 +104,7 @@ def main(arguments):
     parser.add_argument('--tau', type=float, default=0.5)
     parser.add_argument('--patience_epoch', type=int, default=400)
     parser.add_argument('--tsne', type=bool, default=False)
+    parser.add_argument('--temp', type=float, default=0.07)
 
     args = parser.parse_args(arguments)
 
