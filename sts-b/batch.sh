@@ -16,6 +16,7 @@ for i in 1e-3 5e-3 5e-4 1e-4; do
                         jobs='la_false_lr'_${i}_'groups'_${g}_'sigma'_${s}_'epoch'_${e}
                         echo ${jobs}
                         sbatch --job-name=${jobs} ./slurm_jobs/run.sh ${i} ${g} ${s} ${e}
+                    fi
                 done
             done
         done
