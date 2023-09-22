@@ -191,7 +191,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
 
         # add soft label based loss
         if args.soft_label:
-            g_soft_label = soft_labeling(g, args)
+            g_soft_label = soft_labeling(g, args).to(device)
             loss_ce_soft = SoftCrossEntropy(g_hat, g_soft_label)
             loss += loss_ce_soft
         #
