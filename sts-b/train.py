@@ -105,6 +105,7 @@ def main(arguments):
     parser.add_argument('--patience_epoch', type=int, default=400)
     parser.add_argument('--tsne', type=bool, default=False)
     parser.add_argument('--temp', type=float, default=0.07)
+    parser.add_argument('--epoch', type=int, default=100)
 
     args = parser.parse_args(arguments)
 
@@ -130,8 +131,8 @@ def main(arguments):
         args.store_name += f'_{args.loss}'
 
     args.store_name += f'_seed_{args.random_seed}_valint_{args.val_interval}_patience_{args.patience}' \
-                       f'_{args.optimizer}_{args.lr}_{args.batch_size}_grouwise_{args.group_wise}_groups_{args.groups}' \
-                       f'_sigma_{args.sigma}'
+                       f'_opt_{args.optimizer}_lr_{args.lr}_bs_{args.batch_size}_grouwise_{args.group_wise}_groups_{args.groups}' \
+                       f'_sigma_{args.sigma}_epoch_{args.epoch}'
     args.store_name += f'_{args.suffix}' if len(args.suffix) else ''
 
     args.store_dir = os.path.join(args.store_root, args.store_name)
