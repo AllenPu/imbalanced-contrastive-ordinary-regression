@@ -1,11 +1,13 @@
 import torch.nn as nn
 import torchvision
 import torch
+import torch.optim as optim
 
 
 class ResNet_regression(nn.Module):
     def __init__(self, args):
         super(ResNet_regression, self).__init__()
+        self.args = args
         self.groups = args.groups
         exec('self.model = torchvision.models.resnet{}(pretrained=False)'.format(args.model_depth))
         #
@@ -35,3 +37,11 @@ class ResNet_regression(nn.Module):
         # the ouput dim of the embed is : 512
         #
         return y_hat, z
+    
+
+def opts(self, model, args, split_opt=False):
+    opt_list = []
+    if split_opt:
+        opt = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)
+    else:
+        opt_all = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)

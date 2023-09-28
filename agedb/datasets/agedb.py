@@ -103,3 +103,28 @@ class AgeDB(data.Dataset):
         scaling = len(weights) / np.sum(weights)
         weights = [scaling * x for x in weights]
         return weights
+    
+
+def shot_count(train_labels, many_shot_thr=100, low_shot_thr=20):
+    #
+    train_labels = np.array(train_labels).astype(int)
+    #
+    train_class_count = []
+    #
+    maj_class, med_class, min_class = [], [], []
+    #
+    for l in np.unique(train_labels):
+        train_class_count.append(len(
+            train_labels[train_labels == l]))
+    #
+    for i in range(len(train_class_count)):
+        if train_class_count[i] > many_shot_thr:
+            maj_class.append(i)
+        elif train_class_count[i] < low_shot_thr:
+            min_class.append(i)
+        else:
+            med_class.append(i) 
+    #
+    return maj_class, med_class, min_class
+
+
