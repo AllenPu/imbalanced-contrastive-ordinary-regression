@@ -16,7 +16,7 @@ import pandas as pd
 from loss import LAloss
 from network import ResNet_regression
 from datasets.IMDBWIKI import IMDBWIKI
-from utils import AverageMeter, accuracy, adjust_learning_rate, shot_metric, shot_metric_balanced, shot_metric_cls, setup_seed, balanced_metrics
+from utils import AverageMeter, accuracy, adjust_learning_rate, shot_metric, shot_metric_balanced, shot_metric_cls, setup_seed, balanced_metrics, soft_labelinng, SoftCrossEntropy
 #from datasets.datasets_utils import group_df
 from tqdm import tqdm
 # additional for focal
@@ -71,7 +71,7 @@ parser.add_argument('--reweight', type=str, default=None,
 parser.add_argument('--ranked_contra', action='store_true')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
-
+parser.add_argument('--soft_label', action='store_true')
 
 def tolerance(g_pred, g, ranges):
     # g_pred is the prediction tensor
@@ -132,7 +132,7 @@ def get_dataset(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
-    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, temp = args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.temp
+    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, temp, soft = args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.temp, args.soft
     ranges = int(100/args.groups)
     model.train()
     mse_y = 0
@@ -174,6 +174,10 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #
         if la:
             ce_g = ce_loss(g_hat, g.squeeze().long())
+            loss_list.append(ce_g)
+        elif soft:
+            g_soft_label = soft_labeling(g, args).to(device)
+            ce_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(ce_g)
         else:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
