@@ -306,6 +306,9 @@ if __name__ == '__main__':
         '_epoch_' + str(args.epoch) + '_group_dis_' + str(args.g_dis) + '_sigma_' + str(args.sigma) + \
         '_gamma_' + str(args.gamma) + str(args.reweight) + '_ranked_' + str(args.ranked_contra) + '_temp_' + str(args.temp)
     ####
+    if args.soft_label:
+        store_names = 'soft_label_' + 'ce_' + str(args.ce) +store_names
+    #
     print(" store name is ", store_names)
     #
     store_name = store_names + '.txt'
@@ -314,6 +317,7 @@ if __name__ == '__main__':
         args)
     #
     loss_mse = nn.MSELoss()
+    #
     loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
     #
     model = ResNet_regression(args).to(device)

@@ -72,7 +72,7 @@ parser.add_argument('--ranked_contra', action='store_true')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', action='store_true')
-parser.add_argument('--ce', action='store_false')
+parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 
 def tolerance(g_pred, g, ranges):
     # g_pred is the prediction tensor
@@ -419,7 +419,8 @@ if __name__ == '__main__':
         '_gamma_' + str(args.gamma) + '_contras_' + str(args.ranked_contra) + '_temp_' + str(args.temp)
     #
     if args.soft_label:
-        store_names = 'soft_label_' + store_names
+        store_names = 'soft_label_' + 'ce_' + str(args.ce) +store_names
+    #
     print(" store name is ", store_names)
     #
     store_name = store_names + '.txt'
