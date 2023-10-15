@@ -417,7 +417,7 @@ if __name__ == '__main__':
         '_epoch_' + str(args.epoch) + '_g_dyn_' + str(args.g_dis) + '_sigma_' + str(args.sigma) + \
         '_gamma_' + str(args.gamma) + '_contras_' + str(args.ranked_contra) + '_temp_' + str(args.temp)
     #
-    if args.soft_lablel:
+    if args.soft_label:
         store_names = 'soft_label_' + store_names
     print(" store name is ", store_names)
     #
