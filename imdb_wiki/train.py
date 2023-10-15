@@ -72,6 +72,7 @@ parser.add_argument('--ranked_contra', action='store_true')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', action='store_true')
+parser.add_argument('--ce', action='store_false')
 
 def tolerance(g_pred, g, ranges):
     # g_pred is the prediction tensor
@@ -132,7 +133,8 @@ def get_dataset(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
-    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, temp, soft_label = args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.temp, args.soft_label
+    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, temp, soft_label, ce = \
+        args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.temp, args.soft_label, args.ce
     ranges = int(100/args.groups)
     model.train()
     mse_y = 0
@@ -175,11 +177,11 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if la:
             ce_g = ce_loss(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
-        elif soft_label:
+        if soft_label:
             g_soft_label = soft_labeling(g, args).to(device)
             ce_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(ce_g)
-        else:
+        if ce:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
         #
@@ -197,7 +199,6 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             #print(tole)
         #
         loss_list.append(sigma*mse_y)
-
         #
         #loss = mse_y + sigma*ce_g
         loss = 0
