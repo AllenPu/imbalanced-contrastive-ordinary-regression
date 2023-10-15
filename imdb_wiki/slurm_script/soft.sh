@@ -18,4 +18,5 @@ echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 
-python train.py --la --tau 0.5 --lr 0.0002 --sigma 1 --epoch 200 --soft_label
+#python train.py --la --tau 0.5 --lr 0.0002 --sigma 1 --epoch 200 --soft_label
+python train.py --lr 0.0001 --sigma 1 --epoch 200 --soft_label --ce
