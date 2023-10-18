@@ -340,7 +340,7 @@ if __name__ == '__main__':
                            './models/model_{}.pth'.format(store_names))
             with open(store_name, 'a+') as f:
                 f.write(
-                    '---------------------------------------------------------------------\n')
+                    '=---------------------------------------------------------------------=\n')
                 f.write(' In epoch {} gt regression mae is {} best bMAE is {}'.format(
                     e, reg_mae, best_bMAE) + '\n')
                 f.write(' Val bMAE is pred {}, bMAE is gt {}'.format(
