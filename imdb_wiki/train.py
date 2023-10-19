@@ -73,6 +73,9 @@ parser.add_argument('--temp', type=float, help='temperature for contrastive loss
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
+parser.add_argument('--output_file', default='./results_', help='the output directory')
+
+
 
 def tolerance(g_pred, g, ranges):
     # g_pred is the prediction tensor
@@ -423,7 +426,7 @@ if __name__ == '__main__':
     #
     print(" store name is ", store_names)
     #
-    store_name = store_names + '.txt'
+    store_name = './output/' + store_names + '.txt'
     #
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_dataset(
         args)
@@ -479,10 +482,12 @@ if __name__ == '__main__':
                 shot_dict_gt, shot_dict_cls, args)
     #
     if args.ranked_contra:
-        write_test_loggs('./result_contra.txt', results_val, shot_dict_pred,
+        filename = args.output_file + '_contra.txt'
+        write_test_loggs(filename, results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode = 'val')
     else:
-        write_test_loggs('./result_no_contra.txt', results_val, shot_dict_pred,
+        filename = args.output_file + 'no_contra.txt'
+        write_test_loggs(filename, results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode = 'val')
     #
     # test train model
@@ -496,10 +501,12 @@ if __name__ == '__main__':
                 shot_dict_gt, shot_dict_cls, args)
     #
     if args.ranked_contra:
-        write_test_loggs('./result_contra.txt', results_test, shot_dict_pred,
+        filename = args.output_file + '_contra.txt'
+        write_test_loggs(filename, results_test, shot_dict_pred,
                      shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='test')
     else:
-        write_test_loggs('./result_no_contra.txt', results_val, shot_dict_pred,
+        filename = args.output_file + 'no_contra.txt'
+        write_test_loggs(filename, results_val, shot_dict_pred,
                          shot_dict_gt, shot_dict_cls, args, current_task_name=store_names, mode='test')
     
 
