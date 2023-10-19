@@ -311,7 +311,7 @@ if __name__ == '__main__':
     #
     print(" store name is ", store_names)
     #
-    store_name = store_names + '.txt'
+    store_name = './output/' + store_names + '.txt'
     #
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_data_loader(
         args)
