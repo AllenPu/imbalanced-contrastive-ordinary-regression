@@ -1,6 +1,6 @@
 for i in 0.0007 0.001; do
     for g in 10 20; do
-        for e in 300 400; do
+        for e in 200 300; do
             for sigma in 1 1.5 2;do
                 for contra in True; do
                     if [ $contra ];then
