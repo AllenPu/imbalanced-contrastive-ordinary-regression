@@ -259,14 +259,14 @@ def shot_metric_balanced(pred, labels, train_labels, many_shot_thr=100, low_shot
 
     shot_dict = defaultdict(dict)
     shot_dict['many']['l1'] = np.sum(many_shot_l1) / len(many_shot_l1)
-    #shot_dict['many']['gmean'] = gmean(np.hstack(many_shot_gmean), axis=None).astype(float)
+    shot_dict['many']['gmean'] = gmean(np.hstack(many_shot_gmean), axis=None).astype(float)
     #
     shot_dict['median']['l1'] = np.sum(
         median_shot_l1) / len(median_shot_cnt)
-    #shot_dict['median']['gmean'] = gmean(np.hstack(median_shot_gmean), axis=None).astype(float)
+    shot_dict['median']['gmean'] = gmean(np.hstack(median_shot_gmean), axis=None).astype(float)
     #
     shot_dict['low']['l1'] = np.sum(low_shot_l1) / len(low_shot_cnt)
-    #shot_dict['low']['gmean'] = gmean(np.hstack(low_shot_gmean), axis=None).astype(float)
+    shot_dict['low']['gmean'] = gmean(np.hstack(low_shot_gmean), axis=None).astype(float)
 
     return shot_dict
 

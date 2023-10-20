@@ -391,6 +391,12 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
                                                                          shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
         #
+        f.write(' G-mean Gt Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['g-mean'],
+                                                                         shot_dict_pred['median']['g-mean'], shot_dict_pred['low']['g-mean']))                                                       
+        #
+        f.write(' G-mean Prediction Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['g-mean'],
+                                                                         shot_dict_gt['median']['g-mean'], shot_dict_gt['low']['g-mean']))                                                       
+        #
         f.write('---------------------------------------------------------------------\n')
         f.close()
 
