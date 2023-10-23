@@ -316,7 +316,7 @@ if __name__ == '__main__':
     #
     print(" store name is ", store_names)
     #
-    store_name = './output/' + store_names + '.txt'
+    store_name = store_names + '.txt'
     #
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_data_loader(
         args)
@@ -362,7 +362,7 @@ if __name__ == '__main__':
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg]
-    write_log(store_name, results, shot_pred, shot_pred_gt, args)
+    write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     if args.ranked_contra:
         file_name = args.output_file + 'contra.txt'
         write_log(file_name, results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'test')
