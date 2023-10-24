@@ -391,11 +391,11 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
                                                                          shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
         #
-        f.write(' G-mean Gt Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['g-mean'],
-                                                                         shot_dict_pred['median']['g-mean'], shot_dict_pred['low']['g-mean']))                                                       
+        f.write(' G-mean Gt Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
+                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean']))                                                       
         #
-        f.write(' G-mean Prediction Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['g-mean'],
-                                                                         shot_dict_gt['median']['g-mean'], shot_dict_gt['low']['g-mean']))                                                       
+        f.write(' G-mean Prediction Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
+                                                                         shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean']))                                                       
         #
         f.write('---------------------------------------------------------------------\n')
         f.close()
@@ -432,7 +432,7 @@ if __name__ == '__main__':
     #
     print(" store name is ", store_names)
     #
-    store_name = './output/' + store_names + '.txt'
+    store_name =  store_names + '.txt'
     #
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_dataset(
         args)
@@ -466,7 +466,7 @@ if __name__ == '__main__':
             cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
                 model, val_loader, train_labels, e)
             #
-            write_val_log(store_name, cls_acc, reg_mae,  mean_L1_pred,
+            write_val_log('./output/' + store_name, cls_acc, reg_mae,  mean_L1_pred,
                           mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt, tol)
             if best_bMAE > mean_L1_pred and e > 40:
                 best_bMAE = mean_L1_pred
@@ -484,7 +484,7 @@ if __name__ == '__main__':
     # val best model
     #
     results_val = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred]
-    write_test_loggs(store_name, results_val, shot_dict_pred,
+    write_test_loggs('./output/' + store_name, results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
     if args.ranked_contra:
