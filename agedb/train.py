@@ -294,11 +294,11 @@ def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_t
         #f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'], \
         #                                                                       shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls'])+ "\n" )
         #
-        f.write(' G-mean Gt Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
-                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean']))                                                       
+        f.write(' G-mean Gt Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
+                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
         #
-        f.write(' G-mean Prediction Many : Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
-                                                                         shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean']))     
+        f.write(' G-mean Prediction Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
+                                                                         shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")     
         f.write('---------------------------------------------------------------------\n')
         f.close()
 
