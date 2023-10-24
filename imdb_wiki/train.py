@@ -24,6 +24,7 @@ from tqdm import tqdm
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from loss import Ranked_Contrastive_Loss
+import time
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -377,8 +378,8 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         if current_task_name is not None and mode is not None:
             f.write('  current task name is {}'.format(current_task_name) + "\n")
             f.write(' current mode is {}'.format(mode) + "\n")
-        f.write(' tau is {} group is {} lr is {} model depth {} epoch {}'.format(
-            args.tau, args.groups, args.lr, args.model_depth, args.epoch) + "\n")
+        f.write(' tau is {} group is {} lr is {} model depth {} epoch {} time {}'.format(
+            args.tau, args.groups, args.lr, args.model_depth, args.epoch, time.asctime()) + "\n")
         f.write(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred)+"\n")
         #
@@ -431,6 +432,7 @@ if __name__ == '__main__':
         store_names = 'soft_label_' + 'ce_' + str(args.ce) +store_names
     #
     print(" store name is ", store_names)
+    print(" time is  ", time.asctime())
     #
     store_name =  store_names + '.txt'
     #

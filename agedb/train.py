@@ -15,6 +15,7 @@ import torch
 from loss import *
 from network import *
 import torch.optim as optim
+import time
 
 # current sota 7.73, 7.46, 7.76, 10.08
 # g 10 lr 0.0002 epoch 450 sigma 2 temp 0.02
@@ -280,8 +281,8 @@ def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_t
         if current_task_name is not None and mode is not None:
             f.write('  new_current task name is {}'.format(current_task_name)+"\n")
             f.write(' new_current mode is {} '.format(mode) + "\n")
-        f.write(' tau is {} group is {} lr is {} model depth {} epoch {}'.format(
-            args.tau, args.groups, args.lr, args.model_depth, args.epoch) + "\n")
+        f.write(' tau is {} group is {} lr is {} model depth {} epoch {} time {}'.format(
+            args.tau, args.groups, args.lr, args.model_depth, args.epoch, time.asctime()) + "\n")
         f.write(' acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format( g_pred, mae_gt, mae_pred)+"\n")
         #
