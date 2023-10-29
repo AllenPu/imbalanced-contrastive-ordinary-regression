@@ -177,7 +177,6 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             mse_y = torch.mean(mse_y)
         else:
             mse_y = mse_loss(y_predicted, y)
-        #loss_list.append(sigma*mse_y)#
         #
         if la:
             ce_g = ce_loss(g_hat, g.squeeze().long())
