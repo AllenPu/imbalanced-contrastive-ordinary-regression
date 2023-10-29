@@ -235,9 +235,10 @@ def test_step(model, test_loader, train_labels, args):
     mse_pred = AverageMeter()
     acc_mae_pred = AverageMeter()
     mse = nn.MSELoss()
-    #
+    # gmean
     criterion_gmean_gt = nn.L1Loss(reduction='none')
     criterion_gmean_pred = nn.L1Loss(reduction='none')
+    gmean_loss_all_gt, gmean_loss_all_pred = [], [] 
     # this is for y
     pred_gt, pred, labels = [], [], []
     # CHECK THE PREDICTION ACC
@@ -246,22 +247,21 @@ def test_step(model, test_loader, train_labels, args):
     tsne_x_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
     tsne_g_gt = torch.Tensor(0)
-    for idx, (inputs, targets, group) in enumerate(test_loader):
-        #
-        bsz = targets.shape[0]
-        #
-        inputs = inputs.to(device)
-        targets = targets.to(device)
-        group = group.to(device)
-        # for regression
-        labels.extend(targets.data.cpu().numpy())
-        # for cls, cls for g
-        pred_g_gt.extend(group.data.cpu().numpy())
-        # initi for tsne
-        #tsne_x_gt = torch.Tensor(0)
-        #
-
-        with torch.no_grad():
+    with torch.no_grad():
+        for idx, (inputs, targets, group) in enumerate(test_loader):
+            #
+            bsz = targets.shape[0]
+            #
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+            group = group.to(device)
+            # for regression
+            labels.extend(targets.data.cpu().numpy())
+            # for cls, cls for g
+            pred_g_gt.extend(group.data.cpu().numpy())
+            # initi for tsne
+            #tsne_x_gt = torch.Tensor(0)
+            #
             y_output, z = model(inputs.to(torch.float32))
             #
             y_chunk = torch.chunk(y_output, 2, dim=1)
@@ -288,26 +288,28 @@ def test_step(model, test_loader, train_labels, args):
             #
             mae_loss_2 = torch.mean(torch.abs(y_pred - targets))
             #
-            #acc1 = accuracy(y_predicted, targets, topk=(1,))
             acc3 = accuracy(g_hat, group, topk=(1,))
             # gmean
             loss_all_gt = criterion_gmean_gt(y_gt, targets)
             loss_all_pred = criterion_gmean_pred(y_pred, targets)
+            gmean_loss_all_gt.extend(lloss_all_gt.cpu().numpy())
+            gmean_loss_all_pred.extend(loss_all_pred.cpu().numpy())
             #
-            # draw tsne
+            # tsne part
             tsne_x_pred = torch.cat((tsne_x_pred, z.data.cpu()), dim=0)
             #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
             tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
             tsne_g_gt = torch.cat((tsne_g_gt, group.data.cpu()), dim=0)
             #
-
-        mse_gt.update(mse_1.item(), bsz)
-        #mse_mean.update(mse_mean_1.item(), bsz)
-        mse_pred.update(mse_2.item(), bsz)
-        acc_g.update(acc3[0].item(), bsz)
-        acc_mae_gt.update(mae_loss.item(), bsz)
-        acc_mae_pred.update(mae_loss_2.item(), bsz)
-
+            mse_gt.update(mse_1.item(), bsz)
+            #mse_mean.update(mse_mean_1.item(), bsz)
+            mse_pred.update(mse_2.item(), bsz)
+            acc_g.update(acc3[0].item(), bsz)
+            acc_mae_gt.update(mae_loss.item(), bsz)
+            acc_mae_pred.update(mae_loss_2.item(), bsz)
+    # gmean
+    gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
+    gmean_pred = gmean(np.hstack(gmean_loss_all_pred.), axis=None).astype(float)
     # shot metric for predictions
     shot_dict_pred = shot_metric(pred, labels, train_labels)
     shot_dict_gt = shot_metric(pred_gt, labels, train_labels)
@@ -331,7 +333,8 @@ def test_step(model, test_loader, train_labels, args):
             args.lr, args.sigma, args.groups, args.model_depth), dpi=120)
     #
     #
-    return mse_gt.avg,  mse_pred.avg, acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_dict_pred, shot_dict_gt, shot_dict_cls
+    return mse_gt.avg,  mse_pred.avg, acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg,\
+                                    shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred
 
 
 def validate(model, val_loader, train_labels, e):
@@ -381,7 +384,7 @@ def validate(model, val_loader, train_labels, e):
 
 def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dict_cls, args, current_task_name=None, mode = None):
     with open(store_name, 'a+') as f:
-        [acc_gt, acc_pred, g_pred, mae_gt, mae_pred] = results
+        [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred] = results
         f.write('---------------------------------------------------------------------\n')
         if current_task_name is not None and mode is not None:
             f.write('  current task name is {}'.format(current_task_name) + "\n")
@@ -400,10 +403,10 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
                                                                          shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
         #
-        f.write(' G-mean Gt Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
+        f.write(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_dict_gt['many']['gmean'],
                                                                          shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
         #
-        f.write(' G-mean Prediction Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
+        f.write(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
                                                                          shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
         #
         f.write('---------------------------------------------------------------------\n')
@@ -486,14 +489,14 @@ if __name__ == '__main__':
     model_val.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
     #
-    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls = \
+    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred = \
         test_step(model_val, test_loader, train_labels, args)
     print(' Val model mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {} to_avg is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred, np.mean(tole)))
     #
     # val best model
     #
-    results_val = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred]
+    results_val = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred]
     write_test_loggs('./output/' + store_name, results_val, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
@@ -508,11 +511,11 @@ if __name__ == '__main__':
     #
     # test train model
     #
-    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls = \
+    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred = \
         test_step(model, test_loader, train_labels, args)
     print(' Test model mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred))
-    results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred]
+    results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
     write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
