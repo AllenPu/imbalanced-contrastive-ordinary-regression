@@ -16,6 +16,7 @@ from loss import *
 from network import *
 import torch.optim as optim
 import time
+from scipy.stats import gmean
 
 # current sota 7.73, 7.46, 7.76, 10.08
 # g 10 lr 0.0002 epoch 450 sigma 2 temp 0.02
@@ -295,11 +296,11 @@ def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_t
         #f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'], \
         #                                                                       shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls'])+ "\n" )
         #
-        f.write(' G-mean Gt Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
-                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
+        f.write(' G-mean Gt Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
+                                                                         shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
         #
-        f.write(' G-mean Prediction Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
-                                                                         shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")     
+        f.write(' G-mean Prediction Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
+                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")     
         f.write('---------------------------------------------------------------------\n')
         f.close()
 

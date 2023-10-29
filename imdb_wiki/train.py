@@ -25,6 +25,7 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from loss import Ranked_Contrastive_Loss
 import time
+from scipy.stats import gmean
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -234,6 +235,9 @@ def test_step(model, test_loader, train_labels, args):
     mse_pred = AverageMeter()
     acc_mae_pred = AverageMeter()
     mse = nn.MSELoss()
+    #
+    criterion_gmean_gt = nn.L1Loss(reduction='none')
+    criterion_gmean_pred = nn.L1Loss(reduction='none')
     # this is for y
     pred_gt, pred, labels = [], [], []
     # CHECK THE PREDICTION ACC
@@ -286,6 +290,10 @@ def test_step(model, test_loader, train_labels, args):
             #
             #acc1 = accuracy(y_predicted, targets, topk=(1,))
             acc3 = accuracy(g_hat, group, topk=(1,))
+            # gmean
+            loss_all_gt = criterion_gmean_gt(y_gt, targets)
+            loss_all_pred = criterion_gmean_pred(y_pred, targets)
+            #
             # draw tsne
             tsne_x_pred = torch.cat((tsne_x_pred, z.data.cpu()), dim=0)
             #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
@@ -392,11 +400,11 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
                                                                          shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
         #
-        f.write(' G-mean Gt Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
-                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
-        #
-        f.write(' G-mean Prediction Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
+        f.write(' G-mean Gt Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
                                                                          shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
+        #
+        f.write(' G-mean Prediction Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
+                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
         #
         f.write('---------------------------------------------------------------------\n')
         f.close()
