@@ -245,7 +245,7 @@ def test(model, test_loader, train_labels, args):
             # gmean
             loss_all_gt = criterion_gmean_gt(y_hat, targets)
             loss_all_pred = criterion_gmean_pred(y_pred_gt, targets)
-            gmean_loss_all_gt.extend(lloss_all_gt.cpu().numpy())
+            gmean_loss_all_gt.extend(loss_all_gt.cpu().numpy())
             gmean_loss_all_pred.extend(loss_all_pred.cpu().numpy())
             #
             acc_g.update(acc3[0].item(), bsz)
@@ -254,7 +254,7 @@ def test(model, test_loader, train_labels, args):
         #
         # gmean
         gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
-        gmean_pred = gmean(np.hstack(gmean_loss_all_pred.), axis=None).astype(float)
+        gmean_pred = gmean(np.hstack(gmean_loss_all_pred), axis=None).astype(float)
         shot_pred = shot_metric(pred, labels, train_labels)
         shot_pred_gt = shot_metric(pred_gt, labels, train_labels)
 

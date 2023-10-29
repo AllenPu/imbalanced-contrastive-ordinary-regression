@@ -291,7 +291,7 @@ def test_step(model, test_loader, train_labels, args):
             # gmean
             loss_all_gt = criterion_gmean_gt(y_gt, targets)
             loss_all_pred = criterion_gmean_pred(y_pred, targets)
-            gmean_loss_all_gt.extend(lloss_all_gt.cpu().numpy())
+            gmean_loss_all_gt.extend(loss_all_gt.cpu().numpy())
             gmean_loss_all_pred.extend(loss_all_pred.cpu().numpy())
             #
             # tsne part
@@ -308,7 +308,7 @@ def test_step(model, test_loader, train_labels, args):
             acc_mae_pred.update(mae_loss_2.item(), bsz)
         # gmean
         gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
-        gmean_pred = gmean(np.hstack(gmean_loss_all_pred.), axis=None).astype(float)
+        gmean_pred = gmean(np.hstack(gmean_loss_all_pred), axis=None).astype(float)
         # shot metric for predictions
         shot_dict_pred = shot_metric(pred, labels, train_labels)
         shot_dict_gt = shot_metric(pred_gt, labels, train_labels)
