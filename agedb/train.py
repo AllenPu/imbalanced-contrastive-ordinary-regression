@@ -210,17 +210,20 @@ def test(model, test_loader, train_labels, args):
     acc_g = AverageMeter()
     acc_mae_gt = AverageMeter()
     acc_mae_pred = AverageMeter()
+    # gmean
+    criterion_gmean_gt = nn.L1Loss(reduction='none')
+    criterion_gmean_pred = nn.L1Loss(reduction='none')
+    gmean_loss_all_gt, gmean_loss_all_pred = [], [] 
     #
     pred_gt, pred, labels = [], [], []
     #
-    for idx, (x, y, g) in enumerate(test_loader):
-        bsz = x.shape[0]
-        x, y, g = x.to(device), y.to(device), g.to(device)
+    with torch.no_grad():
+        for idx, (x, y, g) in enumerate(test_loader):
+            bsz = x.shape[0]
+            x, y, g = x.to(device), y.to(device), g.to(device)
         #
-        labels.extend(y.data.cpu().numpy())
+            labels.extend(y.data.cpu().numpy())
         # for cls, cls for g
-        #
-        with torch.no_grad():
             #
             y_output, _ = model(x)
             #
@@ -239,13 +242,23 @@ def test(model, test_loader, train_labels, args):
             pred.extend(y_hat.data.cpu().numpy())
             pred_gt.extend(y_pred_gt.data.cpu().numpy())
             #
-        acc_g.update(acc3[0].item(), bsz)
-        acc_mae_gt.update(mae_y_gt.item(), bsz)
-        acc_mae_pred.update(mae_y.item(), bsz)
-    shot_pred = shot_metric(pred, labels, train_labels)
-    shot_pred_gt = shot_metric(pred_gt, labels, train_labels)
+            # gmean
+            loss_all_gt = criterion_gmean_gt(y_hat, targets)
+            loss_all_pred = criterion_gmean_pred(y_pred_gt, targets)
+            gmean_loss_all_gt.extend(lloss_all_gt.cpu().numpy())
+            gmean_loss_all_pred.extend(loss_all_pred.cpu().numpy())
+            #
+            acc_g.update(acc3[0].item(), bsz)
+            acc_mae_gt.update(mae_y_gt.item(), bsz)
+            acc_mae_pred.update(mae_y.item(), bsz)
+        #
+        # gmean
+        gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
+        gmean_pred = gmean(np.hstack(gmean_loss_all_pred.), axis=None).astype(float)
+        shot_pred = shot_metric(pred, labels, train_labels)
+        shot_pred_gt = shot_metric(pred_gt, labels, train_labels)
 
-    return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt
+    return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred
 
 
 def validate(model, val_loader, train_labels):
@@ -277,7 +290,7 @@ def validate(model, val_loader, train_labels):
 
 def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_task_name = None, mode = None ):
     with open(store_name, 'a+') as f:
-        [ g_pred, mae_gt, mae_pred] = results
+        [g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred] = results
         f.write('=---------------------------------------------------------------------=\n')
         if current_task_name is not None and mode is not None:
             f.write('  new_current task name is {}'.format(current_task_name)+"\n")
@@ -296,10 +309,10 @@ def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_t
         #f.write(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'], \
         #                                                                       shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls'])+ "\n" )
         #
-        f.write(' G-mean Gt Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_gt['many']['gmean'],
+        f.write(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_dict_gt['many']['gmean'],
                                                                          shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
         #
-        f.write(' G-mean Prediction Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(shot_dict_pred['many']['gmean'],
+        f.write(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
                                                                          shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")     
         f.write('---------------------------------------------------------------------\n')
         f.close()
@@ -361,9 +374,9 @@ if __name__ == '__main__':
                 f.close()
 
     # test final model
-    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt = test(
+    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
-    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg]
+    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
     write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     if args.ranked_contra:
         file_name = args.output_file + 'contra.txt'
@@ -376,14 +389,15 @@ if __name__ == '__main__':
     # test val best model
     model_val.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
-    acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val, shot_pred_val, shot_pred_gt_val = \
+    acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val, shot_pred_val, shot_pred_gt_val, gmean_gt, gmean_pred = \
                                                                                 test(model_val, test_loader, train_labels, args)
-    results_val = [acc_g_avg_val, acc_mae_gt_avg_val, acc_mae_pred_avg_val]
+    results_val = [acc_g_avg_val, acc_mae_gt_avg_val,
+                   acc_mae_pred_avg_val, gmean_gt, gmean_pred]
     write_log('./output/'+store_name, results_val, shot_pred_val, shot_pred_gt_val, args)
     if args.ranked_contra:
         file_name = args.output_file + 'contra.txt'
         write_log(file_name, results_val,
-              shot_pred_val, shot_pred_gt_val, args,current_task_name=store_names, mode = 'val')
+              shot_pred_val, shot_pred_gt_val, args, current_task_name=store_names, mode = 'val')
     else:
         file_name = args.output_file + 'no_contra.txt'
         write_log(file_name, results, shot_pred, shot_pred_gt, args, current_task_name=store_names, mode = 'val')

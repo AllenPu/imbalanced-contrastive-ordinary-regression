@@ -307,14 +307,14 @@ def test_step(model, test_loader, train_labels, args):
             acc_g.update(acc3[0].item(), bsz)
             acc_mae_gt.update(mae_loss.item(), bsz)
             acc_mae_pred.update(mae_loss_2.item(), bsz)
-    # gmean
-    gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
-    gmean_pred = gmean(np.hstack(gmean_loss_all_pred.), axis=None).astype(float)
-    # shot metric for predictions
-    shot_dict_pred = shot_metric(pred, labels, train_labels)
-    shot_dict_gt = shot_metric(pred_gt, labels, train_labels)
-    #
-    shot_dict_cls = shot_metric_cls(pred_g, pred_g_gt, train_labels,  labels)
+        # gmean
+        gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
+        gmean_pred = gmean(np.hstack(gmean_loss_all_pred.), axis=None).astype(float)
+        # shot metric for predictions
+        shot_dict_pred = shot_metric(pred, labels, train_labels)
+        shot_dict_gt = shot_metric(pred_gt, labels, train_labels)
+        #
+        shot_dict_cls = shot_metric_cls(pred_g, pred_g_gt, train_labels,  labels)
     # draw tsne
     if args.tsne:
         tsne = TSNE(n_components=2, init='pca', random_state=0)
