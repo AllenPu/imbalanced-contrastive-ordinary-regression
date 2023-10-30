@@ -243,8 +243,8 @@ def test(model, test_loader, train_labels, args):
             pred_gt.extend(y_pred_gt.data.cpu().numpy())
             #
             # gmean
-            loss_all_gt = criterion_gmean_gt(y_hat, targets)
-            loss_all_pred = criterion_gmean_pred(y_pred_gt, targets)
+            loss_all_gt = criterion_gmean_gt(y_hat, y)
+            loss_all_pred = criterion_gmean_pred(y_pred_gt, y)
             gmean_loss_all_gt.extend(loss_all_gt.cpu().numpy())
             gmean_loss_all_pred.extend(loss_all_pred.cpu().numpy())
             #
