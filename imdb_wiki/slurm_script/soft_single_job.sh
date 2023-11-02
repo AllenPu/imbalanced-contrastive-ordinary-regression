@@ -1,0 +1,1 @@
+python train.py --lr 0.0001 --sigma 1 --epoch 200 --soft_label  --ce --groups 10 --ranked_contra --temp 0.02
