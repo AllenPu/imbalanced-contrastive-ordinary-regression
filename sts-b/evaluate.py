@@ -2,7 +2,7 @@ import logging
 import tqdm
 import numpy as np
 
-def evaluate(model, tasks, iterator, cuda_device, split="val", store_name=None, ranked_contra=False):
+def evaluate(model, tasks, iterator, cuda_device, split="val", store_name=None, ranked_contra=False, agrs=0):
     '''Evaluate on a dataset'''
     model.eval()
 
@@ -50,6 +50,7 @@ def evaluate(model, tasks, iterator, cuda_device, split="val", store_name=None, 
         task_preds = [min(max(np.float32(0.), pred * np.float32(5.)), np.float32(5.)) for pred in task_preds]
         all_preds[task.name] = (task_preds, task_idxs)
         ##############################
+        
         if ranked_contra:
             with open('./result_contra.txt', "a") as f:
                 f.write('--------------------------------\n')
@@ -66,6 +67,6 @@ def evaluate(model, tasks, iterator, cuda_device, split="val", store_name=None, 
                     f.write(f" * {shot}: MSE {task_metrics[shot.lower()]['mse']:.3f}\n")
                     f.write(f"L1 {task_metrics_gt[shot.lower()]['l1']:.3f}\n")
                 f.write('--------------------------------\n')
-
+        
 
     return task_preds, task_labels, task_metrics['overall']['mse']

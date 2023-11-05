@@ -22,7 +22,7 @@ def main(arguments):
     parser.add_argument('--random_seed', help='random seed to use', type=int, default=111)
 
     # Paths and logging
-    parser.add_argument('--log_file', help='file to log to', type=str, default='training.log')
+    parser.add_argument('--log_file', help='file to log to', type=str, default='_training.log')
     parser.add_argument('--store_root', help='store root path', type=str, default='checkpoint')
     parser.add_argument('--store_name', help='store name prefix for current experiment', type=str, default='sts')
     parser.add_argument('--suffix', help='store name suffix for current experiment', type=str, default='')
@@ -135,7 +135,7 @@ def main(arguments):
     else:
         args.store_name += f'_{args.loss}'
 
-    args.store_name += f'_seed_{args.random_seed}_valint_{args.val_interval}_patience_{args.patience}' \
+    args.store_name += f'_seed_{args.random_seed}_valint_{args.val_interval}_patience_epoch_{args.patience_epoch}' \
                        f'_opt_{args.optimizer}_lr_{args.lr}_bs_{args.batch_size}_grouwise_{args.group_wise}_groups_{args.groups}' \
                        f'_sigma_{args.sigma}_epoch_{args.epoch}'
     args.store_name += f'_{args.suffix}' if len(args.suffix) else ''
@@ -159,7 +159,11 @@ def main(arguments):
     # Logistics
     logging.root.handlers = []
     if os.path.exists(args.store_dir):
-        log_file = os.path.join(args.store_dir, args.log_file)
+        #
+        log_file = 'Soft_label_lr_' + args.lr + '_groups_' + args.groups + '_sigma_' + args.sigma + \
+            '_temp_' + args.temp + '_patience_epoch_' + args.patience_epoch + args.log_file
+        #
+        log_file = os.path.join(args.store_dir, log_file)
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s | %(message)s",
