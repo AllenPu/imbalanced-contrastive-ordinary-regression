@@ -108,6 +108,9 @@ def main(arguments):
     parser.add_argument('--epoch', type=int, default=100)
     parser.add_argument('--soft_label', action='store_true')
     parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
+    parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
+    parser.add_argument('--output_file', default='./results_', help='the output directory')
+
 
     args = parser.parse_args(arguments)
 

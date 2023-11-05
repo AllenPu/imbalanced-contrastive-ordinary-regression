@@ -180,17 +180,18 @@ class STSShotAverage:
         self._label = []
         self._count = 0
 
+#
 def soft_labeling(g, args):
     groups = args.groups
     soft_group = []
     for i in g:
-        label = i.item()
+        label = int(i.item())
         soft_label = [0 for i in range(groups)]
-        soft_label[int(label)] = groups-1
+        soft_label[int(label)] = args.scale*(groups-1)
         for j in range(0, label):
-            soft_label[j] = groups - 1 - (label-j)
+            soft_label[j] = (1/args.scale)*(groups - 1 -  (label-j))
         for j in range(1, groups-label):
-            soft_label[j+label] = groups - 1 - j
+            soft_label[j+label] = (1/args.scale)*(groups - 1 - j)
         soft_group.append(soft_label)
     soft_groups = torch.Tensor(soft_group)
     soft_groups = softmax(soft_groups)

@@ -76,6 +76,8 @@ parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive los
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 parser.add_argument('--output_file', default='./results_', help='the output directory')
+parser.add_argument('--scale', type=float, default=1,
+                    help='scale of the sharpness in soft label')
 
 
 
