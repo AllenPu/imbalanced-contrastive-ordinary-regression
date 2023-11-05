@@ -106,6 +106,8 @@ def main(arguments):
     parser.add_argument('--tsne', type=bool, default=False)
     parser.add_argument('--temp', type=float, default=0.07)
     parser.add_argument('--epoch', type=int, default=100)
+    parser.add_argument('--soft_label', action='store_true')
+    parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 
     args = parser.parse_args(arguments)
 

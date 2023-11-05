@@ -13,6 +13,7 @@ from allennlp.modules.seq2seq_encoders import Seq2SeqEncoder as s2s_e
 
 from fds import FDS
 from loss import *
+from utils import soft_labeling, SoftCrossEntropy
 
 
 
@@ -142,7 +143,11 @@ class MultiTaskModel(nn.Module):
             #
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
-            loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
+            if self.args.ce:
+                loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
+            if self.args.soft_label:
+                group_gt = soft_labeling(group_gt.squeeze(-1).long(), self.args)
+                loss_ce = SoftCrossEntropy(group_, group_gt)
             if self.args.ranked_contra:
                 loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
                 loss_ce += loss_contra
