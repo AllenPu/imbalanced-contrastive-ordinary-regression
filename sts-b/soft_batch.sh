@@ -5,7 +5,7 @@ for i in 0.0001 0.0005; do
                 for sigma in 0.7 1 1.5 2; do
                     jobs='sts'_${i}_'group'_${g}_'epoch'_${e}_'temp'_${temp}
                     echo ${jobs}
-                    sbatch --job-name=${jobs} ./slurm_script/soft.sh ${i} ${g} ${p} ${temp} ${sigma}
+                    sbatch --job-name=${jobs} ./slurm_jobs/soft.sh ${i} ${g} ${p} ${temp} ${sigma}
                 done
             done
         done
