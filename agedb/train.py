@@ -161,9 +161,9 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         y_output, z = model(x)
         #
         y_chunk = torch.chunk(y_output, 2, dim=1)
-        g_hat, y_pred = y_chunk[0], y_chunk[1]
+        g_pred, y_pred = y_chunk[0], y_chunk[1]
         #
-        g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+        g_index = torch.argmax(g_pred, dim=1).unsqueeze(-1)
         #print('g_hat ', g_hat)
         #
         y_hat = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
@@ -184,7 +184,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         # add ce based loss
         if args.ce:
-            loss_ce = ce_loss(g_hat, g.squeeze().long())
+            loss_ce = ce_loss(g_pred, g.squeeze().long())
             loss += loss_ce       
         #
         # add ranked contrastive loss
@@ -195,7 +195,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         # add soft label based loss
         if args.soft_label:
             g_soft_label = soft_labeling(g, args).to(device)
-            loss_ce_soft = SoftCrossEntropy(g_hat, g_soft_label)
+            loss_ce_soft = SoftCrossEntropy(g_pred, g_soft_label)
             loss += loss_ce_soft
         #
         loss.backward()

@@ -363,6 +363,42 @@ def SoftCrossEntropy(inputs, target, reduction='sum'):
         loss = torch.sum(torch.mul(log_likelihood, target))
     return loss
 
+
+#
+def topk_uncertain(y_out, g,  top_k = 3):
+    y_chunk = torch.chunk(y_out, 2, dim=1)
+    #
+    g_pred, y_pred = y_chunk[0], y_chunk[1]
+    #
+    _, k_g = g_pred.topk(top_k, dim=1, largest=True, sorted=True)
+    #
+    y_topk = torch.gather(y_pred, dim=1, index=k_g)
+    #
+    #y_top_k = torch.sum(y_topk, dim=-1)/top_k
+    #
+    g_hat = torch.argmax(g_pred, dim=1).unsqueeze(-1)
+    y_hat = torch.gather(y_pred, dim=1, index=g_hat)
+    #
+    y_gt = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
+    #
+    y_all = torch.cat((y_topk, y_hat, y_gt, k_g, g), 1)
+    #
+    #y_all = torch.cat((y_topk, y_2), 1)
+    #
+    if os.path.exists('./y.gt'):
+        y = torch.load('y.gt')
+        y = torch.cat((y, y_all), 0)
+        torch.save(y, 'y.gt')
+    else:
+        torch.save(y_all, 'y.gt')
+    # return torch size, [biggest group prediction, second group prediction, third group prediction, index1, index2, index3,  y_pred, y_gt, ]
+
+
+        
+
+
+
+
     
 
     
