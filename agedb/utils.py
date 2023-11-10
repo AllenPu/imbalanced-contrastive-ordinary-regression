@@ -394,6 +394,17 @@ def topk_uncertain(y_out, g,  top_k = 3):
     # return torch size, [biggest group prediction, second group prediction, third group prediction, index1, index2, index3,  y_pred, y_gt, ]
 
 
+def diversity_loss(y_pred, g, args, total_dataset_length=100):
+    #
+    ranges = total_dataset_length / args.groups
+    #
+    centroid = (g*ranges + (g+1)*10)/2
+    #
+    mse = nn.MSELoss()(y_pred, centroid)
+    #
+    return -mse
+
+
         
 
 
