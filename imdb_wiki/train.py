@@ -16,7 +16,8 @@ import pandas as pd
 from loss import LAloss
 from network import ResNet_regression
 from datasets.IMDBWIKI import IMDBWIKI
-from utils import AverageMeter, accuracy, adjust_learning_rate, shot_metric, shot_metric_balanced, shot_metric_cls, setup_seed, balanced_metrics, soft_labeling, SoftCrossEntropy
+from utils import AverageMeter, accuracy, adjust_learning_rate,shot_metric, shot_metric_balanced, shot_metric_cls, \
+    setup_seed, balanced_metrics, soft_labeling, SoftCrossEntropy, diversity_loss
 #from datasets.datasets_utils import group_df
 from tqdm import tqdm
 # additional for focal

@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from datasets.agedb import *
-from utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced
+from utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced, diversity_loss
 from utils import soft_labeling, SoftCrossEntropy
 import torch
 from loss import *
@@ -87,7 +87,7 @@ parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 parser.add_argument('--output_file', type=str, default='result_')
 parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
-
+parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -197,6 +197,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
             g_soft_label = soft_labeling(g, args).to(device)
             loss_ce_soft = SoftCrossEntropy(g_pred, g_soft_label)
             loss += loss_ce_soft
+        #
+        loss += args.diversity * diversity_loss(y_hat, g, args)
         #
         loss.backward()
         opt.step()

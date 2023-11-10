@@ -296,3 +296,15 @@ def SoftCrossEntropy(inputs, target, reduction='sum'):
     else:
         loss = torch.sum(torch.mul(log_likelihood, target))
     return loss
+
+
+
+def diversity_loss(y_pred, g, args, total_dataset_length=100):
+    #
+    ranges = total_dataset_length / args.groups
+    #
+    centroid = (g*ranges + (g+1)*10)/2
+    #
+    mse = nn.MSELoss()(y_pred, centroid)
+    #
+    return -mse
