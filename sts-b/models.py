@@ -151,9 +151,9 @@ class MultiTaskModel(nn.Module):
                     pair_emb, group_gt, self.args.temp)
                 loss_ce += loss_contra
             if self.args.soft_label:
-                group_gt = soft_labeling(group_gt.squeeze(-1).long(), self.args).cuda()
-                print('group_ shape : ', group_.shape, 'group_gt shape : ', group_gt.shape)
-                loss_ce = SoftCrossEntropy(group_, group_gt)
+                group_gt_ = soft_labeling(group_gt.squeeze(-1).long(), self.args).cuda()
+                #print('group_ shape : ', group_.shape, 'group_gt shape : ', group_gt.shape)
+                loss_ce = SoftCrossEntropy(group_, group_gt_)
             # regression
             pred_list = []
             pred_list_gt = []
