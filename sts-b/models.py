@@ -145,13 +145,13 @@ class MultiTaskModel(nn.Module):
             group_ = cls_layer(pair_emb_s)
             if self.args.ce:
                 loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
+            if self.args.ranked_contra:
+                loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
+                loss_ce += loss_contra
             if self.args.soft_label:
                 group_gt = soft_labeling(group_gt.squeeze(-1).long(), self.args).cuda()
                 print('group_ shape : ', group_.shape, 'group_gt shape : ', group_gt.shape)
                 loss_ce = SoftCrossEntropy(group_, group_gt)
-            if self.args.ranked_contra:
-                loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
-                loss_ce += loss_contra
             # regression
             pred_list = []
             pred_list_gt = []
