@@ -161,7 +161,7 @@ def main(arguments):
     if os.path.exists(args.store_dir):
         #
         log_file = 'Soft_label_lr_' + args.lr + '_groups_' + args.groups + '_sigma_' + args.sigma + \
-            '_temp_' + args.temp + '_patience_epoch_' + args.patience_epoch + args.log_file
+            '_temp_' + args.temp + '_patience_epoch_' + str(args.patience_epoch) + args.log_file
         #
         log_file = os.path.join(args.store_dir, log_file)
         logging.basicConfig(
