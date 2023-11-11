@@ -148,7 +148,7 @@ class MultiTaskModel(nn.Module):
                 loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
             if self.args.ranked_contra:
                 loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
-                if type(loss_contra) == 'NoneType':
+                if loss_contra is None:
                     print('  group gt  ', group_gt)
                 print(' loss contrastive : ', type(loss_contra), ' contrastive : ', loss_contra.item())
                 loss_ce += loss_contra
