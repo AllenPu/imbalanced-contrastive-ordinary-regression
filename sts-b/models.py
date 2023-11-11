@@ -150,6 +150,8 @@ class MultiTaskModel(nn.Module):
                 loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
                 if loss_contra is None:
                     print('  group gt  ', group_gt)
+                    loss_contra = 0
+                    print('+++++++++++++++++++++++++++++++++++++++++++++')
                 print(' loss contrastive : ', type(loss_contra), 'group_gt shape is ', group_gt.shape)
                 loss_ce += loss_contra
             if self.args.soft_label:
