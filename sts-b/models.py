@@ -147,8 +147,8 @@ class MultiTaskModel(nn.Module):
             if self.args.ce:
                 loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
             if self.args.ranked_contra:
-                loss_contra = Ranked_Contrastive_Loss(
-                    pair_emb, group_gt, self.args.temp)
+                loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
+                print(' loss contrastive : ', type(loss_contra))
                 loss_ce += loss_contra
             if self.args.soft_label:
                 group_gt_ = soft_labeling(group_gt.squeeze(-1).long(), self.args).cuda()
