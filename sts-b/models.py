@@ -13,7 +13,7 @@ from allennlp.modules.seq2seq_encoders import Seq2SeqEncoder as s2s_e
 
 from fds import FDS
 from loss import *
-from utils import soft_labeling, SoftCrossEntropy
+from util import soft_labeling, SoftCrossEntropy
 
 
 

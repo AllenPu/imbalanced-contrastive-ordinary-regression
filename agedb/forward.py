@@ -4,6 +4,15 @@ from torch.utils.data import DataLoader
 from datasets.agedb import *
 import torch
 from network import *
+import argparse
+
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--groups', type=int, default=10,
+                    help='number of split bins to the wole datasets')
+
+
+
 
 data_dir = '/home/ruizhipu/scratch/regression/imbalanced-regression/agedb-dir/data'
 img_size = 224
@@ -39,5 +48,13 @@ def get_data_loader():
 
 
 
-def load_model():
-    model = ResNet_regression().to(device)
+def load_model(args):
+    model = ResNet_regression(args).to(device)
+
+
+
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+
