@@ -5,7 +5,7 @@ import torch.optim as optim
 
 
 class ResNet_regression(nn.Module):
-    def __init__(self, args):
+    def __init__(self, args=None):
         super(ResNet_regression, self).__init__()
         self.args = args
         self.groups = args.groups
