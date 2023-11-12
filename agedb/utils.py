@@ -366,6 +366,7 @@ def SoftCrossEntropy(inputs, target, reduction='sum'):
 
 #
 def topk_uncertain(y_out, g,  top_k = 3):
+    y_out, g = y_out.cpu(), g.cpu()
     y_chunk = torch.chunk(y_out, 2, dim=1)
     #
     g_pred, y_pred = y_chunk[0], y_chunk[1]
@@ -381,7 +382,7 @@ def topk_uncertain(y_out, g,  top_k = 3):
     #
     y_gt = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
     #
-    y_all = torch.cat((y_topk, y_hat, y_gt, k_g, g), 1)
+    y_all = torch.cat((y_topk, k_g, y_hat, g_hat, y_gt, g), 1)
     #
     #y_all = torch.cat((y_topk, y_2), 1)
     #
@@ -391,7 +392,7 @@ def topk_uncertain(y_out, g,  top_k = 3):
         torch.save(y, 'y.gt')
     else:
         torch.save(y_all, 'y.gt')
-    # return torch size, [biggest group prediction, second group prediction, third group prediction, index1, index2, index3,  y_pred, y_gt, ]
+    # return torch is, [biggest group prediction, second group prediction, third group prediction, index1, index2, index3,  y_pred, g_pred, y_gt, g_gt]
 
 
 def diversity_loss(y_pred, g, args, total_dataset_length=100):
