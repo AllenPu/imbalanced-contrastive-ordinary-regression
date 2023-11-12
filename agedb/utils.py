@@ -392,6 +392,14 @@ def topk_uncertain(y_out, g,  top_k = 3):
         torch.save(y, 'y.gt')
     else:
         torch.save(y_all, 'y.gt')
+    #
+    if os.path.exists('./y_pred.gt'):
+        y_ = torch.load('y_pred.gt')
+        y_ = torch.cat((y_, y_pred), 0)
+        torch.save(y_, 'y_pred.gt')
+    else:
+        torch.save(y_pred, 'y_pred.gt')
+
     # return torch is, [biggest group prediction, second group prediction, third group prediction, index1, index2, index3,  y_pred, g_pred, y_gt, g_gt]
 
 
