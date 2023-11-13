@@ -16,7 +16,7 @@ parser.add_argument('--model_name', type=str, default='',
 
 
 
-data_dir = '/home/ruizhipu/scratch/regression/imbalanced-regression/agedb-dir/data'
+data_dir = '/home/ruizhipu/scratch/regression/imbalanced-regression/imdb_wiki/data'
 img_size = 224
 reweight = None
 groups = 10
