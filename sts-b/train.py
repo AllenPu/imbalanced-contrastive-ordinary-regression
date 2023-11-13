@@ -154,7 +154,8 @@ def main(arguments):
                 raise RuntimeError('Output folder {} already exists'.format(args.store_dir))
             '''
         logging.info(f"===> Creating folder: {args.store_dir}")
-        os.makedirs(args.store_dir)
+        if not os.path.exists(args.store_dir):
+            os.makedirs(args.store_dir)
 
     # Logistics
     logging.root.handlers = []
