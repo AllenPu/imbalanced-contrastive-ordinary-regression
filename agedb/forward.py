@@ -15,6 +15,7 @@ parser.add_argument('--model_name', type=str, default='',
                     help='name of the model')
 parser.add_argument('--model_depth', type=int, default=50,
                     help='depth of the model')
+parser.add_argument('--sigma', type=int, default=1)
 
 
 
