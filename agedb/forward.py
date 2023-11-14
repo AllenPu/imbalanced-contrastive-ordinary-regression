@@ -9,7 +9,7 @@ from utils import topk_uncertain
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--groups', type=int, default=10,
+parser.add_argument('--groups', type=int, default=25,
                     help='number of split bins to the wole datasets')
 parser.add_argument('--model_name', type=str, default='',
                     help='name of the model')
@@ -55,7 +55,7 @@ def get_data_loader():
 
 def load_model(args):
     model = ResNet_regression(args).to(device)
-    model.load_state_dict(torch.load(args.model_name), False)
+    model.load_state_dict(torch.load(args.model_name))
     print(model)
     return model
 
