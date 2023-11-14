@@ -308,3 +308,39 @@ def diversity_loss(y_pred, g, args, total_dataset_length=100):
     mse = nn.MSELoss()(y_pred, centroid)
     #
     return -mse
+
+
+def topk_uncertain(y_out, g,  top_k = 3):
+    y_out, g = y_out.cpu(), g.cpu()
+    y_chunk = torch.chunk(y_out, 2, dim=1)
+    #
+    g_pred, y_pred = y_chunk[0], y_chunk[1]
+    #
+    _, k_g = g_pred.topk(top_k, dim=1, largest=True, sorted=True)
+    #
+    y_topk = torch.gather(y_pred, dim=1, index=k_g)
+    #
+    #y_top_k = torch.sum(y_topk, dim=-1)/top_k
+    #
+    g_hat = torch.argmax(g_pred, dim=1).unsqueeze(-1)
+    y_hat = torch.gather(y_pred, dim=1, index=g_hat)
+    #
+    y_gt = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
+    #
+    y_all = torch.cat((y_topk, k_g, y_hat, g_hat, y_gt, g), 1)
+    #
+    #y_all = torch.cat((y_topk, y_2), 1)
+    #
+    if os.path.exists('./y.gt'):
+        y = torch.load('y.gt')
+        y = torch.cat((y, y_all), 0)
+        torch.save(y, 'y.gt')
+    else:
+        torch.save(y_all, 'y.gt')
+    #
+    if os.path.exists('./y_pred.gt'):
+        y_ = torch.load('y_pred.gt')
+        y_ = torch.cat((y_, y_pred), 0)
+        torch.save(y_, 'y_pred.gt')
+    else:
+        torch.save(y_pred, 'y_pred.gt')

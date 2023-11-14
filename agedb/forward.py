@@ -56,7 +56,7 @@ def get_data_loader():
 def load_model(args):
     model = ResNet_regression(args).to(device)
     model.load_state_dict(torch.load(args.model_name))
-    print(model)
+    #print(model)
     return model
 
 
@@ -66,7 +66,7 @@ def forwards(model, loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
             y_output, _ = model(x)
-            topk_uncertain(y, g)
+            topk_uncertain(y_output, g)
 
 
 

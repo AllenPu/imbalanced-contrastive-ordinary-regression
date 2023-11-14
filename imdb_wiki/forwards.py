@@ -65,7 +65,7 @@ def forwards(model, loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
             y_output, _ = model(x)
-            topk_uncertain(y, g)
+            topk_uncertain(y_output, g)
 
 
 
