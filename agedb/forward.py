@@ -55,7 +55,8 @@ def get_data_loader():
 
 def load_model(args):
     model = ResNet_regression(args).to(device)
-    model.load_state_dict(torch.load(args.model_name))
+    model.load_state_dict(torch.load(args.model_name), False)
+    print(model)
     return model
 
 
