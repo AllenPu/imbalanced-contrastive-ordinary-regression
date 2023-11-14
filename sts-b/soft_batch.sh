@@ -1,4 +1,4 @@
-for i in 0.0001 0.0005; do
+for i in 0.0001; do
     for g in 10 20; do
         for p in 200; do
             for temp in 0.02 0.05 0.07; do
