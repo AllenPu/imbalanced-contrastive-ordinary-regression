@@ -79,6 +79,7 @@ parser.add_argument('--ce', action='store_false',  help='if use the cross_entrop
 parser.add_argument('--output_file', default='./results_', help='the output directory')
 parser.add_argument('--scale', type=float, default=1,
                     help='scale of the sharpness in soft label')
+parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
 
 
 
@@ -201,9 +202,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             tol = tolerance(g_index.cpu(), g.cpu(), ranges)
             sigma = gamma/tol
             tole.append(tol)
-        #if idx % 100 == 0:
-        #    print(np.mean(tole))
-            #print(tole)
+        #
+        loss_list.append(args.diversity * diversity_loss(y_hat, g, args))
         #
         loss_list.append(sigma*mse_y)
         #
