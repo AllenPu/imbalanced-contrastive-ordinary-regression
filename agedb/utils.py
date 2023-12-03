@@ -432,6 +432,7 @@ def feature_diversity(z, g, args, total_dataset_length=100):
     _features_center = p[u_index, :]
     _features = F.normalize(z, dim=1)
     diverse_loss = torch.sum((_features - _features_center).pow(2),1)
+    diverse_loss = torch.mean(diverse_loss)
     #
     return -diverse_loss
 
