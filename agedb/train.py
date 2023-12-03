@@ -199,7 +199,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
             loss += loss_ce_soft
         #
         #loss += args.diversity * diversity_loss(y_hat, g, args)
-        loss += args.fd_ratio * feature_diversity(z, g, args)
+        if args.fd_ratio > 0:
+            loss += args.fd_ratio * feature_diversity(z, g, args)
         #
         loss.backward()
         opt.step()
