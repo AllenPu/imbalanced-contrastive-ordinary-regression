@@ -299,7 +299,7 @@ def SoftCrossEntropy(inputs, target, reduction='sum'):
 
 
 
-def diversity_loss(y_pred, g, args, total_dataset_length=100):
+def diversity_loss_regressor(y_pred, g, args, total_dataset_length=100):
     #
     ranges = total_dataset_length / args.groups
     #
@@ -308,6 +308,26 @@ def diversity_loss(y_pred, g, args, total_dataset_length=100):
     mse = nn.MSELoss()(y_pred, centroid)
     #
     return -mse
+
+def feature_diversity(z, g, args, total_dataset_length=100):
+    #
+    num_sample, feature_dim = z.shape[0], z.shape[1]
+    #
+    ranges = total_dataset_length / args.groups
+    #
+    u_value, u_index, u_counts = torch.unique(g, return_inverse=True, return_counts=True)
+    center_f = torch.zeros([len(u_value), feature_dim]).cuda()
+    u_index = u_index.squeeze()
+    center_f.index_add_(0, u_index, z)
+    u_counts = u_counts.unsqueeze(1)
+    center_f = center_f / u_counts
+    p = F.normalize(center_f, dim=1)
+    _features_center = p[u_index, :]
+    _features = F.normalize(z, dim=1)
+    diverse_loss = torch.sum((_features - _features_center).pow(2),1)
+    diverse_loss = torch.mean(diverse_loss)
+    #
+    return -diverse_loss
 
 
 def topk_uncertain(y_out, g,  top_k = 3):
