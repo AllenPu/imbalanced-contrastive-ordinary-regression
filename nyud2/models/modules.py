@@ -194,17 +194,69 @@ class R(nn.Module):
             return x2
         
 
+class Rcls(nn.Module):
+    """Class that adds both a regression and a classification head to the decoded features."""
+    		
+    def __init__(self, args, block_channel, cls_num):
 
-class classifier_Regressor(nn.Module):
-    def __init__(self, args, x_shape = 0):
-        self.groups = args.groups
-        self.input_shape = x_shape
-        self.model_cls = nn.Sequential(
-            nn.MaxPool2d(kernel_size=2),
-            nn.Flatten(),
-            nn.Linear(self.input_shape, self.groups)
+        super(Rcls, self).__init__()
+        self.cls_num = cls_num
+        num_features = 64 + block_channel[3] // 32
+        self.conv0 = nn.Conv2d(
+            num_features, num_features, kernel_size=5, stride=1, padding=2, bias=False
+        )
+        self.bn0 = nn.BatchNorm2d(num_features)
+
+        self.conv1 = nn.Conv2d(
+            num_features, num_features, kernel_size=5, stride=1, padding=2, bias=False
+        )
+        self.bn1 = nn.BatchNorm2d(num_features)
+
+        self.reg = nn.Conv2d(
+            in_channels=num_features,
+            out_channels=1,
+            kernel_size=5,
+            stride=1,
+            padding=2,
+            bias=True,
+        )
+        # Per-pixel classification head inspired from MaskRCNN
+        self.cls = nn.Sequential(nn.ConvTranspose2d(num_features, 256, 2, 2, 0),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, cls_num, 1, 1, 0),
+        )
+        for name, param in self.cls.named_parameters():
+            if "weight" in name:
+                nn.init.kaiming_normal_(param, mode="fan_out", nonlinearity="relu")
+        self.args = args
+
+    
+
+    def forward(self, x, depth=None, epoch=None):
+        x0 = self.conv0(x)
+        x0 = self.bn0(x0)
+        x0 = F.relu(x0)
+
+        x1 = self.conv1(x0)
+        x1 = self.bn1(x1)
+        x1 = F.relu(x1)
+
+        x1_s = x1
+
+        if self.training and self.args.fds:
+            if epoch >= self.args.start_smooth:
+                x1_s = self.FDS.smooth(x1_s, depth, epoch)
+
+        x_reg = self.reg(x1_s)
+        x_cls = self.cls(x1_s)
+        x_cls = (
+            torch.permute(x_cls, (0, 2, 3, 1))
+            .contiguous()
+            .view(-1, self.cls_num)
+            .contiguous()
         )
 
-    def forward(self, x):
-        x = self.model_cls(x)
-        return x
+        if self.training and self.args.fds:
+            return x_reg, x_cls, x1
+        else:
+            return x_reg, x_cls
