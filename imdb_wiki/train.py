@@ -160,6 +160,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         # x shape : (batch,channel, H, W)
         # y shape : (batch, 1)
         # g hsape : (batch, 1)
+        print(' g is ', g)
         x, y, g = x.to(device), y.to(device), g.to(device)
         #
         y_output, z = model(x)
@@ -170,6 +171,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #extract y out
         y_predicted = torch.gather(y_hat, dim=1, index=g.to(torch.int64))
         #
+        loss = 0
         loss_list = []
         #
         # rewrite mse loss if reweight
@@ -185,10 +187,6 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if la:
             ce_g = ce_loss(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
-        if soft_label:
-            g_soft_label = soft_labeling(g, args).to(device)
-            ce_g = SoftCrossEntropy(g_hat, g_soft_label)
-            loss_list.append(ce_g)
         if ce:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
@@ -203,12 +201,15 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             sigma = gamma/tol
             tole.append(tol)
         #
+        if soft_label:
+            g_soft_label = soft_labeling(g, args).to(device)
+            loss_soft_g = SoftCrossEntropy(g_hat, g_soft_label)
+            loss_list.append(loss_soft_g)
+            print(' soft g is ', g)
+        #
         loss_list.append(args.diversity * diversity_loss(y_hat, g, args))
         #
-        loss_list.append(sigma*mse_y)
-        #
         #loss = mse_y + sigma*ce_g
-        loss = 0
         for i in loss_list:
             loss += i
         loss.backward()
@@ -285,8 +286,7 @@ def test_step(model, test_loader, train_labels, args):
             mse_2 = mse(y_pred, targets)
             #mse_mean_1 = mse(y_predicted_mean, targets)
             #
-            reduct = torch.abs(y_gt - targets)
-            mae_loss = torch.mean(reduct)
+            mae_loss = torch.mean(torch.abs(y_gt - targets))
             #
             mae_loss_2 = torch.mean(torch.abs(y_pred - targets))
             #
