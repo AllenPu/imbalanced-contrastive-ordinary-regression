@@ -160,7 +160,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         # x shape : (batch,channel, H, W)
         # y shape : (batch, 1)
         # g hsape : (batch, 1)
-        print(' g is ', g)
+        #print(' g is ', g)
         x, y, g = x.to(device), y.to(device), g.to(device)
         #
         y_output, z = model(x)
@@ -184,6 +184,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         else:
             mse_y = mse_loss(y_predicted, y)
         #
+        loss_list.append(sigma*mse_y)
+        #
         if la:
             ce_g = ce_loss(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
@@ -205,7 +207,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             g_soft_label = soft_labeling(g, args).to(device)
             loss_soft_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(loss_soft_g)
-            print(' soft g is ', g)
+            #print(' soft g is ', g)
         #
         loss_list.append(args.diversity * feature_diversity(z, g, args))
         #
