@@ -17,7 +17,7 @@ from loss import LAloss
 from network import ResNet_regression
 from datasets.IMDBWIKI import IMDBWIKI
 from utils import AverageMeter, accuracy, adjust_learning_rate,shot_metric, shot_metric_balanced, shot_metric_cls, \
-    setup_seed, balanced_metrics, soft_labeling, SoftCrossEntropy, diversity_loss
+    setup_seed, balanced_metrics, soft_labeling, SoftCrossEntropy, feature_diversity, diversity_loss_regressor
 #from datasets.datasets_utils import group_df
 from tqdm import tqdm
 # additional for focal
@@ -207,7 +207,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(loss_soft_g)
             print(' soft g is ', g)
         #
-        loss_list.append(args.diversity * diversity_loss(y_hat, g, args))
+        loss_list.append(args.diversity * feature_diversity(z, g, args))
         #
         #loss = mse_y + sigma*ce_g
         for i in loss_list:
