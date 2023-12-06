@@ -53,16 +53,14 @@ def Ranked_Contrastive_Loss(z, g, temp):
     #
     device = "cuda:{}".format(sim_matrix.get_device())
     #
-    #eye_mask = ~torch.eye(bsz, bsz, dtype = bool)
-    #triu_mask = torch.triu(eye_mask, diagonal=1)
-    #zeros = torch.zeros(bsz, bsz)
-    #
     l1_matrix = torch.zeros(bsz, bsz)
     for i in range(bsz):
         for j in range(bsz):
             l1_matrix[i][j] = torch.abs(g[i] - g[j])
     #        
     #slice = len(uni) - 1
+    #
+    loss = 0
     #
     for i in range(bsz):
         _, cnt = torch.unique(l1_matrix[i], return_counts = True, sorted = True)
@@ -72,8 +70,6 @@ def Ranked_Contrastive_Loss(z, g, temp):
         if len(cnt) == 1:
             continue # return self
         head = cnt[0].item()
-        #
-        loss = 0
         #
         for index in range(head, len(srt)):
             j = srt[index].item()
@@ -97,7 +93,7 @@ def Ranked_Contrastive_Loss(z, g, temp):
             loss_partial = -torch.log(nominator/denominator)
             loss += loss_partial
         #
-        return loss
+    return loss
                 
                 
             
