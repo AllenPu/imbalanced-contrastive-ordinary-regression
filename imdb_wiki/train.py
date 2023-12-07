@@ -195,7 +195,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ce_g)
         #
         if ranked_contra :
-            ranked_contrastive_loss = contra_ratio * RnCLoss(z, g, temp=temp)
+            ranked_contrastive_loss = contra_ratio * RnCLoss(z, g, temperature=temp).to(device)
             loss_list.append(ranked_contrastive_loss)
         #
         if g_dis:

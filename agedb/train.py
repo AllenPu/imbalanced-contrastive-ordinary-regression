@@ -190,7 +190,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         # add ranked contrastive loss
         if ranked_contra:
-            loss_contra = contra_ratio * RnCLoss(z, g, temp=temp)
+            loss_contra = contra_ratio * RnCLoss(z, g, temperaturep=temp).to(device)
             loss += loss_contra
 
         # add soft label based loss
