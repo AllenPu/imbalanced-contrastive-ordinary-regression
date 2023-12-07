@@ -195,7 +195,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ce_g)
         #
         if ranked_contra :
-            ranked_contrastive_loss = contra_ratio * RnCLoss(z, g, temperature=temp).to(device)
+            ranked_contrastive_loss = contra_ratio * ce_loss(z, g, temperature=temp)
             loss_list.append(ranked_contrastive_loss)
         #
         if g_dis:
@@ -457,7 +457,10 @@ if __name__ == '__main__':
         args)
     #
     loss_mse = nn.MSELoss()
-    loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
+    if args.ranked_contra:
+        loss_ce = RnCLoss(temperature=args.temp).to(device)
+    else:
+        loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
     #oss_or = nn.MSELoss()
     #
     model = ResNet_regression(args).to(device)
