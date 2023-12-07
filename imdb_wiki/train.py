@@ -25,6 +25,7 @@ from tqdm import tqdm
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from loss import Ranked_Contrastive_Loss
+from loss_contra import RnCLoss
 import time
 from scipy.stats import gmean
 
@@ -194,7 +195,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ce_g)
         #
         if ranked_contra :
-            ranked_contrastive_loss = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
+            ranked_contrastive_loss = contra_ratio * RnCLoss(z, g, temp=temp)
             loss_list.append(ranked_contrastive_loss)
         #
         if g_dis:

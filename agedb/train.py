@@ -17,6 +17,7 @@ from network import *
 import torch.optim as optim
 import time
 from scipy.stats import gmean
+from loss_contra import RnCLoss
 
 # current sota 7.73, 7.46, 7.76, 10.08
 # g 10 lr 0.0002 epoch 450 sigma 2 temp 0.02
@@ -189,7 +190,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         #
         # add ranked contrastive loss
         if ranked_contra:
-            loss_contra = contra_ratio * Ranked_Contrastive_Loss(z, g, temp=temp)
+            loss_contra = contra_ratio * RnCLoss(z, g, temp=temp)
             loss += loss_contra
 
         # add soft label based loss
