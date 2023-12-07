@@ -38,7 +38,7 @@ def Ranked_Contrastive_Loss(z, g, temp):
     for i in range(bsz):
         for j in range(bsz):
             l1_matrix[i][j] = torch.abs(g[i] - g[j])
-    #
+    #                        
     #slice = len(uni) - 1
     #
     loss = 0
