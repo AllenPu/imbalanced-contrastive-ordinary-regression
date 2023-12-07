@@ -189,8 +189,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
             loss += loss_ce       
         #
         # add ranked contrastive loss
-        if ranked_contra:
-            loss_contra = contra_ratio * RnCLoss(z, g, temperaturep=temp).to(device)
+        if ranked_contra and not args.ce:
+            loss_contra = contra_ratio * ce_loss(z, g)
             loss += loss_contra
 
         # add soft label based loss
@@ -345,7 +345,11 @@ if __name__ == '__main__':
     #
     loss_mse = nn.MSELoss()
     #
-    loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
+    if args.ranked_contra and not args.ce:
+        loss_ce = RnCLoss(temperature=args.temp).to(device)
+        print(' Contrastive loss initiated ')
+    else:
+        loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
     #
     model = ResNet_regression(args).to(device)
     model_val = ResNet_regression(args).to(device)
