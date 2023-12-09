@@ -34,7 +34,7 @@ class FeatureSimilarity(nn.Module):
 
 
 class RnCLoss(nn.Module):
-    def __init__(self, temperature=2, label_diff='l1', feature_sim='cos_sim'):
+    def __init__(self, temperature=2, label_diff='l1', feature_sim='l2'):
         super(RnCLoss, self).__init__()
         self.t = temperature
         self.label_diff_fn = LabelDifference(label_diff)
@@ -45,7 +45,7 @@ class RnCLoss(nn.Module):
         # labels: [bs, label_dim]
 
         #features = torch.cat([features[:, 0], features[:, 1]], dim=0)  # [2bs, feat_dim]
-
+        features = F.normalize(features, dim = -1)
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
         print(f"logits in 51 is {logits}")
