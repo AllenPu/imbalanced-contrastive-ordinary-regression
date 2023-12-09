@@ -192,7 +192,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         if ranked_contra and not args.ce:
             loss_contra = contra_ratio * ce_loss(z, g)
             loss += loss_contra
-            ce = F.cross_entropy(g_pred, g)
+            ce = F.cross_entropy(g_pred, g.squeeze(-1).long())
             print(f" loss contra is {loss_contra.item()} ce is {ce}")
 
         # add soft label based loss
