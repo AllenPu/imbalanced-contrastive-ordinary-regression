@@ -48,6 +48,7 @@ class RnCLoss(nn.Module):
 
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
+        print(f"logits in 51 is {logits}")
         logits_max, _ = torch.max(logits, dim=1, keepdim=True)
         logits -= logits_max.detach()
         exp_logits = logits.exp()
@@ -56,6 +57,7 @@ class RnCLoss(nn.Module):
 
         # remove diagonal
         logits = logits.masked_select((1 - torch.eye(n).to(logits.device)).bool()).view(n, n - 1)
+        print(f"logits after mask select is {logits}")
         exp_logits = exp_logits.masked_select((1 - torch.eye(n).to(logits.device)).bool()).view(n, n - 1)
         label_diffs = label_diffs.masked_select((1 - torch.eye(n).to(logits.device)).bool()).view(n, n - 1)
 
@@ -66,6 +68,6 @@ class RnCLoss(nn.Module):
             neg_mask = (label_diffs >= pos_label_diffs.view(-1, 1)).float()  # [2bs, 2bs - 1]
             pos_log_probs = pos_logits - torch.log((neg_mask * exp_logits).sum(dim=-1))  # 2bs
             loss += - (pos_log_probs / (n * (n - 1))).sum()
-            print(f"pos_log_probs is {pos_log_probs}, neg_mask is {neg_mask}, n is {n}, pos_logits is {pos_logits}")
+            #print(f"pos_log_probs is {pos_log_probs}, neg_mask is {neg_mask}, n is {n}, pos_logits is {pos_logits}")
 
         return loss
