@@ -48,8 +48,8 @@ class RnCLoss(nn.Module):
 
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
-        #print(f"logits in 51 is {logits}")
-        logits_max, _ = torch.max(logits, dim=1, keepdim=True)
+        print(f"logits in 51 is {logits}")
+        #logits_max, _ = torch.max(logits, dim=1, keepdim=True)
         #print(f"logits_max is {logits_max}")
         #logits -= logits_max.detach()
         #print(f"logits in 54 is {logits}")
