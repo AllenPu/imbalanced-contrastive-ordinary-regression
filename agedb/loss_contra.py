@@ -48,13 +48,13 @@ class RnCLoss(nn.Module):
         features = F.normalize(features, dim = -1)
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
-        print(f"logits in 51 is {logits}")
+        #print(f"logits in 51 is {logits}")
         logits_max, _ = torch.max(logits, dim=1, keepdim=True)
-        #print(f"logits_max is {logits_max}")
+        print(f"logits_max is {logits_max}")
         logits -= logits_max.detach()
-        print(f"logits in 54 is {logits}")
+        #print(f"logits in 54 is {logits}")
         exp_logits = logits.exp()
-        print(f"exp_logits is {exp_logits}")
+        #print(f"exp_logits is {exp_logits}")
         
 
         n = logits.shape[0]  # n = 2bs
