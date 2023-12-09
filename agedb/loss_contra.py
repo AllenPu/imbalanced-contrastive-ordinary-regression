@@ -64,11 +64,13 @@ class RnCLoss(nn.Module):
         loss = 0.
         for k in range(n - 1):
             pos_logits = logits[:, k]  # 2bs
+            print(f"n is {n}")
             pos_label_diffs = label_diffs[:, k]  # 2bs
             neg_mask = (label_diffs >= pos_label_diffs.view(-1, 1)).float()  # [2bs, 2bs - 1]
             pos_log_probs = pos_logits - torch.log((neg_mask * exp_logits).sum(dim=-1))  # 2bs
             loss += - (pos_log_probs / (n * (n - 1))).sum()
             print(f"pos_log_probs is {pos_log_probs}")
             print(f"negative mask is {neg_mask}")
+            break
 
         return loss
