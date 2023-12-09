@@ -26,7 +26,7 @@ class FeatureSimilarity(nn.Module):
         # labels: [bs, feat_dim]
         # output: [bs, bs]
         if self.similarity_type == 'l2':
-            return (features[:, None, :] - features[None, :, :]).norm(2, dim=-1)
+            return - (features[:, None, :] - features[None, :, :]).norm(2, dim=-1)
         elif self.similarity_type == 'cos_sim':
             return - F.cosine_similarity(features.unsqueeze(1), features.unsqueeze(0), dim=-1)
         else:
@@ -34,7 +34,7 @@ class FeatureSimilarity(nn.Module):
 
 
 class RnCLoss(nn.Module):
-    def __init__(self, temperature=2, label_diff='l1', feature_sim='l2'):
+    def __init__(self, temperature=2, label_diff='l1', feature_sim='cos_sim'):
         super(RnCLoss, self).__init__()
         self.t = temperature
         self.label_diff_fn = LabelDifference(label_diff)
@@ -49,9 +49,9 @@ class RnCLoss(nn.Module):
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
         print(f"logits in 51 is {logits}")
-        #logits_max, _ = torch.max(logits, dim=1, keepdim=True)
+        logits_max, _ = torch.max(logits, dim=1, keepdim=True)
         #print(f"logits_max is {logits_max}")
-        #logits -= logits_max.detach()
+        logits -= logits_max.detach()
         #print(f"logits in 54 is {logits}")
         exp_logits = logits.exp()
         print(f"exp_logits is {exp_logits}")
