@@ -26,7 +26,7 @@ class FeatureSimilarity(nn.Module):
         # labels: [bs, feat_dim]
         # output: [bs, bs]
         if self.similarity_type == 'l2':
-            return - (features[:, None, :] - features[None, :, :]).norm(2, dim=-1)
+            return (features[:, None, :] - features[None, :, :]).norm(2, dim=-1)
         elif self.similarity_type == 'cos_sim':
             return - F.cosine_similarity(features.unsqueeze(1), features.unsqueeze(0), dim=-1)
         else:
@@ -48,29 +48,30 @@ class RnCLoss(nn.Module):
 
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
-        print(f"logits in 51 is {logits}")
+        #print(f"logits in 51 is {logits}")
         logits_max, _ = torch.max(logits, dim=1, keepdim=True)
-        logits -= logits_max.detach()
-        print(f"logits in 54 is {logits}")
+        #print(f"logits_max is {logits_max}")
+        #logits -= logits_max.detach()
+        #print(f"logits in 54 is {logits}")
         exp_logits = logits.exp()
+        print(f"exp_logits is {exp_logits}")
         
 
         n = logits.shape[0]  # n = 2bs
 
         # remove diagonal
         logits = logits.masked_select((1 - torch.eye(n).to(logits.device)).bool()).view(n, n - 1)
-        print(f"logits after mask select is {logits}")
+        #print(f"logits after mask select is {logits}")
         exp_logits = exp_logits.masked_select((1 - torch.eye(n).to(logits.device)).bool()).view(n, n - 1)
         label_diffs = label_diffs.masked_select((1 - torch.eye(n).to(logits.device)).bool()).view(n, n - 1)
 
         loss = 0.
         for k in range(n - 1):
             pos_logits = logits[:, k]  # 2bs
-            print(f"k is {k}")
-            print(f"pos_logits is {pos_logits }")
+            #print(f"k is {k}")
+            #print(f"pos_logits is {pos_logits }")
             pos_label_diffs = label_diffs[:, k]  # 2bs
             neg_mask = (label_diffs >= pos_label_diffs.view(-1, 1)).float()  # [2bs, 2bs - 1]
-            print(f"exp_logits is {exp_logits}")
             assert 0 == 1
             pos_log_probs = pos_logits - torch.log((neg_mask * exp_logits).sum(dim=-1))  # 2bs
             loss += - (pos_log_probs / (n * (n - 1))).sum()
