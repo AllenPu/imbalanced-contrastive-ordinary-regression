@@ -76,6 +76,6 @@ class RnCLoss(nn.Module):
             loss += - (pos_log_probs / (n * (n - 1))).sum()
             #print(f"pos_log_probs is {pos_log_probs}")
             #print(f"negative mask is {neg_mask}")
-        print(f"loss is {loss.item()}")
+        #print(f"loss is {loss.item()}")
         #assert 0 == 1
         return loss
