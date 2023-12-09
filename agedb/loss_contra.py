@@ -50,7 +50,7 @@ class RnCLoss(nn.Module):
         logits = self.feature_sim_fn(features).div(self.t)
         print(f"logits in 51 is {logits}")
         logits_max, _ = torch.max(logits, dim=1, keepdim=True)
-        logits -= logits_max.detach()
+        #logits -= logits_max.detach()
         exp_logits = logits.exp()
 
         n = logits.shape[0]  # n = 2bs
