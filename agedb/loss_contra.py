@@ -69,7 +69,7 @@ class RnCLoss(nn.Module):
             pos_label_diffs = label_diffs[:, k]  # 2bs
             neg_mask = (label_diffs >= pos_label_diffs.view(-1, 1)).float()  # [2bs, 2bs - 1]
             c = torch.log((neg_mask * exp_logits).sum(dim=-1))
-            print(" c ouput is {c}")
+            print(f" c ouput is {c.item()}")
             assert 0 == 1
             pos_log_probs = pos_logits - torch.log((neg_mask * exp_logits).sum(dim=-1))  # 2bs
             loss += - (pos_log_probs / (n * (n - 1))).sum()
