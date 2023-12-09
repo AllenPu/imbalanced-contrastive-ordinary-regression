@@ -49,9 +49,9 @@ class RnCLoss(nn.Module):
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
         #print(f"logits in 51 is {logits}")
-        logits_max, _ = torch.max(logits, dim=1, keepdim=True)
-        print(f"logits_max is {logits_max}")
-        logits -= logits_max.detach()
+        #logits_max, _ = torch.max(logits, dim=1, keepdim=True)
+        #print(f"logits_max is {logits_max}")
+        #logits -= logits_max.detach()
         #print(f"logits in 54 is {logits}")
         exp_logits = logits.exp()
         #print(f"exp_logits is {exp_logits}")
@@ -77,5 +77,5 @@ class RnCLoss(nn.Module):
             #print(f"pos_log_probs is {pos_log_probs}")
             #print(f"negative mask is {neg_mask}")
         print(f"loss is {loss.item()}")
-        assert 0 == 1
+        #assert 0 == 1
         return loss
