@@ -45,7 +45,7 @@ class RnCLoss(nn.Module):
         # labels: [bs, label_dim]
 
         #features = torch.cat([features[:, 0], features[:, 1]], dim=0)  # [2bs, feat_dim]
-
+        features = F.normalize(features, dim = -1)
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
         logits_max, _ = torch.max(logits, dim=1, keepdim=True)
