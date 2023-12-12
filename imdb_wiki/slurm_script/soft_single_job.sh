@@ -1,1 +1,1 @@
-CUDA_VISIBLE_DEVICES=2 python train.py --lr 0.0001 --groups 20 --epoch 250 --temp 0.05 --batch_size 256 --fd_ratio 1 --sigma 1 --ranked_contra --soft_label --ce --output_file softlabel_g20_1211 --data_dir /home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data
+CUDA_VISIBLE_DEVICES=1 python train.py --lr 0.0001 --groups 20 --epoch 250 --temp 0.05 --batch_size 256 --diversity 1 --sigma 1 --ranked_contra --soft_label --ce --output_file softlabel_g20_1211 --data_dir /home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data
