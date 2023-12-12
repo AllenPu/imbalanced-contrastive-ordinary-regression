@@ -285,13 +285,13 @@ def test_step(model, test_loader, train_labels, args):
             # the cls results for g
             pred_g.extend(g_index.data.cpu().numpy())
             #
-            mse_1 = mse(y_gt, targets)
-            mse_2 = mse(y_pred, targets)
+            mse_y_gt = mse(y_gt, targets)
+            mse_y_pred = mse(y_pred, targets)
             #mse_mean_1 = mse(y_predicted_mean, targets)
             #
-            mae_loss = torch.mean(torch.abs(y_gt - targets))
+            mae_loss_gt = torch.mean(torch.abs(y_gt - targets))
             #
-            mae_loss_2 = torch.mean(torch.abs(y_pred - targets))
+            mae_loss_pred = torch.mean(torch.abs(y_pred - targets))
             #
             acc3 = accuracy(g_hat, group, topk=(1,))
             # gmean
@@ -306,12 +306,12 @@ def test_step(model, test_loader, train_labels, args):
             tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
             tsne_g_gt = torch.cat((tsne_g_gt, group.data.cpu()), dim=0)
             #
-            mse_gt.update(mse_1.item(), bsz)
+            mse_gt.update(mse_y_gt.item(), bsz)
             #mse_mean.update(mse_mean_1.item(), bsz)
-            mse_pred.update(mse_2.item(), bsz)
+            mse_pred.update(mse_y_pred.item(), bsz)
             acc_g.update(acc3[0].item(), bsz)
-            acc_mae_gt.update(mae_loss.item(), bsz)
-            acc_mae_pred.update(mae_loss_2.item(), bsz)
+            acc_mae_gt.update(mae_loss_gt.item(), bsz)
+            acc_mae_pred.update(mae_loss_pred.item(), bsz)
         # gmean
         gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
         gmean_pred = gmean(np.hstack(gmean_loss_all_pred), axis=None).astype(float)
