@@ -143,8 +143,8 @@ def get_dataset(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
-    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, temp, soft_label, ce = \
-        args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.temp, args.soft_label, args.ce
+    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, soft_label, ce = \
+        args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.soft_label, args.ce
     ranges = int(100/args.groups)
     model.train()
     mse_y = 0
