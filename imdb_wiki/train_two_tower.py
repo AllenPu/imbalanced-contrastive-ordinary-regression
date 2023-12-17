@@ -256,7 +256,7 @@ if __name__ == '__main__':
     #
     train_loader, test_loader, val_loader, train_group_cls_num, train_labels = get_dataset(args)
     #
-    model = ResNet_two_tower(args)
+    model = ResNet_two_tower(args).to(device)
     opt_extractor, opt_cls, opt_reg = model.setup_opt(args)
     opts = [opt_extractor, opt_cls, opt_reg]
     #
