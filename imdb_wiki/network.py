@@ -89,7 +89,7 @@ class ResNet_regression_ddp(nn.Module):
 
 class ResNet_two_tower(nn.Module):
     def __init__(self, args):
-        super(ResNet_regression, self).__init__()
+        super(ResNet_two_tower, self).__init__()
         self.groups = args.groups
         exec('self.model = torchvision.models.resnet{}(pretrained=False)'.format(
             args.model_depth))
