@@ -79,7 +79,7 @@ parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive los
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 parser.add_argument('--epoch_cls', default=80)
-parser.add_argument('--epoch_reg', default=40)
+parser.add_argument('--epoch_reg', default=0)
 
 
 
