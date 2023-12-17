@@ -122,8 +122,8 @@ def get_dataset(args):
 
 def train_one_epoch(model, train_loader, args, opt=[], mode = 'cls'):
     [opt_extractor, opt_cls, opt_reg] = opt
-    ce_loss = F.cross_entropy()
-    mse_loss = F.mse_loss()
+    ce_loss = nn.CrossEntropyLoss()
+    mse_loss = nn.MSELoss()
     if mode == 'cls':
         model = freeze_module(model, mode)
     elif mode == 'reg':
