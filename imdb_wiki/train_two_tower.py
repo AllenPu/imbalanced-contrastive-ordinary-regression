@@ -80,6 +80,7 @@ parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 parser.add_argument('--epoch_cls', default=80)
 parser.add_argument('--epoch_reg', default=0)
+parser.add_argument('--output_file', default='./results_', help='the output directory')
 
 
 
@@ -267,14 +268,17 @@ if __name__ == '__main__':
     mse_gt,  mse_pred, acc_g, acc_mae_gt, acc_mae_pred, shot_dict_pred, shot_dict_gt, \
         shot_dict_cls, gmean_gt, gmean_pred = test_step(model, test_loader, args, train_labels, args)
     #
-    print(f'mse_gt is {mse_gt}, mse_pred is {mse_pred}, acc_g is {acc_g}, acc_mae_gt is {acc_mae_gt}, acc_mae_pred is {acc_mae_pred}')
-    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_pred['many']['l1'],
+    store_name = args.output_file + 'test.txt'
+    #
+    with open(store_name, 'a+') as f:
+        f.write(f'mse_gt is {mse_gt}, mse_pred is {mse_pred}, acc_g is {acc_g}, acc_mae_gt is {acc_mae_gt}, acc_mae_pred is {acc_mae_pred}')
+        f.write(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_pred['many']['l1'],
                                                                              shot_dict_pred['median']['l1'], shot_dict_pred['low']['l1']) + "\n")
-    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_gt['many']['l1'],
+        f.write(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_gt['many']['l1'],
                                                                      shot_dict_gt['median']['l1'], shot_dict_gt['low']['l1']) + "\n")
-    print('G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_dict_gt['many']['gmean'],
+        f.write('G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_dict_gt['many']['gmean'],
                                                                          shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
-    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
+        f.write(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
                                                                          shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
 
     
