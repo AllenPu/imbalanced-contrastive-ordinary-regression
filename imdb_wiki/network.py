@@ -126,9 +126,9 @@ class ResNet_two_tower(nn.Module):
             print(" No mode specify!!! ")
      
     def setup_opt(self, args):
-        opt_extractor = optim.adam(self.model_extractor.parameters(), lr=args.lr, weight_decay=5e-4)
-        opt_cls =  optim.adam(self.model_cls.parameters(), lr=args.lr, weight_decay=5e-4)
-        opt_reg = optim.adam(self.model_reg.parameters(),lr=args.lr, weight_decay=5e-4)
+        opt_extractor = optim.Adam(self.model_extractor.parameters(), lr=args.lr, weight_decay=5e-4)
+        opt_cls =  optim.Adam(self.model_cls.parameters(), lr=args.lr, weight_decay=5e-4)
+        opt_reg = optim.Adam(self.model_reg.parameters(),lr=args.lr, weight_decay=5e-4)
         return opt_extractor, opt_cls, opt_reg
 
     
