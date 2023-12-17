@@ -20,4 +20,4 @@ echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 #python train.py --la --tau 0.5 --lr 0.0002 --sigma 1 --epoch 200 --soft_label
 # --ce means no standard ce but soft label ce
-python train_two_tower.py --lr 0.001 --output_file two_tower_
+python train_two_tower.py --lr 0.001 --epoch_reg 0 --output_file two_tower_
