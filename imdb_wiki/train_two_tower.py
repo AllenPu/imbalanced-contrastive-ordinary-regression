@@ -129,7 +129,7 @@ def train_one_epoch(model, train_loader, args, opt=[], mode = 'cls'):
     elif mode == 'reg':
         model = freeze_module(model, mode)
     #
-    for idex, (x, y, g) in enumerate(train_loader):
+    for idex, (x, y, g, _) in enumerate(train_loader):
         x, y, g = x.to(device), y.to(device), g.to(device)
         opt_extractor.zero_grad()
         opt_cls.zero_grad()
