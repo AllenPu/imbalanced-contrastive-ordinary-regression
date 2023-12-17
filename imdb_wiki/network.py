@@ -116,10 +116,10 @@ class ResNet_two_tower(nn.Module):
         z = self.Flatten(z)
         #
         if mode == 'cls':
-            g_hat = self.model_linear(z)
+            g_hat = self.model_cls(z)
             return g_hat, z
         elif mode == 'reg':
-            g_hat = self.model_linear(z)
+            g_hat = self.model_cls(z)
             y_hat = self.model_reg(z)
             return g_hat, y_hat, z
         else:
