@@ -173,9 +173,7 @@ def test_step(model, test_loader, train_labels, args):
             #
             bsz = targets.shape[0]
             #
-            inputs = inputs.to(device)
-            targets = targets.to(device)
-            group = group.to(device)
+            inputs, targets, group = inputs.to(device), targets.to(device), group.to(device)
             # for regression
             labels.extend(targets.data.cpu().numpy())
             # for cls, cls for g
@@ -228,20 +226,21 @@ def test_step(model, test_loader, train_labels, args):
 
 
 def freeze_module(model, model_name='cls'):
+    # do not freeze the model_name part
     if model_name=='cls':
         for name, param in model.model_extractor.named_parameters():
             param.requires_grad = True
         for name, param in model.model_cls.named_parameters():
-            param.requires_grad = False
-        for name, param in model.model_reg.named_parameters():
             param.requires_grad = True
+        for name, param in model.model_reg.named_parameters():
+            param.requires_grad = False
     elif model_name=='reg':
         for name, param in model.model_extractor.named_parameters():
             param.requires_grad = False
         for name, param in model.model_cls.named_parameters():
-            param.requires_grad = True
-        for name, param in model.model_reg.named_parameters():
             param.requires_grad = False
+        for name, param in model.model_reg.named_parameters():
+            param.requires_grad = True
     else:
         print(" Invalid module name !!!")
     return model
@@ -266,7 +265,7 @@ if __name__ == '__main__':
         model = train_one_epoch(model, train_loader, args, opts, 'reg')
     #
     mse_gt,  mse_pred, acc_g, acc_mae_gt, acc_mae_pred, shot_dict_pred, shot_dict_gt, \
-        shot_dict_cls, gmean_gt, gmean_pred = test_step(model, test_loader, args, train_labels, args)
+        shot_dict_cls, gmean_gt, gmean_pred = test_step(model, test_loader, train_labels, args)
     #
     store_name = args.output_file + 'test.txt'
     #
