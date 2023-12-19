@@ -76,11 +76,12 @@ parser.add_argument('--ranked_contra', action='store_true')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', action='store_true')
-parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
+parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 parser.add_argument('--output_file', default='./results_', help='the output directory')
 parser.add_argument('--scale', type=float, default=1,
                     help='scale of the sharpness in soft label')
 parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
+parser.add_argument('--smooth', type=bool, default=True, help='if use smooth first on the groups')
 
 
 
@@ -162,7 +163,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         # y shape : (batch, 1)
         # g hsape : (batch, 1)
         #print(' g is ', g)
-        x, y, g = x.to(device), y.to(device), g.to(device)
+        x, y, g, w = x.to(device), y.to(device), g.to(device), w.to(device)
         #
         y_output, z = model(x)
         #split into two parts : first is the group, second is the prediction
@@ -192,6 +193,10 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ce_g)
         if ce:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
+            loss_list.append(ce_g)
+        if args.smooth:
+            ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
+            ce_g *= w.expand_as(ce_g)
             loss_list.append(ce_g)
         #
         if ranked_contra :
