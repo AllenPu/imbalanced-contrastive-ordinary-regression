@@ -81,7 +81,7 @@ parser.add_argument('--output_file', default='./results_', help='the output dire
 parser.add_argument('--scale', type=float, default=1,
                     help='scale of the sharpness in soft label')
 parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
-parser.add_argument('--smooth', type=bool, default=True, help='if use smooth first on the groups')
+parser.add_argument('--smooth', type=bool, default=True, help='add guassain smooth to the ce for groups')
 
 
 
@@ -197,6 +197,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if args.smooth:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
             ce_g *= w.expand_as(ce_g)
+            ce_g = torch.mean(ce_g)
             loss_list.append(ce_g)
         #
         if ranked_contra :
