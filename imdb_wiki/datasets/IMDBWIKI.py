@@ -156,3 +156,9 @@ class IMDBWIKI(data.Dataset):
             kernel_window = list(map(laplace, np.arange(-half_ks, half_ks + 1))) / max(map(laplace, np.arange(-half_ks, half_ks + 1)))
 
         return kernel_window
+    
+
+
+    def eq_groups(self):
+        C = len(self.group_list)
+        N = sum(self.group_list)

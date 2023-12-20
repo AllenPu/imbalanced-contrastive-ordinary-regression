@@ -80,7 +80,9 @@ parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
 parser.add_argument('--epoch_cls', default=80,type=int)
 parser.add_argument('--epoch_reg', default=0, type=int)
+parser.add_argument('--hybird_epoch', default=0, type=int)
 parser.add_argument('--output_file', default='./results_', help='the output directory')
+
 
 
 
@@ -127,6 +129,8 @@ def train_one_epoch(model, train_loader, args, opt=[], mode = 'cls'):
     if mode == 'cls':
         model = freeze_module(model, mode)
     elif mode == 'reg':
+        model = freeze_module(model, mode)
+    elif mode == 'hybird':
         model = freeze_module(model, mode)
     #
     for idex, (x, y, g, _) in enumerate(train_loader):
@@ -241,6 +245,13 @@ def freeze_module(model, model_name='cls'):
             param.requires_grad = False
         for name, param in model.model_reg.named_parameters():
             param.requires_grad = True
+    elif model_name == 'hybird':
+        for name, param in model.model_extractor.named_parameters():
+            param.requires_grad = True
+        for name, param in model.model_cls.named_parameters():
+            param.requires_grad = True
+        for name, param in model.model_reg.named_parameters():
+            param.requires_grad = True       
     else:
         print(" Invalid module name !!!")
     return model
@@ -263,6 +274,8 @@ if __name__ == '__main__':
         model = train_one_epoch(model, train_loader, args, opts, 'cls')
     for e in tqdm(range(args.epoch_reg)):
         model = train_one_epoch(model, train_loader, args, opts, 'reg')
+    for e in tqdm(range(args.hybird_epoch)):
+        model = train_one_epoch(model, train_loader, args, opts, 'hybird')
     #
     mse_gt,  mse_pred, acc_g, acc_mae_gt, acc_mae_pred, shot_dict_pred, shot_dict_gt, \
         shot_dict_cls, gmean_gt, gmean_pred = test_step(model, test_loader, train_labels, args)
