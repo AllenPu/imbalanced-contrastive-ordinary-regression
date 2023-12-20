@@ -26,6 +26,7 @@ class IMDBWIKI(data.Dataset):
         #
         if split == 'train':
             group_dict = {}
+            bin_dict = {}
             for i in range(len(self.df)):
                 row = self.df.iloc[i]
                 age = row['age']
@@ -37,8 +38,18 @@ class IMDBWIKI(data.Dataset):
                     group_dict[group_id] += 1
                 else:
                     group_dict[group_id] = 1
+                #
+                bin_dict[age] = bin_dict.get(age) + 1
+            #
             list_group = sorted(group_dict.items(), key = lambda group_dict : group_dict[0])
             self.group_list = [i[1] for i in list_group]
+            #
+            # calculate the number of each age, if not in train set, set 0
+            for i in range(121):
+                if i not in bin_dict.keys():
+                    bin_dict[i] = 0
+            list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
+            self.bin_list = [j[i] for j in list_bin]
             #
             self.weights = self.weights_prepare(reweight=reweight)
         else:
@@ -159,6 +170,20 @@ class IMDBWIKI(data.Dataset):
     
 
 
-    def eq_groups(self):
-        C = len(self.group_list)
-        N = sum(self.group_list)
+    def eq_groups(self, classes=10):
+        N = sum(self.bin_list)
+        new_class = {}
+        new_class_bin = {}
+        cum = 0
+        for i in range(len(self.bin_list)):
+            cum += self.bin_list[i]
+            index = classes/N * cum
+            new_class[index] = new_class.get(index) + self.bin_list[i]
+            if type(new_class_bin.get(index)) is list:
+                new_class_bin[index].append(i)
+            else:
+                new_class_bin[index] = [i]
+        return new_class, new_class_bin
+
+
+
