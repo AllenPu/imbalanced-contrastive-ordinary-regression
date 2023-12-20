@@ -34,22 +34,22 @@ class IMDBWIKI(data.Dataset):
                 # put the age 0 into the first group
                 if group_id > self.groups - 1:
                     group_id = self.groups - 1
-                if group_id in group_dict.keys():
-                    group_dict[group_id] += 1
                 else:
-                    group_dict[group_id] = 1
+                    group_dict[group_id] = group_dict.get(group_id) + 1
                 #
                 bin_dict[age] = bin_dict.get(age) + 1
             #
             list_group = sorted(group_dict.items(), key = lambda group_dict : group_dict[0])
             self.group_list = [i[1] for i in list_group]
             #
-            # calculate the number of each age, if not in train set, set 0
-            for i in range(121):
-                if i not in bin_dict.keys():
-                    bin_dict[i] = 0
-            list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
-            self.bin_list = [j[i] for j in list_bin]
+            # calculate the number of each age to construct a balanced group, if not in train set, set 0
+            if self.group_mode == 'b_g':
+                for i in range(122):
+                    if i not in bin_dict.keys():
+                        bin_dict[i] = 0
+                list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
+                self.bin_list = [j[i] for j in list_bin]
+                _, _, self.mapping = self.eq_groups(self.groups)
             #
             self.weights = self.weights_prepare(reweight=reweight)
         else:
@@ -71,7 +71,8 @@ class IMDBWIKI(data.Dataset):
                 group_index = self.groups - 1
             group = np.asarray([group_index]).astype('float32')
         elif self.group_mode == 'b_g':
-            group = np.asarray([row['group']]).astype('float32')
+            group_id = self.mapping[row['group']]
+            group = np.asarray([group_id]).astype('float32')
         else:
             print(" group mode should be defined! ")
         # ordinary binary label with [1,0] denotes 1, [0,1] denotes 0
@@ -174,16 +175,18 @@ class IMDBWIKI(data.Dataset):
         N = sum(self.bin_list)
         new_class = {}
         new_class_bin = {}
+        mapping = {}
         cum = 0
         for i in range(len(self.bin_list)):
             cum += self.bin_list[i]
             index = classes/N * cum
             new_class[index] = new_class.get(index) + self.bin_list[i]
+            mapping[i] = index
             if type(new_class_bin.get(index)) is list:
                 new_class_bin[index].append(i)
             else:
                 new_class_bin[index] = [i]
-        return new_class, new_class_bin
+        return new_class, new_class_bin, mapping
 
 
 
