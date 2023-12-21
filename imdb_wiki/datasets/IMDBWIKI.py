@@ -45,12 +45,9 @@ class IMDBWIKI(data.Dataset):
             #
             # calculate the number of each age to construct a balanced group, if not in train set, set 0
             if self.group_mode == 'b_g':
-                for i in range(122):
-                    if i not in bin_dict.keys():
-                        bin_dict[i] = 0
                 list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
-                print(f" list bin {list_bin} length {len(list_bin)}")
-                self.bin_list = [j[i] for j in list_bin]
+                #print(f" list bin {list_bin} length {len(list_bin)}")
+                self.bin_list = [list_bin[j] for j in list_bin.keys()]
                 _, _, self.mapping = self.eq_groups(self.groups)
             #
             self.weights = self.weights_prepare(reweight=reweight, lds=lds)
