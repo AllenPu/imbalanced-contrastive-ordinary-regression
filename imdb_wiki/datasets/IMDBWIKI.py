@@ -139,7 +139,8 @@ class IMDBWIKI(data.Dataset):
         if not len(num_per_label):
             print(" None num_per_label ")
             return None
-        print(f"Using re-weighting: [{reweight.upper()}]")
+        if reweight is not None:
+            print(f"Using re-weighting: [{reweight.upper()}]")
         if lds:
             lds_kernel_window = self.get_lds_kernel_window(lds_kernel, lds_ks, lds_sigma)
             print(f'Using LDS: [{lds_kernel.upper()}] ({lds_ks}/{lds_sigma})')
