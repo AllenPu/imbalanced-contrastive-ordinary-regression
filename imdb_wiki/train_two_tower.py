@@ -272,6 +272,7 @@ if __name__ == '__main__':
     #
     for e in tqdm(range(args.epoch_cls)):
         model = train_one_epoch(model, train_loader, args, opts, 'cls')
+        model = train_one_epoch(model, val_loader, args, opts, 'cls')
     for e in tqdm(range(args.epoch_reg)):
         model = train_one_epoch(model, train_loader, args, opts, 'reg')
     for e in tqdm(range(args.hybird_epoch)):
