@@ -197,7 +197,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ce_g)
         if args.smooth:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
-            print(f' shape of ce_g is {ce_g.shape} w shape is {w.shape}')
+            #print(f' shape of ce_g is {ce_g.shape} w shape is {w.shape}')
             ce_g = w * ce_g.expand_as(w)
             ce_g = torch.mean(ce_g)
             loss_list.append(ce_g)
