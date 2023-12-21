@@ -284,6 +284,7 @@ if __name__ == '__main__':
     store_name = args.output_file + 'test.txt'
     #
     with open(store_name, 'a+') as f:
+        f.write(f' val  added ')
         f.write(f'mse_gt is {mse_gt}, mse_pred is {mse_pred}, acc_g is {acc_g}, acc_mae_gt is {acc_mae_gt}, acc_mae_pred is {acc_mae_pred}')
         f.write(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_pred['many']['l1'],
                                                                              shot_dict_pred['median']['l1'], shot_dict_pred['low']['l1']) + "\n")
