@@ -11,7 +11,7 @@ from scipy.ndimage import convolve1d
 
 
 class IMDBWIKI(data.Dataset):
-    def __init__(self, df, data_dir, img_size = 224, split='train', group_num = 10, group_mode = 'i_g', ord_binary = False, reweight = None, max_group=100):
+    def __init__(self, df, data_dir, img_size = 224, split='train', group_num = 10, lds = False, group_mode = 'i_g', ord_binary = False, reweight = None, max_group=100):
         self.groups = group_num
         self.df = df
         self.data_dir = data_dir
@@ -21,6 +21,7 @@ class IMDBWIKI(data.Dataset):
         self.group_mode = group_mode
         self.ord_binary = ord_binary
         self.re_weight = reweight
+        self.lds = lds
         #self.key_list = [i for i in range(group_num)]
         # key is the group is, value is the group num
         #
@@ -51,7 +52,7 @@ class IMDBWIKI(data.Dataset):
                 self.bin_list = [j[i] for j in list_bin]
                 _, _, self.mapping = self.eq_groups(self.groups)
             #
-            self.weights = self.weights_prepare(reweight=reweight)
+            self.weights = self.weights_prepare(reweight=reweight, lds=lds)
         else:
             pass
         
@@ -76,6 +77,7 @@ class IMDBWIKI(data.Dataset):
         else:
             print(" group mode should be defined! ")
         # ordinary binary label with [1,0] denotes 1, [0,1] denotes 0
+        '''
         if self.ord_binary:
             pos_label = torch.Tensor([1,0])
             neg_label = torch.Tensor([0,1])
@@ -83,8 +85,9 @@ class IMDBWIKI(data.Dataset):
                 group_index, 1), neg_label.repeat((self.groups - group_index), 1)), 0)
             return img, label, group, ord_label
         # ordinary binary label with [1] denotes 1, [0] denotes 0
+        '''
         if self.split == 'train':
-            if self.re_weight is not None:
+            if self.re_weight is not None or self.lds is True:
                 weight = np.asarray([self.weights[index]]).astype(
                     'float32') if self.weights is not None else np.asarray([np.float32(1.)])
                 return img, label, group, weight
@@ -121,9 +124,6 @@ class IMDBWIKI(data.Dataset):
         #
         value_dict = {x: 0 for x in range(max_target)}
         #
-        if reweight is None:
-            return None
-        #
         labels = self.df['age'].values
         #
         for label in labels:
@@ -137,10 +137,10 @@ class IMDBWIKI(data.Dataset):
         num_per_label = [
             value_dict[min(max_target - 1, int(label))] for label in labels]
         if not len(num_per_label):
+            print(" None num_per_label ")
             return None
         print(f"Using re-weighting: [{reweight.upper()}]")
         if lds:
-
             lds_kernel_window = self.get_lds_kernel_window(lds_kernel, lds_ks, lds_sigma)
             print(f'Using LDS: [{lds_kernel.upper()}] ({lds_ks}/{lds_sigma})')
             smoothed_value = convolve1d(
@@ -150,7 +150,11 @@ class IMDBWIKI(data.Dataset):
         weights = [np.float32(1 / x) for x in num_per_label]
         scaling = len(weights) / np.sum(weights)
         weights = [scaling * x for x in weights]
-        return weights
+
+        if reweight is None and lds is False:
+            return None
+        else:
+            return weights
 
 
 

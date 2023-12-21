@@ -33,6 +33,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
 parser = argparse.ArgumentParser('argument for training')
 parser.add_argument('--seed', default=3407)
+parser.add_argument('--lds', default=False, type=bool)
 parser.add_argument('--mode', default='train', type=str)
 parser.add_argument('--sigma', default=1.0, type=float)
 parser.add_argument('--epoch', default=100, type=int)
@@ -81,7 +82,7 @@ parser.add_argument('--output_file', default='./results_', help='the output dire
 parser.add_argument('--scale', type=float, default=1,
                     help='scale of the sharpness in soft label')
 parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
-parser.add_argument('--smooth', type=bool, default=True, help='add guassain smooth to the ce for groups')
+parser.add_argument('--smooth', type=bool, default=False, help='add guassain smooth to the ce for groups')
 
 
 
@@ -120,7 +121,7 @@ def get_dataset(args):
                                    'train'], df[df['split'] == 'val'], df[df['split'] == 'test']
     ##### how to orgnize the datastes
     train_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_train, img_size=args.img_size,
-                             split='train', group_num=args.groups, group_mode=args.group_mode, reweight=args.reweight)
+                             split='train', group_num=args.groups, group_mode=args.group_mode, reweight=args.reweight, lds = args.lds)
     val_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_val, img_size=args.img_size,
                            split='val', group_num=args.groups, group_mode=args.group_mode)
     test_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_test, img_size=args.img_size,
