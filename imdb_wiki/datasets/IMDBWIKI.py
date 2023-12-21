@@ -73,7 +73,7 @@ class IMDBWIKI(data.Dataset):
                 group_index = self.groups - 1
             group = np.asarray([group_index]).astype('float32')
         elif self.group_mode == 'b_g':
-            group_id = self.mapping[row['group']]
+            group_id = self.mapping[row['age']]
             group = np.asarray([group_id]).astype('float32')
         else:
             print(" group mode should be defined! ")
