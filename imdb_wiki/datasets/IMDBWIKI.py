@@ -36,9 +36,9 @@ class IMDBWIKI(data.Dataset):
                 if group_id > self.groups - 1:
                     group_id = self.groups - 1
                 else:
-                    group_dict[group_id] = group_dict.get(group_id) + 1
+                    group_dict[group_id] = group_dict.get(group_id, 0) + 1
                 #
-                bin_dict[age] = bin_dict.get(age) + 1
+                bin_dict[age] = bin_dict.get(age, 0) + 1
             #
             list_group = sorted(group_dict.items(), key = lambda group_dict : group_dict[0])
             self.group_list = [i[1] for i in list_group]
