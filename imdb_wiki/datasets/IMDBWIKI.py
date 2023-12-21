@@ -184,9 +184,9 @@ class IMDBWIKI(data.Dataset):
         for i in range(len(self.bin_list)):
             cum += self.bin_list[i]
             index = classes/N * cum
-            new_class[index] = new_class.get(index) + self.bin_list[i]
+            new_class[index] = new_class.get(index, 0) + self.bin_list[i]
             mapping[i] = index
-            if type(new_class_bin.get(index)) is list:
+            if type(new_class_bin.get(index, 0)) is list:
                 new_class_bin[index].append(i)
             else:
                 new_class_bin[index] = [i]
