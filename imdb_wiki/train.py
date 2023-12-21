@@ -447,14 +447,14 @@ if __name__ == '__main__':
     #
     #total_result = 'total_result_model_'+str(args.model_depth)+'.txt'
     #
-    store_names = 'la_' + str(args.la) + '_tau_' + str(args.tau) + \
+    store_names = '_la_' + str(args.la) + '_tau_' + str(args.tau) + '_lds_' + str(args.lds) + '_group_mode_' + str(args.group_mode) +\
         '_lr_' + str(args.lr) + '_g_' + str(args.groups) + '_model_' + str(args.model_depth) + \
         '_epoch_' + str(args.epoch) + '_bs_' + str(args.batch_size) + '_sigma_' + str(args.sigma) + \
         '_gamma_' + str(args.gamma) + '_contras_' + str(args.ranked_contra) + '_temp_' + str(args.temp) + \
-        '_scale_' + str(args.scale) + '_fd_ratio_' + str(args.diversity)
+        '_scale_' + str(args.scale) + '_fd_ratio_' + str(args.diversity) + '_smooth_data_' + str(args.smooth)
     #
     if args.soft_label:
-        store_names = 'soft_label_' + 'ce_' + str(args.ce) +store_names
+        store_names = 'soft_label_' + 'ce_' + str(args.ce) + store_names
     #
     print(" store name is ", store_names)
     print(" time is  ", time.asctime())
