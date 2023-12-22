@@ -203,7 +203,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             ce_g = ce_g * w.squeeze(-1)
             print(f' ce_g_1 shape is {ce_g_1.shape}')
             ce_g = torch.mean(ce_g)
-            print(f'ce_g is {ce_g.shape}')
+            print(f'ce_g is {ce_g}')
             loss_list.append(ce_g)
             #print(f'smooth loss is {ce_g.item()}')
         #
