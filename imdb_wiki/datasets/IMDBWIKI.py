@@ -186,7 +186,7 @@ class IMDBWIKI(data.Dataset):
         cum = 0
         for i in range(len(self.bin_list)):
             cum += self.bin_list[i]
-            index = round(classes/N * cum)
+            index = max(round(classes/N * cum)-1, 0)
             new_class[index] = new_class.get(index, 0) + self.bin_list[i]
             mapping[self.list_bin[i][0]] = index
             if type(new_class_bin.get(index, 0)) is list:
