@@ -203,6 +203,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             #print(f' ce_g shape is {ce_g.shape}')
             #ce_g = torch.mean(ce_g)
             loss_list.append(ce_g)
+            print(f'smmoth loss is {ce_g.item()}')
         #
         if ranked_contra :
             ranked_contrastive_loss = contra_ratio * ce_loss(z, g)
