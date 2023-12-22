@@ -152,7 +152,7 @@ class IMDBWIKI(data.Dataset):
         weights = [np.float32(1 / x) for x in num_per_label]
         scaling = len(weights) / np.sum(weights)
         weights = [scaling * x for x in weights]
-        print(f" weights is {weights}")
+        #print(f" weights is {weights}")
 
         if reweight is None and lds is False:
             return None
