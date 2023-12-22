@@ -203,7 +203,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             #print(f' ce_g shape is {ce_g.shape}')
             #ce_g = torch.mean(ce_g)
             loss_list.append(ce_g)
-            print(f'smmoth loss is {ce_g.item()}')
+            print(f'smooth loss is {ce_g.item()}')
         #
         if ranked_contra :
             ranked_contrastive_loss = contra_ratio * ce_loss(z, g)
@@ -223,6 +223,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #
         loss_list.append(args.diversity * feature_diversity(z, g, args))
         #
+        print(f'loss list is {loss_list}')
         #loss = mse_y + sigma*ce_g
         for i in loss_list:
             loss += i
