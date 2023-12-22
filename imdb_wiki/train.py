@@ -200,10 +200,10 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
             #print(f' shape of ce_g is {ce_g.shape} w shape is {w.shape}')
             ce_g = ce_g * w.squeeze(-1)
-            print(f' ce_g shape is {ce_g.shape}')
+            #print(f' ce_g shape is {ce_g.shape}')
             ce_g = torch.mean(ce_g)
             loss_list.append(ce_g)
-            print(f'smooth loss is {ce_g.item()}')
+            #print(f'smooth loss is {ce_g.item()}')
         #
         if ranked_contra :
             ranked_contrastive_loss = contra_ratio * ce_loss(z, g)
