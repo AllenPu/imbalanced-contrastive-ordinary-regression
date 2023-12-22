@@ -193,6 +193,8 @@ class IMDBWIKI(data.Dataset):
                 new_class_bin[index].append(i)
             else:
                 new_class_bin[index] = [i]
+        print(f' mapping is {mapping}')
+        print(f' group is {self.group_list}')
         return new_class, new_class_bin, mapping
 
 
