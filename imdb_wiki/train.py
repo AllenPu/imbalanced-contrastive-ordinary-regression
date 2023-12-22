@@ -188,7 +188,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         else:
             mse_y = mse_loss(y_predicted, y)
         #
-        print(f' shape pof mse {mse_y.shape}')
+        #print(f' shape pof mse {mse_y.shape}')
         loss_list.append(sigma*mse_y)
         #
         if la:
