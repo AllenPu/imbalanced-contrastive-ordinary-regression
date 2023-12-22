@@ -49,7 +49,7 @@ class IMDBWIKI(data.Dataset):
                 #    if i not in bin_dict.keys():
                 #        bin_dict[i] = 0
                 list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
-                #print(f" list bin {list_bin} length {len(list_bin)}")
+                print(f" list bin {list_bin} length {len(list_bin)}")
                 self.bin_list = [bin_dict[1] for j in list_bin]
                 _, _, self.mapping = self.eq_groups(self.groups)
             #
