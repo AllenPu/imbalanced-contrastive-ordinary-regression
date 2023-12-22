@@ -159,6 +159,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         l1 = nn.MSELoss()
     #
     for idx, (x, y, g, w) in enumerate(train_loader):
+        bs = x.shape[0]
         opt.zero_grad()
         # x shape : (batch,channel, H, W)
         # y shape : (batch, 1)
@@ -197,10 +198,10 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ce_g)
         if args.smooth:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
-            print(f' shape of ce_g is {ce_g.shape} w shape is {w.shape}')
-            ce_g = ce_g @ w
-            print(f' ce_g shape is {ce_g.shape}')
-            ce_g = torch.mean(ce_g)
+            #print(f' shape of ce_g is {ce_g.shape} w shape is {w.shape}')
+            ce_g = (ce_g @ w)/bs
+            #print(f' ce_g shape is {ce_g.shape}')
+            #ce_g = torch.mean(ce_g)
             loss_list.append(ce_g)
         #
         if ranked_contra :
