@@ -48,9 +48,9 @@ class IMDBWIKI(data.Dataset):
                 #for i in range(101):
                 #    if i not in bin_dict.keys():
                 #        bin_dict[i] = 0
-                list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
-                print(f" list bin {list_bin} length {len(list_bin)}")
-                self.bin_list = [bin_dict[1] for j in list_bin]
+                self.list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
+                #print(f" list bin {list_bin} length {len(list_bin)}")
+                self.bin_list = [bin_dict[1] for j in self.list_bin]
                 _, _, self.mapping = self.eq_groups(self.groups)
             #
             self.weights = self.weights_prepare(reweight=reweight, lds=lds)
@@ -185,9 +185,9 @@ class IMDBWIKI(data.Dataset):
         cum = 0
         for i in range(len(self.bin_list)):
             cum += self.bin_list[i]
-            index = classes/N * cum
+            index = round(classes/N * cum)
             new_class[index] = new_class.get(index, 0) + self.bin_list[i]
-            mapping[i] = index
+            mapping[self.list_bin[i][0]] = index
             if type(new_class_bin.get(index, 0)) is list:
                 new_class_bin[index].append(i)
             else:
