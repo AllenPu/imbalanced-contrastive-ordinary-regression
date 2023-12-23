@@ -8,6 +8,7 @@ import torch
 from scipy.ndimage import gaussian_filter1d
 from scipy.signal.windows import triang
 from scipy.ndimage import convolve1d
+import pickle
 
 
 class IMDBWIKI(data.Dataset):
@@ -25,38 +26,43 @@ class IMDBWIKI(data.Dataset):
         #self.key_list = [i for i in range(group_num)]
         # key is the group is, value is the group num
         #
-        #if split == 'train':
-        group_dict = {}
-        bin_dict = {}
-        for i in range(len(self.df)):
-            row = self.df.iloc[i]
-            age = row['age']
-            group_id = math.floor(age/self.group_range)
+        if split == 'train':
+            group_dict = {}
+            bin_dict = {}
+            for i in range(len(self.df)):
+                row = self.df.iloc[i]
+                age = row['age']
+                group_id = math.floor(age/self.group_range)
                 # put the age 0 into the first group
-            if group_id > self.groups - 1:
-                group_id = self.groups - 1
-            else:
-                group_dict[group_id] = group_dict.get(group_id, 0) + 1
+                if group_id > self.groups - 1:
+                    group_id = self.groups - 1
+                else:
+                    group_dict[group_id] = group_dict.get(group_id, 0) + 1
                 #
-            bin_dict[age] = bin_dict.get(age, 0) + 1
+                bin_dict[age] = bin_dict.get(age, 0) + 1
             #
-        list_group = sorted(group_dict.items(), key = lambda group_dict : group_dict[0])
-        self.group_list = [i[1] for i in list_group]
+            list_group = sorted(group_dict.items(), key = lambda group_dict : group_dict[0])
+            self.group_list = [i[1] for i in list_group]
         #
             # calculate the number of each age to construct a balanced group, if not in train set, set 0
-        if self.group_mode == 'b_g':
+            if self.group_mode == 'b_g':
                 #for i in range(101):
                 #    if i not in bin_dict.keys():
                 #        bin_dict[i] = 0
-            self.list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
+                self.list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
                 #print(f" list bin {list_bin} length {len(list_bin)}")
-            self.bin_list = [bin_dict[1] for j in self.list_bin]
-            _, _, self.mapping = self.eq_groups(self.groups)
+                self.bin_list = [bin_dict[1] for j in self.list_bin]
+                _, _, self.mapping = self.eq_groups(self.groups)
+                with open('./mapping.pkl', 'wb') as f:
+                    pickle.dump(self.mapping, f)
+
+            
             #
-        if split == 'train':
             self.weights = self.weights_prepare(reweight=reweight, lds=lds)
         else:
-            pass
+            if self.group_mode == 'b_g':
+                with open('./mapping.pkl', 'rb') as f:
+                    self.mapping = pickle.load(f)
         #else:
         #    pass
         

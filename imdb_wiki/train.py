@@ -516,7 +516,7 @@ if __name__ == '__main__':
     #
     acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred = \
         test_step(model_val, test_loader, train_labels, args)
-    print(' Val model mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
+    print(' Val model mse of gt is {}, mse of pred is {}, acc of the group assignment is {}, \
             mae of gt is {}, mae of pred is {} to_avg is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred, np.mean(tole)))
     #
     # val best model
