@@ -84,6 +84,7 @@ parser.add_argument('--scale', type=float, default=1,
                     help='scale of the sharpness in soft label')
 parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
 parser.add_argument('--smooth', type=bool, default=False, help='add guassain smooth to the ce for groups')
+parser.add_argument('--more_train', type=bool, default=False, help='add guassain smooth to the ce for groups')
 
 
 
@@ -515,7 +516,8 @@ if __name__ == '__main__':
                           mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt, tol)
             # add the validation to train
             # new line
-            model, tol = train_one_epoch(model, val_loader, loss_ce, loss_mse, opt, args, e)
+            if args.more_train:
+                model, tol = train_one_epoch(model, val_loader, loss_ce, loss_mse, opt, args, e)
             #
             if best_bMAE > mean_L1_pred and e > 40:
                 best_bMAE = mean_L1_pred
