@@ -53,11 +53,11 @@ class IMDBWIKI(data.Dataset):
                 #print(f" list bin {list_bin} length {len(list_bin)}")
                 self.bin_list = [bin_dict[1] for j in self.list_bin]
                 _, _, self.mapping = self.eq_groups(self.groups)
-                with open('./mapping.pkl', 'wb') as f:
-                    pickle.dump(self.mapping, f)
+                #with open('./mapping.pkl', 'wb') as f:
+                #    pickle.dump(self.mapping, f)
             #
-            with open('bin_dict_smooth.pkl', 'wb') as f:
-                pickle.dump(bin_dict, f)
+            #with open('bin_dict_smooth.pkl', 'wb') as f:
+            #    pickle.dump(bin_dict, f)
             
             #
             self.weights = self.weights_prepare(reweight=reweight, lds=lds)
