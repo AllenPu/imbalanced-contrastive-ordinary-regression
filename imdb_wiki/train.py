@@ -555,6 +555,7 @@ if __name__ == '__main__':
     write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
+    # check if used  eq groups
     with open('test_gt_{}_eq.pkl', 'wb') as f:
         pickle.dump(group_and_pred, f)
     #
