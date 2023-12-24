@@ -28,6 +28,7 @@ from loss import Ranked_Contrastive_Loss
 from loss_contra import RnCLoss
 import time
 from scipy.stats import gmean
+import pickle
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -261,7 +262,9 @@ def test_step(model, test_loader, train_labels, args):
     criterion_gmean_pred = nn.L1Loss(reduction='none')
     gmean_loss_all_gt, gmean_loss_all_pred = [], [] 
     # this is for y
-    pred_gt, pred, labels = [], [], []
+    group_and_pred = {'pred': [], 'gt':[]}
+    #
+    pred_gt, pred, labels, groups = [], [], [], []
     # CHECK THE PREDICTION ACC
     pred_g_gt, pred_g = [], []
     #
@@ -299,6 +302,10 @@ def test_step(model, test_loader, train_labels, args):
             pred_gt.extend(y_gt.data.cpu().numpy())
             # the cls results for g
             pred_g.extend(g_index.data.cpu().numpy())
+            groups.extend(group.data.cpu().numpy())
+            #
+            group_and_pred['pred'].extend(g_index.data.cpu().numpy())
+            group_and_pred['gt'].extend(g_index.data.cpu().numpy())
             #
             mse_y_gt = mse(y_gt, targets)
             mse_y_pred = mse(y_pred, targets)
@@ -354,7 +361,7 @@ def test_step(model, test_loader, train_labels, args):
     #
     #
     return mse_gt.avg,  mse_pred.avg, acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg,\
-                                    shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred
+                                    shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred,  group_and_pred
 
 
 def validate(model, val_loader, train_labels, e):
@@ -362,7 +369,7 @@ def validate(model, val_loader, train_labels, e):
     g_cls_acc = AverageMeter()
     y_gt_mae = AverageMeter()
     preds, labels, preds_gt = [], [], []
-    for idx, (inputs, targets, group) in enumerate(val_loader):
+    for idx, (inputs, targets, group, _) in enumerate(val_loader):
         inputs, targets, group = inputs.to(
             device), targets.to(device), group.to(device)
         bsz = inputs.shape[0]
@@ -506,6 +513,9 @@ if __name__ == '__main__':
             #
             write_val_log('./output/' + store_name, cls_acc, reg_mae,  mean_L1_pred,
                           mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt, tol)
+            #
+            model, tol = train_one_epoch(model, val_loader, loss_ce, loss_mse, opt, args, e)
+            #
             if best_bMAE > mean_L1_pred and e > 40:
                 best_bMAE = mean_L1_pred
                 torch.save(model.state_dict(),
@@ -514,7 +524,7 @@ if __name__ == '__main__':
     model_val.load_state_dict(torch.load(
         './models/model_{}.pth'.format(store_names)))
     #
-    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred = \
+    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, _ = \
         test_step(model_val, test_loader, train_labels, args)
     print(' Val model mse of gt is {}, mse of pred is {}, acc of the group assignment is {}, \
             mae of gt is {}, mae of pred is {} to_avg is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred, np.mean(tole)))
@@ -536,13 +546,16 @@ if __name__ == '__main__':
     #
     # test train model
     #
-    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred = \
+    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \
         test_step(model, test_loader, train_labels, args)
     print(' Test model mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred))
     results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
     write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
+    #
+    with open('test_gt.pkl', 'wb') as f:
+        pickle.dump(group_and_pred, f)
     #
     if args.ranked_contra:
         filename = args.output_file + '_contra.txt'

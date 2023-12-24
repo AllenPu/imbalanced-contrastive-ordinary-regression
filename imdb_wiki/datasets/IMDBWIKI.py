@@ -103,6 +103,8 @@ class IMDBWIKI(data.Dataset):
                 return img, label, group, weight
             else:
                 return img, label, group, 1
+        elif self.split == 'val':
+            return img, label, group, 1
         else:
             return img, label, group
 
