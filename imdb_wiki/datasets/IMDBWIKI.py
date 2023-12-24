@@ -55,7 +55,9 @@ class IMDBWIKI(data.Dataset):
                 _, _, self.mapping = self.eq_groups(self.groups)
                 with open('./mapping.pkl', 'wb') as f:
                     pickle.dump(self.mapping, f)
-
+            #
+            with open('bin_dict.pkl', 'wb') as f:
+                pickle.dump(bin_dict, f)
             
             #
             self.weights = self.weights_prepare(reweight=reweight, lds=lds)
