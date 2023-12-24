@@ -513,7 +513,8 @@ if __name__ == '__main__':
             #
             write_val_log('./output/' + store_name, cls_acc, reg_mae,  mean_L1_pred,
                           mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt, tol)
-            #
+            # add the validation to train
+            # new line
             model, tol = train_one_epoch(model, val_loader, loss_ce, loss_mse, opt, args, e)
             #
             if best_bMAE > mean_L1_pred and e > 40:
