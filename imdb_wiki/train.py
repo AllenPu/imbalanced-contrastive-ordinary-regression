@@ -555,7 +555,7 @@ if __name__ == '__main__':
     write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
     #
-    with open('test_gt.pkl', 'wb') as f:
+    with open('test_gt_{}_eq.pkl', 'wb') as f:
         pickle.dump(group_and_pred, f)
     #
     if args.ranked_contra:

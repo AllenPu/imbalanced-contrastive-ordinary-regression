@@ -56,7 +56,7 @@ class IMDBWIKI(data.Dataset):
                 with open('./mapping.pkl', 'wb') as f:
                     pickle.dump(self.mapping, f)
             #
-            with open('bin_dict.pkl', 'wb') as f:
+            with open('bin_dict_eq.pkl', 'wb') as f:
                 pickle.dump(bin_dict, f)
             
             #
