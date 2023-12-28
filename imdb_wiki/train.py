@@ -480,11 +480,15 @@ if __name__ == '__main__':
         args)
     #
     loss_mse = nn.MSELoss()
-    if args.ranked_contra and not args.ce:
+    if args.ranked_contra:
         loss_ce = RnCLoss(temperature=args.temp).to(device)
         print(' Contrastive loss initiated ')
-    else:
+    elif args.la:
         loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
+    elif args.ce and not args.ranked_contra and not args.la:
+        loss_ce = nn.CrossEntropyLoss()
+    else:
+        loss_ce = None
     #oss_or = nn.MSELoss()
     #
     model = ResNet_regression(args).to(device)
