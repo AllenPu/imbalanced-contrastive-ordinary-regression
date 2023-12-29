@@ -11,7 +11,6 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as transforms
 from PIL import Image
-import argparse
 import pandas as pd
 from loss import LAloss
 from network import ResNet_regression
