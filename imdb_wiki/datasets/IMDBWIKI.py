@@ -51,7 +51,7 @@ class IMDBWIKI(data.Dataset):
                 #        bin_dict[i] = 0
                 self.list_bin = sorted(bin_dict.items(), key= lambda bin_dict : bin_dict[0])
                 #print(f" list bin {self.list_bin} length {len(self.list_bin)} type {type(self.list_bin)}")
-                self.bin_list = [bin_dict[1] for j in self.list_bin]
+                self.bin_list = [j[1] for j in self.list_bin]
                 _, _, self.mapping = self.eq_groups(self.groups)
                 #with open('./mapping.pkl', 'wb') as f:
                 #    pickle.dump(self.mapping, f)
@@ -192,6 +192,7 @@ class IMDBWIKI(data.Dataset):
 
 
     def eq_groups(self, classes=10):
+        print(self.bin_list)
         N = sum(self.bin_list)
         print(f'N is {N}')
         new_class = {}
