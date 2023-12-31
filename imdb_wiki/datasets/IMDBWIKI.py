@@ -192,7 +192,7 @@ class IMDBWIKI(data.Dataset):
 
 
     def eq_groups(self, classes=10):
-        N = sum(self.bin_list)
+        N = sum(self.bin_list.values())
         new_class = {}
         new_class_bin = {}
         mapping = {}
