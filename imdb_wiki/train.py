@@ -305,7 +305,7 @@ def test_step(model, test_loader, train_labels, args):
             groups.extend(group.data.cpu().numpy())
             #
             group_and_pred['pred'].extend(g_index.data.cpu().numpy())
-            group_and_pred['gt'].extend(g_index.data.cpu().numpy())
+            group_and_pred['gt'].extend(group.data.cpu().numpy())
             #
             mse_y_gt = mse(y_gt, targets)
             mse_y_pred = mse(y_pred, targets)
