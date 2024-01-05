@@ -271,7 +271,7 @@ def shot_metric_balanced(pred, labels, train_labels, many_shot_thr=100, low_shot
     return shot_dict
 
 
-def soft_labeling(g, args):
+def soft_labeling(g, args, step = 1):
     groups = args.groups
     soft_group = []
     for i in g:

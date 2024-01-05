@@ -68,3 +68,31 @@ class RnCLoss(nn.Module):
             loss += - (pos_log_probs / (n * (n - 1))).sum()
 
         return loss
+    
+
+class Softlabel_Loss(nn.Module):
+    def __init__(self, label_smooth=None, class_num=10):
+        super().__init__()
+        self.label_smooth = label_smooth
+        self.class_num = class_num
+
+    def forward(self, pred, target):
+        ''' 
+        Args:
+            pred: prediction of model output    [N, M]
+            target: ground truth of sampler [N]
+        '''
+        eps = 1e-12
+        
+        # cross entropy loss with label smoothing
+        logprobs = F.log_softmax(pred, dim=1)	# softmax + log
+        target = F.one_hot(target, self.class_num)	# 转换成one-hot
+            
+        # label smoothing
+        # 实现 1
+        # target = (1.0-self.label_smooth)*target + self.label_smooth/self.class_num 	
+        # 实现 2
+        # implement 2
+        target = torch.clamp(target.float(), min=self.label_smooth/(self.class_num-1), max=1.0-self.label_smooth)
+        loss = -1*torch.sum(target*logprobs, 1)
+        return loss.mean()
