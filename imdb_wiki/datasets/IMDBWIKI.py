@@ -75,8 +75,13 @@ class IMDBWIKI(data.Dataset):
         index = index % len(self.df)
         row = self.df.iloc[index]
         img = Image.open(os.path.join(self.data_dir, row['path'])).convert('RGB')
+        #
         transform = self.get_transform()
-        img = transform(img)
+        if not self.aug:
+            img = transform(img)
+        else:
+            img1, img2 = transform(img), transform(img)
+            img = torch.cat((img1, img2))
         label = np.asarray([row['age']]).astype('float32')
         if self.group_mode  == 'i_g':
             group_index = math.floor(label/self.group_range)
