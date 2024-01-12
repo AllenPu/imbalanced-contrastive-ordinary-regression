@@ -169,11 +169,10 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #print(' g is ', g)
         x, y, g, w = x.to(device), y.to(device), g.to(device), w.to(device)
         #
-        y_output, z = model(x)
+        if args.aug:
+            x = torch.cat([x[0], x[1]], dim=0)
         #
-        if args.aug :
-            z_chunk = torch.chunk(z,2,dim=0)
-            
+        y_output, z = model(x)
         #split into two parts : first is the group, second is the prediction
         y_chunk = torch.chunk(y_output, 2, dim=1)
         g_hat, y_hat = y_chunk[0], y_chunk[1]
@@ -216,8 +215,13 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #
         if args.ranked_contra :
             ranked_contrastive_loss = args.contra_ratio * ce_loss(z, g)
-            loss_list.append(ranked_contrastive_loss)
-            
+            loss_list.append(ranked_contrastive_loss)  
+        #
+        if args.aug:
+            f1, f2 = torch.split(features, [bs, bs], dim=0)
+            features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
+            pairwise_contrastive_loss = args.contra_ratio * ce_loss(g,z) 
+            loss_list.append(pairwise_contrastive_loss)  
         #
         if args.g_dis:
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
