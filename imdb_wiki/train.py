@@ -24,7 +24,7 @@ from tqdm import tqdm
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from loss import Ranked_Contrastive_Loss
-from loss_contra import RnCLoss
+from loss_contra import RnCLoss, RnCLoss_pairwise
 import time
 from scipy.stats import gmean
 import pickle
@@ -84,7 +84,7 @@ parser.add_argument('--scale', type=float, default=1,
 parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
 parser.add_argument('--smooth', type=bool, default=False, help='add guassain smooth to the ce for groups')
 parser.add_argument('--more_train', type=bool, default=False, help='add guassain smooth to the ce for groups')
-parser.add_argument('--aug', type=bool, default=False, help='add strong data augmentation to data')
+parser.add_argument('--aug', action='store_true', help='add strong data augmentation to data')
 
 
 
@@ -147,8 +147,8 @@ def get_dataset(args):
 
 
 def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
-    sigma, la, g_dis, gamma, ranked_contra, contra_ratio, soft_label, ce = \
-        args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.soft_label, args.ce
+    #sigma, la, g_dis, gamma, ranked_contra, contra_ratio, soft_label, ce = \
+    #    args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.soft_label, args.ce
     ranges = int(100/args.groups)
     model.train()
     mse_y = 0
@@ -157,7 +157,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
     tol = 0
     tole = []
     #
-    if g_dis:
+    if args.g_dis:
         l1 = nn.MSELoss()
     #
     for idx, (x, y, g, w) in enumerate(train_loader):
@@ -170,6 +170,10 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         x, y, g, w = x.to(device), y.to(device), g.to(device), w.to(device)
         #
         y_output, z = model(x)
+        #
+        if args.aug :
+            z_chunk = torch.chunk(z,2,dim=0)
+            
         #split into two parts : first is the group, second is the prediction
         y_chunk = torch.chunk(y_output, 2, dim=1)
         g_hat, y_hat = y_chunk[0], y_chunk[1]
@@ -191,12 +195,12 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             mse_y = mse_loss(y_predicted, y)
         #
         #print(f' shape pof mse {mse_y.shape}')
-        loss_list.append(sigma*mse_y)
+        loss_list.append(args.sigma*mse_y)
         #
-        if la:
+        if args.la:
             ce_g = ce_loss(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
-        if ce:
+        if args.ce:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
         if args.smooth:
@@ -210,17 +214,18 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ce_g)
             #print(f'smooth loss is {ce_g.item()}')
         #
-        if ranked_contra :
-            ranked_contrastive_loss = contra_ratio * ce_loss(z, g)
+        if args.ranked_contra :
+            ranked_contrastive_loss = args.contra_ratio * ce_loss(z, g)
             loss_list.append(ranked_contrastive_loss)
+            
         #
-        if g_dis:
+        if args.g_dis:
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
             tol = tolerance(g_index.cpu(), g.cpu(), ranges)
-            sigma = gamma/tol
+            sigma = args.gamma/tol
             tole.append(tol)
         #
-        if soft_label:
+        if args.soft_label:
             g_soft_label = soft_labeling(g, args).to(device)
             loss_soft_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(loss_soft_g)
@@ -239,7 +244,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #    tol= tolerance(g_index.cpu() , g.cpu(), ranges)
         #   print(" tolerance ", tol)
         #
-    if not g_dis:
+    if not args.g_dis:
         tole = [0]
     
     tol_avg = int(np.mean(tole))
@@ -466,7 +471,7 @@ if __name__ == '__main__':
         '_lr_' + str(args.lr) + '_g_' + str(args.groups) + '_model_' + str(args.model_depth) + \
         '_epoch_' + str(args.epoch) + '_bs_' + str(args.batch_size) + '_sigma_' + str(args.sigma) + \
         '_gamma_' + str(args.gamma) + '_contras_' + str(args.ranked_contra) + '_temp_' + str(args.temp) + \
-        '_scale_' + str(args.scale) + '_fd_ratio_' + str(args.diversity) + '_smooth_data_' + str(args.smooth)
+        '_scale_' + str(args.scale) + '_fd_ratio_' + str(args.diversity) + '_smooth_data_' + str(args.smooth) + '_aug_' + str(args.aug)
     #
     if args.soft_label:
         store_names = 'soft_label_' + 'ce_' + str(args.ce) + store_names
@@ -480,12 +485,15 @@ if __name__ == '__main__':
         args)
     #
     loss_mse = nn.MSELoss()
-    if args.ranked_contra:
+    if args.ranked_contra :
         loss_ce = RnCLoss(temperature=args.temp).to(device)
-        print(' Contrastive loss initiated ')
+        print(' Group wise Contrastive loss initiated ')
+    elif args.aug:
+        loss_ce = RnCLoss_pairwise(temperature=args.temp).to(device)
+        print(' Pair wise Contrastive loss initiated ')            
     elif args.la:
         loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
-    elif args.ce and not args.ranked_contra and not args.la:
+    elif args.ce and not args.ranked_contra and not args.aug  and not args.la:
         loss_ce = nn.CrossEntropyLoss()
     else:
         loss_ce = None

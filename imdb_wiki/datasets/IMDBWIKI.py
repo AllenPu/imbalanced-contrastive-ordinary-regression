@@ -79,9 +79,9 @@ class IMDBWIKI(data.Dataset):
         transform = self.get_transform()
         if not self.aug:
             img = transform(img)
-        else:
+        elif self.split == 'train' and self.aug :
             img1, img2 = transform(img), transform(img)
-            img = torch.cat((img1, img2))
+            img = [img1, img2]
         label = np.asarray([row['age']]).astype('float32')
         if self.group_mode  == 'i_g':
             group_index = math.floor(label/self.group_range)
