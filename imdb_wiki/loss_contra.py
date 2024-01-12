@@ -100,7 +100,7 @@ class Softlabel_Loss(nn.Module):
 
 class RnCLoss_pairwise(nn.Module):
     def __init__(self, temperature=2, label_diff='l1', feature_sim='l2'):
-        super(RnCLoss, self).__init__()
+        super(RnCLoss_pairwise, self).__init__()
         self.t = temperature
         self.label_diff_fn = LabelDifference(label_diff)
         self.feature_sim_fn = FeatureSimilarity(feature_sim)
