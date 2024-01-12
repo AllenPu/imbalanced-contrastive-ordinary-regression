@@ -175,6 +175,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         y_output, z = model(x)
         #split into two parts : first is the group, second is the prediction
         y_chunk = torch.chunk(y_output, 2, dim=1)
+        #
         g_hat, y_hat = y_chunk[0], y_chunk[1]
         #
         #extract y out
