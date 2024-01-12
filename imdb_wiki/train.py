@@ -199,9 +199,11 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if args.la:
             ce_g = ce_loss(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
+        #
         if args.ce:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
+        #
         if args.smooth:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
             #print(f' shape of ce_g is {ce_g.shape} w shape is {w.shape}')
@@ -235,7 +237,9 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(loss_soft_g)
             #print(' soft g is ', g)
         #
-        loss_list.append(args.diversity * feature_diversity(z, g, args))
+        if args.diversity != 0:
+            diversity_loss = args.diversity * feature_diversity(z, g, args)
+            loss_list.append(diversity_loss)
         #
         #print(f'loss list is {loss_list}')
         #loss = mse_y + sigma*ce_g
