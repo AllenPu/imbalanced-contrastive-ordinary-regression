@@ -161,7 +161,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         l1 = nn.MSELoss()
     #
     for idx, (x, y, g, w) in enumerate(train_loader):
-        bs = x.shape[0]
+        bs = y.shape[0]
         opt.zero_grad()
         # x shape : (batch,channel, H, W)
         # y shape : (batch, 1)
