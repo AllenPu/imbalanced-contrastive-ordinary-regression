@@ -224,7 +224,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_list.append(ranked_contrastive_loss)  
         #
         if args.aug:
-            f1, f2 = torch.split(features, [bs, bs], dim=0)
+            f1, f2 = torch.split(z, [bs, bs], dim=0)
             features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
             pairwise_contrastive_loss = args.contra_ratio * ce_loss(g,z) 
             loss_list.append(pairwise_contrastive_loss)  
