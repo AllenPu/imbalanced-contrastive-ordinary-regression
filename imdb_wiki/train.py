@@ -167,10 +167,13 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         # y shape : (batch, 1)
         # g hsape : (batch, 1)
         #print(' g is ', g)
-        x, y, g, w = x.to(device), y.to(device), g.to(device), w.to(device)
+        y, g, w =  y.to(device), g.to(device), w.to(device)
         #
         if args.aug:
             x = torch.cat([x[0], x[1]], dim=0)
+            x = x.to(device)
+        else:
+            x = x.to(device)
         #
         y_output, z = model(x)
         #split into two parts : first is the group, second is the prediction
