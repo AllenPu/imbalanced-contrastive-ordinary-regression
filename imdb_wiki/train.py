@@ -150,7 +150,11 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
     #sigma, la, g_dis, gamma, ranked_contra, contra_ratio, soft_label, ce = \
     #    args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.soft_label, args.ce
     ranges = int(100/args.groups)
+    #
+    repeats = 1
+    #
     model.train()
+    #
     mse_y = 0
     ce_g = 0
     #
@@ -172,6 +176,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if args.aug:
             x = torch.cat([x[0], x[1]], dim=0)
             x = x.to(device)
+            repeats = 2
         else:
             x = x.to(device)
         #
@@ -236,7 +241,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             tole.append(tol)
         #
         if args.soft_label:
-            g_soft_label = soft_labeling(g, args).to(device)
+            g_soft = soft_labeling(g, args).to(device)
+            g_soft_label = g_soft.repeat(repeats, 1)
             loss_soft_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(loss_soft_g)
             #print(' soft g is ', g)
