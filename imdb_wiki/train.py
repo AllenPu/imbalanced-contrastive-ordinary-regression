@@ -291,10 +291,6 @@ def test_step(model, test_loader, train_labels, args):
     pred_gt, pred, labels, groups = [], [], [], []
     # CHECK THE PREDICTION ACC
     pred_g_gt, pred_g = [], []
-    #
-    tsne_x_pred = torch.Tensor(0)
-    tsne_g_pred = torch.Tensor(0)
-    tsne_g_gt = torch.Tensor(0)
     with torch.no_grad():
         for idx, (inputs, targets, group) in enumerate(test_loader):
             #
@@ -328,8 +324,8 @@ def test_step(model, test_loader, train_labels, args):
             pred_g.extend(g_index.data.cpu().numpy())
             groups.extend(group.data.cpu().numpy())
             #
-            group_and_pred['pred'].extend(g_index.data.cpu().numpy())
-            group_and_pred['gt'].extend(group.data.cpu().numpy())
+            #group_and_pred['pred'].extend(g_index.data.cpu().numpy())
+            #group_and_pred['gt'].extend(group.data.cpu().numpy())
             #
             mse_y_gt = mse(y_gt, targets)
             mse_y_pred = mse(y_pred, targets)
@@ -346,12 +342,6 @@ def test_step(model, test_loader, train_labels, args):
             gmean_loss_all_gt.extend(loss_all_gt.cpu().numpy())
             gmean_loss_all_pred.extend(loss_all_pred.cpu().numpy())
             #
-            # tsne part
-            tsne_x_pred = torch.cat((tsne_x_pred, z.data.cpu()), dim=0)
-            #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
-            tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
-            tsne_g_gt = torch.cat((tsne_g_gt, group.data.cpu()), dim=0)
-            #
             mse_gt.update(mse_y_gt.item(), bsz)
             #mse_mean.update(mse_mean_1.item(), bsz)
             mse_pred.update(mse_y_pred.item(), bsz)
@@ -366,22 +356,6 @@ def test_step(model, test_loader, train_labels, args):
         shot_dict_gt = shot_metric(pred_gt, labels, train_labels)
         #
         shot_dict_cls = shot_metric_cls(pred_g, pred_g_gt, train_labels,  labels)
-    # draw tsne
-    if args.tsne:
-        tsne = TSNE(n_components=2, init='pca', random_state=0)
-        X_tsne_pred = tsne.fit_transform(tsne_x_pred)
-        plt.figure(figsize=(10, 5))
-        plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
-                    c=tsne_g_gt, label="t-SNE true label")
-        plt.legend()
-        plt.savefig('images/tsne_x_pred_{}_sigma_{}_group_{}_model_{}_true_label.png'.format(
-            args.lr, args.sigma, args.groups, args.model_depth), dpi=120)
-        plt.figure(figsize=(10, 5))
-        plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
-                    c=tsne_g_pred, label="t-SNE pred label")
-        plt.legend()
-        plt.savefig('images/tsne_x_pred_{}_sigma_{}_group_{}_model_{}_pred_lael.png'.format(
-            args.lr, args.sigma, args.groups, args.model_depth), dpi=120)
     #
     #
     return mse_gt.avg,  mse_pred.avg, acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg,\
