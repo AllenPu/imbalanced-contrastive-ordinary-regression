@@ -464,7 +464,7 @@ if __name__ == '__main__':
         '_lr_' + str(args.lr) + '_g_' + str(args.groups) + '_model_' + str(args.model_depth) + \
         '_epoch_' + str(args.epoch) + '_bs_' + str(args.batch_size) + '_sigma_' + str(args.sigma) + \
         '_gamma_' + str(args.gamma) + '_contras_' + str(args.ranked_contra) + '_temp_' + str(args.temp) + \
-        '_scale_' + str(args.scale) + '_fd_ratio_' + str(args.diversity) + '_smooth_data_' + str(args.smooth) + '_aug_' + str(args.aug)
+        '_scale_' + str(args.scale) + '_feature_diversity_' + str(args.diversity) + '_smooth_data_' + str(args.smooth) + '_aug_' + str(args.aug)
     #
     if args.soft_label:
         store_names = 'soft_label_' + 'ce_' + str(args.ce) + store_names
