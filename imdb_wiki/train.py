@@ -414,6 +414,7 @@ def write_test_loggs(store_name, results, shot_dict_pred, shot_dict_gt, shot_dic
         if current_task_name is not None and mode is not None:
             f.write('  current task name is {}'.format(current_task_name) + "\n")
             f.write(' current mode is {}'.format(mode) + "\n")
+        f.write(f' time is {time.asctime()}')
         f.write(' tau is {} group is {} lr is {} model depth {} epoch {} time {}'.format(
             args.tau, args.groups, args.lr, args.model_depth, args.epoch, time.asctime()) + "\n")
         f.write(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
@@ -500,8 +501,8 @@ if __name__ == '__main__':
     #if args.fl:
     #    loss_ce = FocalLoss(gamma=0.75)
     #
-    print(" tau is {} group is {} lr is {} model depth {}".format(
-        args.tau, args.groups, args.lr, args.model_depth))
+    #print(" tau is {} group is {} lr is {} model depth {}".format(
+    #    args.tau, args.groups, args.lr, args.model_depth))
     #
     best_bMAE = 100
     tole = []
