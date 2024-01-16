@@ -112,7 +112,8 @@ class RnCLoss_pairwise(nn.Module):
 
         features = torch.cat([features[:, 0], features[:, 1]], dim=0)  # [2bs, feat_dim]
         labels = labels.repeat(2, 1)  # [2bs, label_dim]
-
+        #
+        features = F.normalize(features, dim = -1)
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
         logits_max, _ = torch.max(logits, dim=1, keepdim=True)
