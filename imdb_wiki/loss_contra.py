@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import math
 
 
 class LabelDifference(nn.Module):
@@ -132,5 +133,7 @@ class RnCLoss_pairwise(nn.Module):
             neg_mask = (label_diffs >= pos_label_diffs.view(-1, 1)).float()  # [2bs, 2bs - 1]
             pos_log_probs = pos_logits - torch.log((neg_mask * exp_logits).sum(dim=-1))  # 2bs
             loss += - (pos_log_probs / (n * (n - 1))).sum()
-
+            if math.isnan(loss.item()):
+                print(f'pos_log_probs is {pos_log_probs} k is {k}')
+                assert 1 == 2
         return loss
