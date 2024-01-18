@@ -202,7 +202,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         else:
             mse_y = mse_loss(y_predicted, y)
         #
-        #print(f' shape pof mse {mse_y.shape}')
+        print(f' mse loss is {mse_y.item()}')
         loss_list.append(args.sigma*mse_y)
         #
         if args.la:
@@ -231,7 +231,9 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if args.aug:
             f1, f2 = torch.split(z, [bs, bs], dim=0)
             features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
-            pairwise_contrastive_loss = args.contra_ratio * ce_loss(features, g) 
+            pairwise_contrastive_loss = args.contra_ratio * ce_loss(features, g)
+            #if e % 10 == 0:
+            print(f' contrastive loss in {e} is {pairwise_contrastive_loss.item()}')
             loss_list.append(pairwise_contrastive_loss)  
         #
         if args.g_dis:
@@ -246,6 +248,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_soft_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(loss_soft_g)
             #print(' soft g is ', g)
+            print(f'soft label loss is {loss_soft_g.item()}')
         #
         if args.diversity != 0:
             diversity_loss = args.diversity * feature_diversity(z, g, args)
@@ -254,7 +257,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #print(f'loss list is {loss_list}')
         #loss = mse_y + sigma*ce_g
         for i in loss_list:
-            loss += i
+            loss += i/i.detach()
         loss.backward()
         opt.step()
         #

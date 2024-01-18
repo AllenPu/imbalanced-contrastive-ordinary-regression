@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import math
 
 
 class LabelDifference(nn.Module):
@@ -111,7 +112,8 @@ class RnCLoss_pairwise(nn.Module):
 
         features = torch.cat([features[:, 0], features[:, 1]], dim=0)  # [2bs, feat_dim]
         labels = labels.repeat(2, 1)  # [2bs, label_dim]
-
+        #
+        features = F.normalize(features, dim = -1)
         label_diffs = self.label_diff_fn(labels)
         logits = self.feature_sim_fn(features).div(self.t)
         logits_max, _ = torch.max(logits, dim=1, keepdim=True)
@@ -132,5 +134,4 @@ class RnCLoss_pairwise(nn.Module):
             neg_mask = (label_diffs >= pos_label_diffs.view(-1, 1)).float()  # [2bs, 2bs - 1]
             pos_log_probs = pos_logits - torch.log((neg_mask * exp_logits).sum(dim=-1))  # 2bs
             loss += - (pos_log_probs / (n * (n - 1))).sum()
-
         return loss
