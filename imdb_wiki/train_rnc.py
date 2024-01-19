@@ -51,7 +51,7 @@ parser.add_argument('--groups', type=int, default=10,
 parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
-parser.add_argument('--lr', type=float, default=1e-3,
+parser.add_argument('--lr', type=float, default=0.5,
                     help='initial learning rate')
 parser.add_argument('--tau', default=1, type=float,
                     help=' tau for logit adjustment ')
@@ -156,7 +156,7 @@ def train_one_epoch(model, opt, e, criterion, losses, args):
 
 
 def adjust_learning_rate(args, optimizer, epoch):
-    #lr = args.learning_rate
+    lr = args.lr
     eta_min = lr * (0.1 ** 3)
     lr = eta_min + (lr - eta_min) * (1 + math.cos(math.pi * epoch / args.epochs)) / 2
     for param_group in optimizer.param_groups:
@@ -183,7 +183,7 @@ if __name__ == '__main__':
     train_loader, test_loader, val_loader, train_group_cls_num, train_labels = get_dataset(args)
     #
     model = Encoder('resnet50').to(device)
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.5,
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=0.9, weight_decay=1e-4)
     if args.aug:
         criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2')
