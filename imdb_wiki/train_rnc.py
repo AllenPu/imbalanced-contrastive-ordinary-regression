@@ -131,14 +131,14 @@ def train_one_epoch(model, optimizer, e, criterion, losses, args):
         #
         bsz = y.shape[0]
         adjust_learning_rate(args, optimizer, e)
-        x, y, g = x.to(device), y.to(device), g.to(device)
+        y, g = y.to(device), g.to(device)
         optimizer.zero_grad()
         #
         if args.aug:
-            images = torch.cat([x[0], x[1]], dim=0)
+            images = torch.cat([x[0], x[1]], dim=0).to(device)
             align = y
         else:
-            images = x
+            images = x.to(device)
             align = g
         features = model(images)
         f1, f2 = torch.split(features, [bsz, bsz], dim=0)
