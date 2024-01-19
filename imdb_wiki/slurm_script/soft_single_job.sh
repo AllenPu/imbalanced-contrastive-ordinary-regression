@@ -7,5 +7,5 @@
 #CUDA_VISIBLE_DEVICES=0 python train.py --lr 0.0001 --groups 20 --epoch 200 --aug --soft_label --output_file aug_ --data_dir /home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data
 #CUDA_VISIBLE_DEVICES=1 python train.py --lr 0.0001 --groups 5 --epoch 250 --ranked_contra --soft_label --diversity 1 --output_file softlabel_g5_0113 --data_dir /home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data
 #CUDA_VISIBLE_DEVICES=1 python train.py --lr 0.0001 --groups 5 --epoch 250 --soft_label --diversity 1 --output_file softlabel_g5_0113 --data_dir /home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data
-CUDA_VISIBLE_DEVICES=1 python train.py --lr 0.0001 --groups 5 --epoch 250 --ce --diversity 1 --output_file softlabel_g5_0113 --data_dir /home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data
+CUDA_VISIBLE_DEVICES=0 python train.py --lr 0.0001 --groups 5 --epoch 250 --ce --diversity 1 --output_file softlabel_g5_0113 --data_dir /home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data
 
