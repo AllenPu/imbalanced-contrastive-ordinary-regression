@@ -125,12 +125,12 @@ def get_dataset(args):
 
 
 
-def train_one_epoch(model, opt, e, criterion, losses, args):
+def train_one_epoch(model, optimizer e, criterion, losses, args):
     #
     for idx, (x, y, g, _) in enumerate(train_loader):
         #
         bsz = y.shape[0]
-        adjust_learning_rate(opt, optimizer, e)
+        adjust_learning_rate(args, optimizer, e)
         x, y, g = x.to(device), y.to(device), g.to(device)
         optimizer.zero_grad()
         #
