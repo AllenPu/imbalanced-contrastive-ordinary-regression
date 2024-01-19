@@ -27,7 +27,7 @@ test_loader = DataLoader(test_dataset, batch_size=256, shuffle=False,
                          num_workers=8, pin_memory=True, drop_last=False)
 print(f'done dataloader')
 
-for idx, (inputs, targets, group) in enumerate(val_loader):
+for idx, (inputs, targets, group, _) in enumerate(val_loader):
     inputs, targets, group = inputs.to(
         device), targets.to(device), group.to(device)
     if idx % 100 == 0:
