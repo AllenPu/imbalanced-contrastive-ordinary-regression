@@ -83,26 +83,19 @@ class IMDBWIKI(data.Dataset):
             img1, img2 = transform(img), transform(img)
             img = [img1, img2]
         label = np.asarray([row['age']]).astype('float32')
+        # imbalanced each group
         if self.group_mode  == 'i_g':
             group_index = math.floor(label/self.group_range)
             if group_index > self.groups - 1:
                 group_index = self.groups - 1
             group = np.asarray([group_index]).astype('float32')
+        # balanced each group 
         elif self.group_mode == 'b_g':
             group_id = self.mapping[row['age']]
             group = np.asarray([group_id]).astype('float32')
         else:
             print(" group mode should be defined! ")
         # ordinary binary label with [1,0] denotes 1, [0,1] denotes 0
-        '''
-        if self.ord_binary:
-            pos_label = torch.Tensor([1,0])
-            neg_label = torch.Tensor([0,1])
-            ord_label = torch.cat((pos_label.repeat(
-                group_index, 1), neg_label.repeat((self.groups - group_index), 1)), 0)
-            return img, label, group, ord_label
-        # ordinary binary label with [1] denotes 1, [0] denotes 0
-        '''
         if self.split == 'train':
             if self.re_weight is not None or self.lds is True:
                 weight = np.asarray([self.weights[index]]).astype(
