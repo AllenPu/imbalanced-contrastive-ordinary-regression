@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=baselines
 #SBATCH --account=def-boyuwang
-#SBATCH --time=02-22:00
+#SBATCH --time=03-00:00
 #SBATCH --mem=32G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=6
