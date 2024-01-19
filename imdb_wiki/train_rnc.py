@@ -101,7 +101,7 @@ def get_dataset(args):
                                    'train'], df[df['split'] == 'val'], df[df['split'] == 'test']
     ##### how to orgnize the datastes
     train_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_train, img_size=args.img_size,
-                             split='train', group_num=args.groups, group_mode=args.group_mode, reweight=args.reweight)
+                             split='train', group_num=args.groups, group_mode=args.group_mode, reweight=args.reweight, aug=args.aug)
     val_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_val, img_size=args.img_size,
                            split='val', group_num=args.groups, group_mode=args.group_mode)
     test_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_test, img_size=args.img_size,
