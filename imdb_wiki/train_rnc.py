@@ -182,7 +182,7 @@ if __name__ == '__main__':
     #
     train_loader, test_loader, val_loader, train_group_cls_num, train_labels = get_dataset(args)
     #
-    model = Encoder('resnet50')
+    model = Encoder('resnet50').to(device)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.5,
                                 momentum=0.9, weight_decay=1e-4)
     if args.aug:
