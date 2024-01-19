@@ -125,7 +125,7 @@ def get_dataset(args):
 
 
 
-def train_one_epoch(model, optimizer e, criterion, losses, args):
+def train_one_epoch(model, optimizer, e, criterion, losses, args):
     #
     for idx, (x, y, g, _) in enumerate(train_loader):
         #
