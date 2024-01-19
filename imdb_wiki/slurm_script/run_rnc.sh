@@ -19,6 +19,6 @@ echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 
 #CUDA_VISIBLE_DEVICES=2 python train_rnc.py --aug --epoch 400
-python train_rnc.py --epoch 400
+python train_rnc.py --epoch 400 --data_dir /home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data 
 
 
