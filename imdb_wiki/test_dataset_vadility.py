@@ -37,4 +37,4 @@ for idx, (inputs, targets, group) in enumerate(val_loader):
 for idx, (x, y, g, w) in enumerate(train_loader):
     x, y, g = x.to(device), y.to(device), g.to(device)
     if idx % 100 == 0:
-        print(f' {idx} done in val')
+        print(f' {idx} done in train')
