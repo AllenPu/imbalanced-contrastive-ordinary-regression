@@ -137,12 +137,16 @@ def train_one_epoch(model, optimizer, e, criterion, losses, args):
         if args.aug:
             images = torch.cat([x[0], x[1]], dim=0).to(device)
             align = y
+            features = model(images)
+            f1, f2 = torch.split(features, [bsz, bsz], dim=0)
+            features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
         else:
             images = x.to(device)
             align = g
-        features = model(images)
-        f1, f2 = torch.split(features, [bsz, bsz], dim=0)
-        features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
+            features = model(images)
+        #features = model(images)
+        #f1, f2 = torch.split(features, [bsz, bsz], dim=0)
+        #features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
 
         loss = criterion(features, align)
         losses.update(loss.item(), bsz)
