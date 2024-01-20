@@ -15,6 +15,7 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from datasets.agedb import *
+from collections import OrderedDict
 
 
 def get_data_loader(args):
@@ -47,7 +48,20 @@ def get_data_loader(args):
 
 
 
-def get_model(groups):
+def get_model(args, groups):
     model = Encoder_regression(groups=groups, name='resnet18')
+    # load pretrained
     ckpt = torch.load('last.pth')
-    model.encoder.load_state_dict(ckpt['model'])
+    new_state_dict = OrderedDict()
+    for k,v in ckpt['model'].items():
+        key = k.replace('module.','')
+        keys = key.replace('encoder.','')
+        new_state_dict[keys]=v
+    model.encoder.load_state_dict(new_state_dict)
+    # freeze the pretrained part
+    for (name, param) in model.encoder.named_parameters():
+        param.requires_grad = False
+    #
+    optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.learning_rate,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    return model, optimizer
