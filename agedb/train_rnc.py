@@ -5,9 +5,6 @@ import time
 import argparse
 from tqdm import tqdm
 import pandas as pd
-from utils import AverageMeter, accuracy, shot_metric, setup_seed, balanced_metrics, shot_metric_balanced, diversity_loss, feature_diversity
-from utils import soft_labeling, SoftCrossEntropy
-from loss import *
 from network import *
 from model import *
 from scipy.stats import gmean
@@ -16,6 +13,16 @@ import torch.backends.cudnn as cudnn
 from torch.utils.data import DataLoader
 from datasets.agedb import *
 from collections import OrderedDict
+from loss import *
+from loss_contra import *
+from utils import *
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f" training on ", device)
+parser = argparse.ArgumentParser('argument for training')
+
+
+
 
 
 def get_data_loader(args):
@@ -65,3 +72,29 @@ def get_model(args, groups):
     optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.learning_rate,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
+
+
+
+def train(model, train_loader, opt, args):
+    mse = nn.MSELoss()
+    for e in tqdm(range(args.epoch)):
+        for idx, (x, y, g) in enumerate(train_loader):
+            x, y, g = x.to(device), y.to(device), g.to(device)
+            opt.zero_grad()
+            y_output, z = model(x)
+            y =  torch.chunk(y_output,2,dim=-1)
+            g_hat, y_hat = y[0], y[1]
+            y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64))
+            g_soft_label = soft_labeling(g, args).to(device)
+            loss_ce_soft = SoftCrossEntropy(g_hat, g_soft_label)
+            loss_mse = mse(y_pred, y)
+            loss = loss_mse + loss_ce_soft
+            loss.backward()
+            opt.step()
+    return model
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+    setup_seed(args.seed)
+    
