@@ -98,6 +98,7 @@ def get_model(args):
 
 
 def train_epoch(model, train_loader, opt, args):
+    model = model.to(device)
     model.train()
     mse = nn.MSELoss()
     for e in tqdm(range(args.epoch)):
