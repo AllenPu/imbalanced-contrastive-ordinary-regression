@@ -16,11 +16,32 @@ from collections import OrderedDict
 from loss import *
 from loss_contra import *
 from utils import *
+from train import test, write_log
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
 parser = argparse.ArgumentParser('argument for training')
-
+parser.add_argument('--data_dir', type=str,
+                    default='/home/ruizhipu/scratch/regression/imbalanced-regression/agedb-dir/data', help='data directory')
+parser.add_argument('--lr', type=float, default=1e-4,
+                    help='initial learning rate')
+parser.add_argument('--epoch', type=int, default=100,
+                    help='number of epochs to train')
+parser.add_argument('--batch_size', type=int, default=128, help='batch size')
+parser.add_argument('--img_size', type=int, default=224,
+                    help='image size used in training')
+parser.add_argument('--workers', type=int, default=32,
+                    help='number of workers used in data loading')
+parser.add_argument('--groups', type=int, default=10,
+                    help='number of split bins to the wole datasets')
+parser.add_argument('--reweight', type=str, default=None,
+                    help='weight : inv or sqrt_inv')
+parser.add_argument('--momentum', type=float, default=0.9,
+                    help='optimizer momentum')
+parser.add_argument('--weight_decay', type=float,
+                    default=1e-4, help='optimizer weight decay')
+parser.add_argument('--output_file', type=str,
+                    default='result_', help='store')
 
 
 
@@ -55,8 +76,8 @@ def get_data_loader(args):
 
 
 
-def get_model(args, groups):
-    model = Encoder_regression(groups=groups, name='resnet18')
+def get_model(args):
+    model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
     ckpt = torch.load('last.pth')
     new_state_dict = OrderedDict()
@@ -69,13 +90,14 @@ def get_model(args, groups):
     for (name, param) in model.encoder.named_parameters():
         param.requires_grad = False
     #
-    optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.learning_rate,
+    optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
 
 
-def train(model, train_loader, opt, args):
+def train_epoch(model, train_loader, opt, args):
+    model.train()
     mse = nn.MSELoss()
     for e in tqdm(range(args.epoch)):
         for idx, (x, y, g) in enumerate(train_loader):
@@ -97,4 +119,13 @@ def train(model, train_loader, opt, args):
 if __name__ == '__main__':
     args = parser.parse_args()
     setup_seed(args.seed)
+    train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
+    model, optimizer = get_model(args)
+    store_name = args.output_file + '.txt'
+    model = train_epoch(model, train_loader, optimizer, args)
+    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
+        model, test_loader, train_labels, args)
+    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
+    write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
+    
     
