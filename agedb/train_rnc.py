@@ -21,6 +21,7 @@ from train import test, write_log
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
 parser = argparse.ArgumentParser('argument for training')
+parser.add_argument('--seed', default=3407)
 parser.add_argument('--data_dir', type=str,
                     default='/home/ruizhipu/scratch/regression/imbalanced-regression/agedb-dir/data', help='data directory')
 parser.add_argument('--lr', type=float, default=1e-4,
