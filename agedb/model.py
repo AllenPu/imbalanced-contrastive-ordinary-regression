@@ -174,7 +174,11 @@ class Encoder_regression(nn.Module):
         backbone, dim_in = model_dict[name]
         output_dim = groups * 2
         self.encoder = backbone()
-        self.regressor = nn.Linear(dim_in, output_dim)
+        self.regressor = nn.Sequential(nn.Linear(dim_in, 2048),
+                                       nn.ReLU(),
+                                       nn.Linear(2048, 512),
+                                       nn.ReLU(),
+                                       nn.Linear(512, output_dim))
 
     def forward(self, x):
         feat = self.encoder(x)
