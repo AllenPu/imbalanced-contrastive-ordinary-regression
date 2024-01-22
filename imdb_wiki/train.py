@@ -212,6 +212,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if args.ce:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
+            print(f'ce loss is {ce_g.item()}')
         #
         if args.smooth:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
@@ -248,7 +249,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_soft_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(loss_soft_g)
             #print(' soft g is ', g)
-            #print(f'soft label loss is {loss_soft_g.item()}')
+            print(f'soft label loss is {loss_soft_g.item()}')
         #
         if args.diversity != 0:
             diversity_loss = args.diversity * feature_diversity(z, g, args)
@@ -463,14 +464,14 @@ if __name__ == '__main__':
     #
     #total_result = 'total_result_model_'+str(args.model_depth)+'.txt'
     #
-    store_names = '_la_' + str(args.la) + '_tau_' + str(args.tau) + '_lds_' + str(args.lds) + '_group_mode_' + str(args.group_mode) +\
+    store_names = 'ce_' + str(args.ce) + '_la_' + str(args.la) + '_tau_' + str(args.tau) + '_lds_' + str(args.lds) + '_group_mode_' + str(args.group_mode) +\
         '_lr_' + str(args.lr) + '_g_' + str(args.groups) + '_model_' + str(args.model_depth) + \
         '_epoch_' + str(args.epoch) + '_bs_' + str(args.batch_size) + '_sigma_' + str(args.sigma) + \
         '_gamma_' + str(args.gamma) + '_contras_' + str(args.ranked_contra) + '_temp_' + str(args.temp) + \
         '_scale_' + str(args.scale) + '_feature_diversity_' + str(args.diversity) + '_smooth_data_' + str(args.smooth) + '_aug_' + str(args.aug)
     #
     if args.soft_label:
-        store_names = 'soft_label_' + 'ce_' + str(args.ce) + store_names
+        store_names = 'soft_label_' + store_names
     #
     print(" store name is ", store_names)
     print(" time is  ", time.asctime())
@@ -489,8 +490,6 @@ if __name__ == '__main__':
         print(' Pair wise Contrastive loss initiated ')            
     elif args.la:
         loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
-    elif args.ce and not args.ranked_contra and not args.aug  and not args.la:
-        loss_ce = nn.CrossEntropyLoss()
     else:
         loss_ce = None
     #oss_or = nn.MSELoss()
