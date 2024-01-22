@@ -43,6 +43,7 @@ parser.add_argument('--weight_decay', type=float,
                     default=1e-4, help='optimizer weight decay')
 parser.add_argument('--output_file', type=str,
                     default='result_', help='store')
+parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
 
 
 
