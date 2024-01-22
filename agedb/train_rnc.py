@@ -106,12 +106,12 @@ def train_epoch(model, train_loader, opt, args):
         for idx, (x, y, g) in enumerate(train_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
-            y_output, z = model(x)
+            z, y_output = model(x)
             y =  torch.chunk(y_output,2,dim=-1)
             g_hat, y_hat = y[0], y[1]
             y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64))
             g_soft_label = soft_labeling(g, args).to(device)
-            print(f' g {g_soft_label.shape} g pred {g_hat.shape}')
+            #print(f' g {g_soft_label.shape} g pred {g_hat.shape}')
             loss_ce_soft = SoftCrossEntropy(g_hat, g_soft_label)
             loss_mse = mse(y_pred, y)
             loss = loss_mse + loss_ce_soft
