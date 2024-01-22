@@ -258,7 +258,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #print(f'loss list is {loss_list}')
         #loss = mse_y + sigma*ce_g
         for i in loss_list:
-            loss += i/i.detach()
+            loss += i
         loss.backward()
         opt.step()
         #
