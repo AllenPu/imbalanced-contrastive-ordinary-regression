@@ -212,7 +212,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         if args.ce:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long())
             loss_list.append(ce_g)
-            print(f'ce loss is {ce_g.item()}')
+            #print(f'ce loss is {ce_g.item()}')
         #
         if args.smooth:
             ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
@@ -249,7 +249,7 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
             loss_soft_g = SoftCrossEntropy(g_hat, g_soft_label)
             loss_list.append(loss_soft_g)
             #print(' soft g is ', g)
-            print(f'soft label loss is {loss_soft_g.item()}')
+            #print(f'soft label loss is {loss_soft_g.item()}')
         #
         if args.diversity != 0:
             diversity_loss = args.diversity * feature_diversity(z, g, args)
