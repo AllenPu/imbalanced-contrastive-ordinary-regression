@@ -44,6 +44,8 @@ parser.add_argument('--weight_decay', type=float,
 parser.add_argument('--output_file', type=str,
                     default='result_rnc', help='store')
 parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
+parser.add_argument('--soft_label', action='store_true')
+parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 
 
 
@@ -110,10 +112,13 @@ def train_epoch(model, train_loader, opt, args):
             y_ =  torch.chunk(y_output,2,dim=-1)
             g_hat, y_hat = y_[0], y_[1]
             y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64))
-            g_soft_label = soft_labeling(g, args).to(device)
-            loss_ce_soft = SoftCrossEntropy(g_hat, g_soft_label)
+            if args.soft_label:
+                g_soft_label = soft_labeling(g, args).to(device)
+                loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
+            if args.ce:
+                loss_ce = F.cross_entropy(g_hat, g, reduction='mean')
             loss_mse = mse(y_pred, y)
-            loss = loss_mse + loss_ce_soft
+            loss = loss_mse + loss_ce
             loss.backward()
             opt.step()
     return model
