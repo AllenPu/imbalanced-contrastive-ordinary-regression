@@ -120,7 +120,8 @@ def train_epoch(model, train_loader, opt, args):
                 loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
                 print(f' ce loss is {loss_ce.item()}')
             if torch.isnan(loss_ce):
-                print(f' g_hat is {g_hat} g is {g}')
+                print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
+                assert 1==0
             loss_mse = mse(y_pred, y)
             loss = loss_mse + loss_ce
             loss.backward()
