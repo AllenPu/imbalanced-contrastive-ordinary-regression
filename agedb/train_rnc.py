@@ -108,7 +108,7 @@ def train_epoch(model, train_loader, opt, args):
         for idx, (x, y, g) in enumerate(train_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
-            z, y_output = model(x)
+            y_output,  z = model(x)
             y_ =  torch.chunk(y_output,2,dim=-1)
             g_hat, y_hat = y_[0], y_[1]
             y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64))
