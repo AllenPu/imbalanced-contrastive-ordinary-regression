@@ -303,6 +303,7 @@ def write_log(store_name, results, shot_dict_pred, shot_dict_gt, args, current_t
         if current_task_name is not None and mode is not None:
             f.write('  new_current task name is {}'.format(current_task_name)+"\n")
             f.write(' new_current mode is {} '.format(mode) + "\n")
+        f.write(f' store name is {store_name}')
         #f.write(' tau is {} group is {} lr is {} model depth {} epoch {} time {}'.format(
         #    args.tau, args.groups, args.lr, args.model_depth, args.epoch, time.asctime()) + "\n")
         f.write(' acc of the group assinment is {}, \

@@ -137,5 +137,20 @@ if __name__ == '__main__':
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
     write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
+    print(' acc of the group assinment is {}, \
+            mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
+        #
+    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
+                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
+        #
+    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred_gt['many']['l1'],
+                                                                    shot_pred_gt['median']['l1'], shot_pred_gt['low']['l1']) + "\n")
+        #
+    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_pred_gt['many']['gmean'],
+                                                                    shot_pred_gt['median']['gmean'], shot_pred_gt['low']['gmean'])+ "\n")                                                       
+        #
+    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n")     
+
     
     
