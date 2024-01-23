@@ -337,7 +337,7 @@ def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
 
 
 #
-def soft_labeling(g, args):
+def soft_labeling(g, args, step=1):
     groups = args.groups
     soft_group = []
     for i in g:
@@ -345,11 +345,12 @@ def soft_labeling(g, args):
         soft_label = [0 for i in range(groups)]
         soft_label[int(label)] = args.scale*(groups-1)
         for j in range(0, label):
-            soft_label[j] = (1/args.scale)*(groups - 1 -  (label-j))
+            soft_label[j] = (1/args.scale)*(groups - step -  (label-j))
         for j in range(1, groups-label):
-            soft_label[j+label] = (1/args.scale)*(groups - 1 - j)
+            soft_label[j+label] = (1/args.scale)*(groups - step - j)
         soft_group.append(soft_label)
     soft_groups = torch.Tensor(soft_group)
+    soft_groups =  torch.clamp(soft_groups, 0, groups-1)
     soft_groups = softmax(soft_groups)
     return soft_groups
 
