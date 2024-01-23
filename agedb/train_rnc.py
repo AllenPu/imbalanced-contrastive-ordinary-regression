@@ -24,7 +24,7 @@ parser = argparse.ArgumentParser('argument for training')
 parser.add_argument('--seed', default=3407)
 parser.add_argument('--data_dir', type=str,
                     default='/home/rpu2/scratch/data/imbalanced-regression/agedb-dir/data', help='data directory')
-parser.add_argument('--lr', type=float, default=1e-2,
+parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate')
 parser.add_argument('--epoch', type=int, default=100,
                     help='number of epochs to train')
