@@ -172,9 +172,9 @@ class Encoder_regression(nn.Module):
     def __init__(self, groups=10, name='resnet50'):
         super(Encoder_regression, self).__init__()
         backbone, dim_in = model_dict[name]
-        output_dim = groups * 2
+        self.output_dim = groups * 2
         self.encoder = backbone()
-        self.regressor = nn.Sequential(nn.Linear(dim_in, output_dim))#,
+        self.regressor = nn.Sequential(nn.Linear(dim_in, 1))#,
                                        #nn.ReLU(),
                                        #nn.Linear(2048, 512),
                                        #nn.ReLU(),
@@ -185,4 +185,7 @@ class Encoder_regression(nn.Module):
         pred = self.regressor(feat)
         return pred, feat
     
+
+    def output_dims(self):
+        return self.output_dim/2
 
