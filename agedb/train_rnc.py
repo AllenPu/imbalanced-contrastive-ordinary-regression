@@ -109,7 +109,7 @@ def train_epoch(model, train_loader, opt, args):
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
             y_output,  z = model(x)
-            loss_ce = torch.Tensor(0)
+            #
             if model.output_dim > 1:
                 print(f' ourpur dim is {model.output_dim}')
                 y_ =  torch.chunk(y_output,2,dim=-1)
@@ -128,7 +128,7 @@ def train_epoch(model, train_loader, opt, args):
             #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
             #    assert 1==0
             loss_mse = mse(y_pred, y)
-            loss = loss_mse + loss_ce
+            loss = loss_mse #+ loss_ce
             loss.backward()
             opt.step()
     return model
