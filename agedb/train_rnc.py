@@ -111,6 +111,7 @@ def train_epoch(model, train_loader, opt, args):
             y_output,  z = model(x)
             loss_ce = 0
             if model.output_dim > 1:
+                print(f' ourpur dim is {model.output_dim}')
                 y_ =  torch.chunk(y_output,2,dim=-1)
                 g_hat, y_hat = y_[0], y_[1]
                 y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
