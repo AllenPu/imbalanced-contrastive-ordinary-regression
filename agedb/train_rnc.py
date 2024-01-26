@@ -46,7 +46,7 @@ parser.add_argument('--output_file', type=str,
 parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
-parser.add_argument('--step',)
+parser.add_argument('--step', type=int, default=1)
 
 
 

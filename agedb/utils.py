@@ -337,7 +337,8 @@ def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
 
 
 #
-def soft_labeling(g, args, step=1):
+def soft_labeling(g, args):
+    step = args.step
     groups = args.groups
     soft_group = []
     for i in g:
