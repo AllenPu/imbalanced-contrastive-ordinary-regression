@@ -109,9 +109,13 @@ def train_epoch(model, train_loader, opt, args):
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
             y_output,  z = model(x)
-            y_ =  torch.chunk(y_output,2,dim=-1)
-            g_hat, y_hat = y_[0], y_[1]
-            y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
+            loss_ce = 0
+            if model.output_dim > 1:
+                y_ =  torch.chunk(y_output,2,dim=-1)
+                g_hat, y_hat = y_[0], y_[1]
+                y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
+            else:
+                y_pred = y_output
             if args.soft_label:
                 g_soft_label = soft_labeling(g, args).to(device)
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
