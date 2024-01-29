@@ -91,10 +91,10 @@ def get_model(args):
         new_state_dict[keys]=v
     model.encoder.load_state_dict(new_state_dict)
     # freeze the pretrained part
-    for (name, param) in model.encoder.named_parameters():
-        param.requires_grad = False
+    #for (name, param) in model.encoder.named_parameters():
+    #    param.requires_grad = False
     #
-    optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
