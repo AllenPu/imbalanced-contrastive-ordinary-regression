@@ -194,7 +194,7 @@ def train_epoch(model, train_loader, opt, args):
     model.train()
     mse = nn.MSELoss()
     for e in tqdm(range(args.epoch)):
-        for idx, (x, y, g) in enumerate(train_loader):
+        for idx, (x, y, g, _) in enumerate(train_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
             y_output,  z = model(x)
