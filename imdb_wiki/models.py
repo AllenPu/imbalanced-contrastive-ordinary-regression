@@ -169,6 +169,7 @@ class SupResNet(nn.Module):
     
 
     
+    
 class Encoder_regression(nn.Module):
     def __init__(self, groups=10, name='resnet50'):
         super(Encoder_regression, self).__init__()
