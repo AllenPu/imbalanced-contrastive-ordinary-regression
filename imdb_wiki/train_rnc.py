@@ -90,6 +90,8 @@ parser.add_argument('--hybird_epoch', default=0, type=int)
 parser.add_argument('--output_file', default='./results_rnc', help='the output directory')
 parser.add_argument('--momentum', type=float, default=0.9,
                     help='optimizer momentum')
+parser.add_argument('--weight_decay', type=float,
+                    default=1e-4, help='optimizer weight decay')
 
 
 
@@ -240,7 +242,7 @@ def get_model(args):
     #    param.requires_grad = False
     #
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
-                                momentum=0.9, weight_decay=args.weight_decay)
+                            momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
 
