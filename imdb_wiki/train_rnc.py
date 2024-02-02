@@ -31,6 +31,7 @@ from scipy.stats import gmean
 from models import *
 from loss_contra import *
 from collections import OrderedDict
+from train import test, write_log
 
 
 
@@ -82,10 +83,12 @@ parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive los
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 parser.add_argument('--aug', action='store_true')
+parser.add_argument('--aug_model', action='store_true')
 parser.add_argument('--epoch_cls', default=80,type=int)
 parser.add_argument('--epoch_reg', default=0, type=int)
 parser.add_argument('--hybird_epoch', default=0, type=int)
-parser.add_argument('--output_file', default='./results_', help='the output directory')
+parser.add_argument('--output_file', default='./results_rnc', help='the output directory')
+
 
 
 
@@ -218,7 +221,7 @@ def train_epoch(model, train_loader, opt, args):
 def get_model(args):
     model = Encoder_regression(groups=args.groups, name='resnet50')
     # load pretrained
-    if args.aug:
+    if args.aug_model:
         ckpt = torch.load('ckpt_aug_True.pth')
     else:
         ckpt = torch.load('ckpt_aug_False.pth')
@@ -244,21 +247,40 @@ def get_model(args):
 if __name__ == '__main__':
     args = parser.parse_args()
     setup_seed(args.seed)
+    store_name = args.output_file + '.txt'
     #####
     #
     train_loader, test_loader, val_loader, train_group_cls_num, train_labels = get_dataset(args)
     #
-    model = Encoder('resnet50').to(device)
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
-                                momentum=0.9, weight_decay=1e-4)
+    #model = Encoder('resnet50').to(device)
+    #optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,momentum=0.9, weight_decay=1e-4)
+    model, optimizer = get_model(args)
     if args.aug:
         criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2')
     else:
         criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
     #
     losses = AverageMeter()
-    for e in range(args.epoch):
-        model, losses = train_epoch(model, optimizer, e, criterion, losses, args)
+    #for e in range(args.epoch):
+    model, losses = train_epoch(model, train_loader, optimizer, args)
+    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(model, test_loader, train_labels, args)
+    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
+    write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
+    print(' acc of the group assinment is {}, \
+            mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
+        #
+    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
+                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
+        #
+    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred_gt['many']['l1'],
+                                                                    shot_pred_gt['median']['l1'], shot_pred_gt['low']['l1']) + "\n")
+        #
+    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_pred_gt['many']['gmean'],
+                                                                    shot_pred_gt['median']['gmean'], shot_pred_gt['low']['gmean'])+ "\n")                                                       
+        #
+    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n")     
+
         #model, losses = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
         #if e%20 == 0:
             #print(f' In epoch {e} losses is {losses.avg}')
