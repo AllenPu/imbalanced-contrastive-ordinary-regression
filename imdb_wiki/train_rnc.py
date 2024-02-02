@@ -30,6 +30,7 @@ import time
 from scipy.stats import gmean
 from models import *
 from loss_contra import *
+from collections import OrderedDict
 
 
 
@@ -125,7 +126,7 @@ def get_dataset(args):
 
 
 
-def train_one_epoch(model, optimizer, e, criterion, losses, args):
+def train_encoder_one_epoch(model, optimizer, e, criterion, losses, args):
     #
     for idx, (x, y, g, _) in enumerate(train_loader):
         #
@@ -179,6 +180,67 @@ def save_model(model, optimizer, args, save_file):
     del state
 
 
+
+
+def train_epoch(model, train_loader, opt, args):
+    model = model.to(device)
+    model.train()
+    mse = nn.MSELoss()
+    for e in tqdm(range(args.epoch)):
+        for idx, (x, y, g) in enumerate(train_loader):
+            x, y, g = x.to(device), y.to(device), g.to(device)
+            opt.zero_grad()
+            y_output,  z = model(x)
+            #
+            y_ =  torch.chunk(y_output,2,dim=-1)
+            g_hat, y_hat = y_[0], y_[1]
+            y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
+            #
+            if args.soft_label:
+                g_soft_label = soft_labeling(g, args).to(device)
+                loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
+                #print(f' soft label loss is {loss_ce.item()}')
+            if args.ce:
+                loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
+                #print(f' ce loss is {loss_ce.item()}')
+            #if torch.isnan(loss_ce):
+            #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
+            #    assert 1==0
+            loss_mse = mse(y_pred, y)
+            loss = loss_mse + loss_ce
+            loss.backward()
+            opt.step()
+    return model
+
+
+
+
+def get_model(args):
+    model = Encoder_regression(groups=args.groups, name='resnet50')
+    # load pretrained
+    if args.aug:
+        ckpt = torch.load('ckpt_aug_True.pth')
+    else:
+        ckpt = torch.load('ckpt_aug_False.pth')
+    #
+    #ckpt = torch.load('last.pth')
+    new_state_dict = OrderedDict()
+    for k,v in ckpt['model'].items():
+        key = k.replace('module.','')
+        keys = key.replace('encoder.','')
+        new_state_dict[keys]=v
+    model.encoder.load_state_dict(new_state_dict)
+    # freeze the pretrained part
+    #for (name, param) in model.encoder.named_parameters():
+    #    param.requires_grad = False
+    #
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    return model, optimizer
+
+
+
+
 if __name__ == '__main__':
     args = parser.parse_args()
     setup_seed(args.seed)
@@ -196,10 +258,11 @@ if __name__ == '__main__':
     #
     losses = AverageMeter()
     for e in range(args.epoch):
-        model, losses = train_one_epoch(model, optimizer, e, criterion, losses, args)
-        if e%20 == 0:
-            print(f' In epoch {e} losses is {losses.avg}')
-            save_model(model, optimizer, args, save_file= f'ckpt_aug_{args.aug}.pth')
+        model, losses = train_epoch(model, optimizer, e, criterion, losses, args)
+        #model, losses = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
+        #if e%20 == 0:
+            #print(f' In epoch {e} losses is {losses.avg}')
+            #save_model(model, optimizer, args, save_file= f'ckpt_aug_{args.aug}.pth')
     
 
 
