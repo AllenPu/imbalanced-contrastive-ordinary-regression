@@ -31,7 +31,7 @@ from scipy.stats import gmean
 from models import *
 from loss_contra import *
 from collections import OrderedDict
-from train import test_steo, write_log
+from train import test_step, write_log
 
 
 
@@ -263,7 +263,7 @@ if __name__ == '__main__':
     losses = AverageMeter()
     #for e in range(args.epoch):
     model, losses = train_epoch(model, train_loader, optimizer, args)
-    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(model, test_loader, train_labels, args)
+    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test_step(model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
     write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     print(' acc of the group assinment is {}, \
