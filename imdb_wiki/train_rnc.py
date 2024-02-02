@@ -31,7 +31,7 @@ from scipy.stats import gmean
 from models import *
 from loss_contra import *
 from collections import OrderedDict
-from train import test, write_log
+from train import test_steo, write_log
 
 
 
