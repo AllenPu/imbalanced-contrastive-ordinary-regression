@@ -23,6 +23,7 @@ def train_regressor(train_loader, model, regressor, optimizer, opt):
             bsz = labels.shape[0]
 
             with torch.no_grad():
+                print(f' images shape is {images.shape}')
                 features = model(images)
 
             output = regressor(features.detach())
