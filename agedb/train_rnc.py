@@ -17,6 +17,7 @@ from loss import *
 from loss_contra import *
 from utils import *
 from train import test, write_log
+from util_devlove import shot_metrics, train_regressor, validate
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -94,7 +95,7 @@ def get_model(args):
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
     #
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+    optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
@@ -131,12 +132,19 @@ def train_epoch(model, train_loader, opt, args):
     return model
 
 
+
+
+
+
 if __name__ == '__main__':
     args = parser.parse_args()
     setup_seed(args.seed)
     train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
     store_name = args.output_file + '.txt'
+    model = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
+    val_loss_mse, val_loss_l1, val_loss_gmean = validate(val_loader, model, train_labels=train_labels)
+    '''
     model = train_epoch(model, train_loader, optimizer, args)
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
@@ -156,6 +164,6 @@ if __name__ == '__main__':
         #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n")     
-
+    '''
     
     
