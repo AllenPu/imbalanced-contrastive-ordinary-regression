@@ -14,7 +14,7 @@ def train_regressor(train_loader, model, regressor, optimizer, opt):
     regressor.train()
 
     criterion = nn.MSELoss()
-    model, regressor = model.cuda(non_blocking=True), regressor.cuda(non_blocking=True)
+    model, regressor = model.cuda(), regressor.cuda()
 
     end = time.time()
     for e in tqdm(range(opt.epoch)):
