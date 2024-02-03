@@ -143,7 +143,7 @@ if __name__ == '__main__':
     model, optimizer = get_model(args)
     store_name = args.output_file + '.txt'
     encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
-    val_loss_mse, val_loss_l1, val_loss_gmean = validate(val_loader, model, train_labels=train_labels)
+    val_loss_mse, val_loss_l1, val_loss_gmean = validate(val_loader, encoder, regressor, train_labels=train_labels)
     '''
     model = train_epoch(model, train_loader, optimizer, args)
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
