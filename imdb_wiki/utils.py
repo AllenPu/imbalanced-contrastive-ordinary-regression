@@ -291,8 +291,9 @@ def soft_labeling(g, args, step = 1):
 
 
 def SoftCrossEntropy(inputs, target, reduction='sum'):
-    print(f' target shape os {target.shape}')
+    print(f' target shape is {target.shape}')
     log_likelihood = -F.log_softmax(inputs, dim=1)
+    print(f' log_likelihood is {log_likelihood.shape}')
     batch = inputs.shape[0]
     if reduction == 'average':
         loss = torch.sum(torch.mul(log_likelihood, target)) / batch
