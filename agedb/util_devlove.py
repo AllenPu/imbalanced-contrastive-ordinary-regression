@@ -54,7 +54,7 @@ def validate(val_loader, model, train_labels=None):
         end = time.time()
         for idx, (inputs, targets, _) in enumerate(val_loader):
             inputs, targets = inputs.cuda(non_blocking=True), targets.cuda(non_blocking=True)
-            outputs = model(inputs)
+            outputs, _ = model(inputs)
 
             preds.extend(outputs.data.cpu().numpy())
             labels.extend(targets.data.cpu().numpy())
