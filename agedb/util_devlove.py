@@ -34,11 +34,11 @@ def train_regressor(train_loader, model, regressor, optimizer, opt):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-    return model
+    return model, regressor 
 
 
 
-def validate(val_loader, model, train_labels=None):
+def validate(val_loader, model, regressor, train_labels=None):
     batch_time = AverageMeter('Time', ':6.3f')
     losses_mse = AverageMeter('Loss (MSE)', ':.3f')
     losses_l1 = AverageMeter('Loss (L1)', ':.3f')
@@ -54,7 +54,8 @@ def validate(val_loader, model, train_labels=None):
         end = time.time()
         for idx, (inputs, targets, _) in enumerate(val_loader):
             inputs, targets = inputs.cuda(non_blocking=True), targets.cuda(non_blocking=True)
-            outputs, _ = model(inputs)
+            z = model(inputs)
+            outputs = regressor(z)
 
             preds.extend(outputs.data.cpu().numpy())
             labels.extend(targets.data.cpu().numpy())
