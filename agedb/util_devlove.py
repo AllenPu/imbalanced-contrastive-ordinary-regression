@@ -97,6 +97,7 @@ def shot_metrics(preds, labels, train_labels, many_shot_thr=100, low_shot_thr=20
 
     train_class_count, test_class_count = [], []
     mse_per_class, l1_per_class, l1_all_per_class = [], [], []
+    print(f' preds {preds.shape}, labels {labels.shape}')
     for l in np.unique(labels):
         train_class_count.append(len(train_labels[train_labels == l]))
         test_class_count.append(len(labels[labels == l]))
