@@ -286,14 +286,14 @@ def soft_labeling(g, args, step = 1):
     soft_groups = torch.Tensor(soft_group)
     soft_group = torch.clamp(soft_groups, 0, args.groups-1)
     soft_groups = softmax(soft_groups)
-    print(f' shape of soft groups {soft_groups.shape}')
+    #print(f' shape of soft groups {soft_groups.shape}')
     return soft_groups
 
 
 def SoftCrossEntropy(inputs, target, reduction='sum'):
-    print(f' input shape is {inputs.shape}')
+    #print(f' input shape is {inputs.shape}')
     log_likelihood = -F.log_softmax(inputs, dim=1)
-    print(f' log_likelihood is {log_likelihood.shape}')
+    #print(f' log_likelihood is {log_likelihood.shape}')
     batch = inputs.shape[0]
     if reduction == 'average':
         loss = torch.sum(torch.mul(log_likelihood, target)) / batch
