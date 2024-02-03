@@ -264,9 +264,7 @@ if __name__ == '__main__':
     else:
         criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
     #
-    losses = AverageMeter()
-    #for e in range(args.epoch):
-    model, losses = train_epoch(model, train_loader, optimizer, args)
+    model = train_epoch(model, train_loader, optimizer, args)
     acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \
         test_step(model, test_loader, train_labels, args)
     results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
