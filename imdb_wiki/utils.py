@@ -286,6 +286,7 @@ def soft_labeling(g, args, step = 1):
     soft_groups = torch.Tensor(soft_group)
     soft_group = torch.clamp(soft_groups, 0, args.groups-1)
     soft_groups = softmax(soft_groups)
+    print(f' shape of soft groups {soft_groups.shape}')
     return soft_groups
 
 
