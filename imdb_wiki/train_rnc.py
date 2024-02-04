@@ -274,20 +274,25 @@ if __name__ == '__main__':
     results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
     write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
                 shot_dict_gt, shot_dict_cls, args)
-    print(' acc of the group assinment is {}, \
+    print(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred)+"\n")
         #
     print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_pred['many']['l1'],
-                                                                    shot_dict_pred['median']['l1'], shot_dict_pred['low']['l1']) + "\n")
+                                                                             shot_dict_pred['median']['l1'], shot_dict_pred['low']['l1']) + "\n")
         #
     print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_gt['many']['l1'],
-                                                                    shot_dict_gt['median']['l1'], shot_dict_gt['low']['l1']) + "\n")
+                                                                     shot_dict_gt['median']['l1'], shot_dict_gt['low']['l1']) + "\n")
+        #
+    print(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
+                                                                         shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
         #
     print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_dict_gt['many']['gmean'],
-                                                                    shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
+                                                                         shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
         #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
-                                                                    shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")     
+                                                                         shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
+        #
+
 
         #model, losses = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
         #if e%20 == 0:
