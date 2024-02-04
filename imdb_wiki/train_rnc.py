@@ -53,7 +53,7 @@ parser.add_argument('--groups', type=int, default=10,
 parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
-parser.add_argument('--lr', type=float, default=0.5,
+parser.add_argument('--lr', type=float, default=0.01,
                     help='initial learning rate')
 parser.add_argument('--tau', default=1, type=float,
                     help=' tau for logit adjustment ')
@@ -205,8 +205,8 @@ def train_epoch(model, train_loader, opt, args):
             #
             if args.soft_label:
                 g_soft_label = soft_labeling(g, args).to(device)
-                print(f' g hat is {g_hat[:8]} soft label {g_soft_label[:8]}')
-                assert 1== 2
+                #print(f' g hat is {g_hat[:8]} soft label {g_soft_label[:8]}')
+                #assert 1== 2
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
                 #print(f' soft label loss is {loss_ce.item()}')
             if args.ce:
