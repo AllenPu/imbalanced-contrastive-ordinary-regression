@@ -197,7 +197,7 @@ def train_epoch(model, train_loader, opt, args):
         for idx, (x, y, g, _) in enumerate(train_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
-            z,  y_output = model(x)
+            y_output, z = model(x)
             #
             y_ =  torch.chunk(y_output,2,dim=-1)
             g_hat, y_hat = y_[0], y_[1]
@@ -263,10 +263,10 @@ if __name__ == '__main__':
     #model = Encoder('resnet50').to(device)
     #optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,momentum=0.9, weight_decay=1e-4)
     model, optimizer = get_model(args)
-    if args.aug:
-        criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2')
-    else:
-        criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
+    #if args.aug:
+    #    criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2')
+    #else:
+    #    criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
     #
     model = train_epoch(model, train_loader, optimizer, args)
     acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \

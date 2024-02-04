@@ -181,4 +181,4 @@ class Encoder_regression(nn.Module):
     def forward(self, x):
         feat = self.encoder(x)
         pred = self.regressor(feat)
-        return feat, pred
+        return pred, feat
