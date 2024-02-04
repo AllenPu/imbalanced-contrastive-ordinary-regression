@@ -216,10 +216,11 @@ def train_epoch(model, train_loader, opt, args):
             #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
             #    assert 1==0
             loss_mse = mse(y_pred, y)
-            print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
+            #print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
             loss = loss_mse + loss_ce
             loss.backward()
             opt.step()
+        print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
     return model
 
 
