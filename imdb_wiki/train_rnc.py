@@ -53,7 +53,7 @@ parser.add_argument('--groups', type=int, default=10,
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
-parser.add_argument('--lr', type=float, default=0.05,
+parser.add_argument('--lr', type=float, default=0.01,
                     help='initial learning rate')
 parser.add_argument('--tau', default=1, type=float,
                     help=' tau for logit adjustment ')
