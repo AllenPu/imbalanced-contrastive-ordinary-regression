@@ -370,6 +370,9 @@ def topk_uncertain(y_out, g,  top_k = 3):
         torch.save(y_pred, 'y_pred.gt')
 
 
+
+
+
 class TwoCropTransform:
     def __init__(self, transform):
         self.transform = transform
