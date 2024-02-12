@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math
+from torch.autograd import Function
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -169,7 +170,7 @@ class SupResNet(nn.Module):
     
 
     
-    
+
 class Encoder_regression(nn.Module):
     def __init__(self, groups=10, name='resnet50'):
         super(Encoder_regression, self).__init__()
@@ -182,3 +183,17 @@ class Encoder_regression(nn.Module):
         feat = self.encoder(x)
         pred = self.regressor(feat)
         return pred, feat
+    
+
+
+
+class GRL(Function):
+    @staticmethod
+    def forward(ctx, x, alpha):
+        ctx.alpha = alpha
+        return x.view_as(x)
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        output = grad_output.neg() * ctx.alpha
+        return output, None
