@@ -52,7 +52,7 @@ class listDataset(Dataset):
 
 
 
-def get_dataset(train_json, test_json, batch_size):
+def get_dataset(train_json='/home/rpu2/scratch/data/CSRNet-pytorch/part_A_train.json', test_json='/home/rpu2/scratch/data/CSRNet-pytorch/part_A_test.json', batch_size=1):
     with open(train_json, 'r') as outfile:        
         train_list = json.load(outfile)
     with open(test_json, 'r') as outfile:       
