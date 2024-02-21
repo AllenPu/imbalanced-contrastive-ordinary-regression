@@ -14,6 +14,7 @@ from allennlp.modules.seq2seq_encoders import Seq2SeqEncoder as s2s_e
 from fds import FDS
 from loss import *
 from util import soft_labeling, SoftCrossEntropy
+from loss_contra import *
 
 
 
@@ -146,18 +147,21 @@ class MultiTaskModel(nn.Module):
             loss_ce = 0
             if self.args.ce:
                 loss_ce = self.lce(group_, group_gt.squeeze(-1).long())
+                out['ce'] = loss_ce
             if self.args.ranked_contra:
-                loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp)
+                #loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp) 
+                loss_contra = RnCLoss_groupwise(pair_emb, group_gt, self.args.temp)
                 if loss_contra is None:
                     #print('  group gt  ', group_gt)
                     loss_contra = 0
-                    #print('+++++++++++++++++++++++++++++++++++++++++++++')
                 #print(' loss contrastive : ', type(loss_contra), 'group_gt shape is ', group_gt.shape)
                 loss_ce += loss_contra
+                out['loss_contra'] = loss_contra
             if self.args.soft_label:
                 group_gt_ = soft_labeling(group_gt.squeeze(-1).long(), self.args).cuda()
                 #print('group_ shape : ', group_.shape, 'group_gt shape : ', group_gt.shape)
                 loss_ce = SoftCrossEntropy(group_, group_gt_)
+                out['ce'] = loss_ce
             # regression
             pred_list = []
             pred_list_gt = []
@@ -224,14 +228,15 @@ class MultiTaskModel(nn.Module):
         logits = logits.squeeze(-1).data.cpu().numpy()
         task.scorer(logits, label)
         if self.args.group_wise:
-            if not self.args.g_dis:
-                out['loss'] = self.args.sigma*loss + loss_ce
-            else:
-                current_loss = self.args.sigma*loss + loss_ce
-                if current_loss < 1:
-                    out['loss'] = loss + loss_ce
-                else:
-                    out['loss'] = current_loss
+            out['loss'] = self.args.sigma*loss + loss_ce
+            #if not self.args.g_dis:
+            #    out['loss'] = self.args.sigma*loss + loss_ce
+            #else:
+            #    current_loss = self.args.sigma*loss + loss_ce
+            #    if current_loss < 1:
+            #        out['loss'] = loss + loss_ce
+            #    else:
+            #        out['loss'] = current_loss
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)

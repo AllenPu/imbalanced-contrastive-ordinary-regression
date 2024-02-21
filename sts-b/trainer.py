@@ -109,7 +109,7 @@ class SamplingMultiTaskTrainer():
         return task_infos, metric_infos
 
 
-    def train(self, tasks, validation_interval, train_params, optimizer_params, resume=False):
+    def train(self, tasks, validation_interval, train_params, optimizer_params, resume=False, encoder_only=False):
         print("=============at training the patience is=================", self.patience_epoch)
         iterator = self._iterator
         task_infos, metric_infos = self._setup_training(tasks, train_params, optimizer_params, iterator)
@@ -155,7 +155,10 @@ class SamplingMultiTaskTrainer():
                 output_dict = self._forward(batch, task=task, epoch=real_epoch)
                 #print(' after forward ')
                 assert "loss" in output_dict, "Model must return a dict containing a 'loss' key"
-                loss = output_dict["loss"]
+                if encoder_only:
+                    loss = output_dict["loss_contra"]
+                else:
+                    loss = output_dict["loss"]
                 assert torch.isfinite(loss).all(), logging.info(f'Bad Loss: {loss}')
                 loss.backward()
                 tr_loss += loss.data.cpu().numpy()

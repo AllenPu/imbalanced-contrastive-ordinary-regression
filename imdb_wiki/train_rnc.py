@@ -14,8 +14,6 @@ import torchvision.transforms as transforms
 from PIL import Image
 import argparse
 import pandas as pd
-from loss import LAloss
-from network import ResNet_two_tower
 from datasets.IMDBWIKI import IMDBWIKI
 from utils import *
 #from datasets.datasets_utils import group_df
