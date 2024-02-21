@@ -30,6 +30,7 @@ def load_data(img_path,train = True):
             img = img.transpose(Image.FLIP_LEFT_RIGHT)
     
     print(f' target is {type(target)}')
+    print(f' shape 1 {target.shape[1]/8}, shape 0 is {target.shape[0]/8}')
  
     target = cv2.resize(target,(target.shape[1]/8,target.shape[0]/8),interpolation = cv2.INTER_CUBIC)*64
     

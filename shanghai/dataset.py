@@ -53,6 +53,7 @@ class listDataset(Dataset):
 
 
 def get_dataset(train_json='/home/rpu2/scratch/data/shanghai_data/part_A_train.json', test_json='/home/rpu2/scratch/data/shanghai_data/part_B_test.json', batch_size=1):
+    #
     with open(train_json, 'r') as outfile:        
         train_list = json.load(outfile)
     with open(test_json, 'r') as outfile:       
