@@ -22,22 +22,18 @@ def load_data(img_path,train = True):
             dx = int(random.random()*img.size[0]*1./2)
             dy = int(random.random()*img.size[1]*1./2)
         
-        
-        
         img = img.crop((dx,dy,crop_size[0]+dx,crop_size[1]+dy))
         target = target[dy:crop_size[1]+dy,dx:crop_size[0]+dx]
-        
-        
-        
         
         if random.random()>0.8:
             target = np.fliplr(target)
             img = img.transpose(Image.FLIP_LEFT_RIGHT)
     
-    
-    
-    
+    print(f' target is {target.shape} target is {target}')
+    print(f' shape 1 {target.shape[1]/8}, shape 0 is {target.shape[0]/8}')
+ 
     target = cv2.resize(target,(target.shape[1]/8,target.shape[0]/8),interpolation = cv2.INTER_CUBIC)*64
     
     
     return img,target
+
