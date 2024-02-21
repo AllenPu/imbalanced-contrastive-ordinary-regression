@@ -81,3 +81,12 @@ def get_dataset(train_json='/home/rpu2/scratch/data/shanghai_data/part_A_train.j
         batch_size=batch_size)   
     #
     return train_loader, test_loader
+
+
+
+if __name__ == '__main__':
+    tr, te = get_dataset()
+    for i, (x,y) in enumerate(tr):
+        print(f' x is {x.shape}')
+        print(f' y is {y.shape}')
+        break
