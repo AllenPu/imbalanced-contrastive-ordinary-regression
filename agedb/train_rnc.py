@@ -112,8 +112,10 @@ def train_epoch(model, train_loader, opt, args):
             y_output,  z = model(x)
             #
             y_ =  torch.chunk(y_output,2,dim=-1)
+            print(f' y shape {y_}')
             g_hat, y_hat = y_[0], y_[1]
             y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
+            
             #
             if args.soft_label:
                 g_soft_label = soft_labeling(g, args).to(device)
