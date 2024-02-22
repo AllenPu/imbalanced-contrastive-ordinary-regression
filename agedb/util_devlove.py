@@ -8,7 +8,7 @@ import torch.nn as nn
 from tqdm import tqdm
 
 
-
+# train for the regressor only
 def train_regressor(train_loader, model, regressor, optimizer, opt):
     model.eval()
     regressor.train()

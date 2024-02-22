@@ -95,7 +95,7 @@ def get_model(args):
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
     #
-    optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
@@ -142,9 +142,8 @@ if __name__ == '__main__':
     train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
     store_name = args.output_file + '.txt'
-    encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
-    validate(val_loader, encoder, regressor, train_labels=train_labels)
-    '''
+    #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
+    #validate(val_loader, encoder, regressor, train_labels=train_labels)
     model = train_epoch(model, train_loader, optimizer, args)
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
@@ -164,6 +163,6 @@ if __name__ == '__main__':
         #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n")     
-    '''
+    
     
     
