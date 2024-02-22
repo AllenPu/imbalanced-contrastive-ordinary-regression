@@ -92,9 +92,10 @@ class MultiTaskModel(nn.Module):
         if self.args.group_wise:
             groups = int(self.args.groups)
             self.groups = groups
-            for i in range(groups):
-                layer_ = nn.Linear(d_inp, 1)
-                setattr(self, 'regressor_%s_pred_layer' % i, layer_)
+            #for i in range(groups):
+            #    layer_ = nn.Linear(d_inp, 1)
+            #    setattr(self, 'regressor_%s_pred_layer' % i, layer_)
+            setattr(self, 'regressor' , nn.Linear(d_inp, groups) )
             setattr(self, 'classifier' , nn.Linear(d_inp, groups) )
             if self.args.la:
                 # TO DO: class_num_list
@@ -163,36 +164,35 @@ class MultiTaskModel(nn.Module):
                 loss_ce = SoftCrossEntropy(group_, group_gt_)
                 out['ce'] = loss_ce
             # regression
-            pred_list = []
-            pred_list_gt = []
+            #pred_list = []
+            #pred_list_gt = []
             if self.training:
-                for i in range(bsz):
-                    pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
-                    pred_list.append(pred_layer_(pair_emb_s[i]))
+                #for i in range(bsz):
+                #    pred_layer_ = getattr(self, 'regressor' % group_gt[i].item())
+                #    pred_list.append(pred_layer_(pair_emb_s[i]))
+                reg_pred = self.regressor(pair_emb_s)
+                logits = torch.gather(reg_pred, index=group_gt.to(torch.int64),dim=1)
             else:
                 group_hat = torch.argmax(group_, dim=1).unsqueeze(-1)
-                for i in range(bsz):
-                    pred_layer_ = getattr(
-                        self, 'regressor_%s_pred_layer' % group_hat[i].item())
-                    output_ = pred_layer_(pair_emb_s[i])
-                    pred_list.append(output_)
+                reg_pred = self.regressor(pair_emb_s)
+                logits = torch.gather(reg_pred, index=group_gt.to(torch.int64),dim=1)
+                logits_gt = torch.gather(reg_pred, index=group_hat.to(torch.int64),dim=1)
+                #for i in range(bsz):
+                #    pred_layer_ = getattr(
+                #        self, 'regressor_%s_pred_layer' % group_hat[i].item())
+                #    output_ = pred_layer_(pair_emb_s[i])
+                #    pred_list.append(output_)
                     # gt
-                    pred_layer_gt = getattr(
-                        self, 'regressor_%s_pred_layer' % group_gt[i].item())
-                    output_gt = pred_layer_gt(pair_emb_s[i])
-                    pred_list_gt.append(output_gt)
-                #print(' current index for pred is {} for gt is {}'.format(group_hat[i].item(), group_gt[i].item()))
-                #print(' current output for pred is {} for gt is {}'.format(output_.item(), output_gt.item()))
-                #print('pred_layer_', pred_layer_ == pred_layer_gt)
-                #print('name', 'regressor_%s_pred_layer' % group_hat[i].item(
-                #), ' name gt ', 'regressor_%s_pred_layer' % group_gt[i].item())
-                #print('task name ', task.name, type(task.name),
-                #      ' type fot gt ', type(group_gt[i].item()))
-                logits_gt = torch.cat(pred_list_gt)
+                #    pred_layer_gt = getattr(
+                #        self, 'regressor_%s_pred_layer' % group_gt[i].item())
+                #    output_gt = pred_layer_gt(pair_emb_s[i])
+                #    pred_list_gt.append(output_gt)
+                #
+                #logits_gt = torch.cat(pred_list_gt)
             
 
             #
-            logits = torch.cat(pred_list) 
+            #logits = torch.cat(pred_list) 
             #
             logits = logits.unsqueeze(-1)
             #print(" logits shape ", logits.shape, " label shape ", label.shape )

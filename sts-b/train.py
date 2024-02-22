@@ -110,6 +110,7 @@ def main(arguments):
     parser.add_argument('--ce', action='store_false',  help='if use the cross_entropy /la or not')
     parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
     parser.add_argument('--output_file', default='./results_', help='the output directory')
+    parser.add_argument('--encoder_only', type= bool, default=False, help='Only train encoder')
 
 
     args = parser.parse_args(arguments)
@@ -221,6 +222,8 @@ def main(arguments):
                     param.requires_grad = False
             logging.info(f'Only optimize parameters: {[n for n, p in trainer._model.named_parameters() if p.requires_grad]}')
             to_train = [(n, p) for n, p in trainer._model.named_parameters() if p.requires_grad]
+        elif args.encoder_only:
+            to_train = [(n, p) for n, p in trainer._model.pair_encoder.named_parameters() if p.requires_grad]
         else:
             to_train = [(n, p) for n, p in model.named_parameters() if p.requires_grad]
 
