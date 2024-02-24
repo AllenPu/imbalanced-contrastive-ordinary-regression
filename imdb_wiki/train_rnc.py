@@ -228,9 +228,9 @@ def get_model(args):
     model = Encoder_regression(groups=args.groups, name='resnet50')
     # load pretrained
     if args.aug_model:
-        ckpt = torch.load('ckpt_aug_True.pth')
+        ckpt = torch.load('ckpt_aug_sample.pth')
     else:
-        ckpt = torch.load('ckpt_aug_False.pth')
+        ckpt = torch.load('ckpt_aug_group.pth')
     #
     #ckpt = torch.load('last.pth')
     new_state_dict = OrderedDict()
