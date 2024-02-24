@@ -1,16 +1,2 @@
-python train_rnc.py --epoch 50 --soft_label --groups 2
-python train_rnc.py --epoch 50 --soft_label --groups 5
-python train_rnc.py --epoch 50 --soft_label --groups 10
-python train_rnc.py --epoch 50 --soft_label --groups 15
-python train_rnc.py --epoch 50 --soft_label --groups 20
-python train_rnc.py --epoch 50 --soft_label --groups 25
-python train_rnc.py --epoch 50 --soft_label --groups 40
-python train_rnc.py --epoch 50 --soft_label --groups 50
-python train_rnc.py --epoch 50 --ce --groups 2
-python train_rnc.py --epoch 50 --ce --groups 5
-python train_rnc.py --epoch 50 --ce --groups 10
-python train_rnc.py --epoch 50 --ce --groups 15
-python train_rnc.py --epoch 50 --ce --groups 20
-python train_rnc.py --epoch 50 --ce --groups 25
-python train_rnc.py --epoch 50 --ce --groups 40
-python train_rnc.py --epoch 50 --ce --groups 50
+CUDA_VISIBLE_DEVICE=0 python train_rnc.py --epoch 100 --soft_label --groups 10 --aug_model
+#CUDA_VISIBLE_DEVICE=1 python train_rnc.py --epoch 100 --soft_label --groups 10 
