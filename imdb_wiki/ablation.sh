@@ -1,2 +1,2 @@
-CUDA_VISIBLE_DEVICE=0 python train_rnc.py --epoch 100 --soft_label --groups 10 --aug_model
-#CUDA_VISIBLE_DEVICE=1 python train_rnc.py --epoch 100 --soft_label --groups 10
+#CUDA_VISIBLE_DEVICE=0 python train_rnc.py --epoch 100 --soft_label --groups 10 --aug_model
+CUDA_VISIBLE_DEVICE=1 python train_rnc.py --epoch 100 --soft_label --groups 10
