@@ -191,34 +191,34 @@ def train_epoch(model, train_loader, opt, args):
     model = model.to(device)
     model.train()
     mse = nn.MSELoss()
-    for e in tqdm(range(args.epoch)):
-        for idx, (x, y, g, _) in enumerate(train_loader):
-            x, y, g = x.to(device), y.to(device), g.to(device)
-            opt.zero_grad()
-            y_output, z = model(x)
-            #
-            y_ =  torch.chunk(y_output,2,dim=-1)
-            g_hat, y_hat = y_[0], y_[1]
-            y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
-            #
-            if args.soft_label:
-                g_soft_label = soft_labeling(g, args).to(device)
+    
+    for idx, (x, y, g, _) in enumerate(train_loader):
+        x, y, g = x.to(device), y.to(device), g.to(device)
+        opt.zero_grad()
+        y_output, z = model(x)
+        #
+        y_ =  torch.chunk(y_output,2,dim=-1)
+        g_hat, y_hat = y_[0], y_[1]
+        y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
+        #
+        if args.soft_label:
+            g_soft_label = soft_labeling(g, args).to(device)
                 #print(f' g hat is {g_hat[:8]} soft label {g_soft_label[:8]}')
                 #assert 1== 2
-                loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
+            loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
                 #print(f' soft label loss is {loss_ce.item()}')
-            if args.ce:
-                loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
+        if args.ce:
+            loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
                 #print(f' ce loss is {loss_ce.item()}')
             #if torch.isnan(loss_ce):
             #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
             #    assert 1==0
-            loss_mse = mse(y_pred, y)
+        loss_mse = mse(y_pred, y)
             #print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
-            loss = loss_mse + loss_ce
-            loss.backward()
-            opt.step()
-        print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
+        loss = loss_mse + loss_ce
+        loss.backward()
+        opt.step()
+    print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
     return model
 
 
@@ -266,28 +266,31 @@ if __name__ == '__main__':
     #else:
     #    criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
     #
-    model = train_epoch(model, train_loader, optimizer, args)
-    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \
-        test_step(model, test_loader, train_labels, args)
-    results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
-    write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
-                shot_dict_gt, shot_dict_cls, args)
-    print(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
-            mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred)+"\n")
-        #
-    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_pred['many']['l1'],
+    for e in tqdm(range(args.epoch))
+        model = train_epoch(model, train_loader, optimizer, args)
+        acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \
+            test_step(model, test_loader, train_labels, args)
+        results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
+    #write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
+    #            shot_dict_gt, shot_dict_cls, args)
+        if e%5 == 0 :
+            print(' current epoch is {}'.format(e))
+            print(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
+                    mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred)+"\n")
+            #
+            print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_pred['many']['l1'],
                                                                              shot_dict_pred['median']['l1'], shot_dict_pred['low']['l1']) + "\n")
-        #
-    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_gt['many']['l1'],
+            #
+            print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_gt['many']['l1'],
                                                                      shot_dict_gt['median']['l1'], shot_dict_gt['low']['l1']) + "\n")
-        #
-    print(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
+            #
+            print(' CLS Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_dict_cls['many']['cls'],
                                                                          shot_dict_cls['median']['cls'], shot_dict_cls['low']['cls']) + "\n")
-        #
-    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_dict_gt['many']['gmean'],
+            #
+            print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_dict_gt['many']['gmean'],
                                                                          shot_dict_gt['median']['gmean'], shot_dict_gt['low']['gmean'])+ "\n")                                                       
-        #
-    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
+            #
+            print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
                                                                          shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
         #
 
