@@ -48,7 +48,7 @@ parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
 parser.add_argument('--groups', type=int, default=10,
                     help='number of split bins to the wole datasets')
-parser.add_argument('--batch_size', type=int, default=256, help='batch size')
+parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
 parser.add_argument('--lr', type=float, default=0.01,
@@ -240,10 +240,10 @@ def get_model(args):
         new_state_dict[keys]=v
     model.encoder.load_state_dict(new_state_dict)
     # freeze the pretrained part
-    #for (name, param) in model.encoder.named_parameters():
-    #    param.requires_grad = False
+    for (name, param) in model.encoder.named_parameters():
+        param.requires_grad = False
     #
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+    optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
