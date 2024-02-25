@@ -146,7 +146,7 @@ class MultiTaskModel(nn.Module):
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
             #
-            print(f' group predition {group_.shape}')
+            #print(f' group predition {group_.shape}')
             #
             loss_ce = 0
             if self.args.ce:
@@ -200,7 +200,7 @@ class MultiTaskModel(nn.Module):
             #
             #logits = logits.unsqueeze(-1)
             #logits = logits.unsqueeze(-1)
-            print(" logits shape ", logits.shape, " label shape ", label.shape )
+            #print(" logits shape ", logits.shape, " label shape ", label.shape )
             #assert logits.shape == label.shape
         else:
             if self.training and self.FDS is not None:
@@ -225,7 +225,7 @@ class MultiTaskModel(nn.Module):
                     inputs=logits_gt, targets=label / torch.tensor(5.).cuda(), weights=weight
                 )
                 out['loss_gt'] = loss_gt
-                print(' task cls loss is ', loss_ce.item(),' task reg loss is ', loss.item(), ' gt reg loss is ', loss_gt.item())
+                #print(' task cls loss is ', loss_ce.item(),' task reg loss is ', loss.item(), ' gt reg loss is ', loss_gt.item())
                 #out['logits_gt'] = logits_gt
         out['logits'] = logits
         label = label.squeeze(-1).data.cpu().numpy()
