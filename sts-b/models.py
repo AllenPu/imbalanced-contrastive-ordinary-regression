@@ -134,7 +134,7 @@ class MultiTaskModel(nn.Module):
         pair_emb_s = pair_emb
 
         bsz = pair_emb_s.shape[0]
-
+        out = {}
         if self.args.group_wise:
             #
             # divide groups
@@ -201,7 +201,6 @@ class MultiTaskModel(nn.Module):
                     pair_emb_s = self.FDS.smooth(pair_emb_s, label, epoch)
             logits = pred_layer(pair_emb_s)
         ###
-        out = {}
         if self.training and self.FDS is not None:
             out['embs'] = pair_emb
             out['labels'] = label
