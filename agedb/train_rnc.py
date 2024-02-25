@@ -124,7 +124,7 @@ def train_epoch(model, train_loader, opt, args):
             if args.ce:
                 loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
             if args.la :
-                loss_la = LAloss(cls_num_list)
+                loss_la = LAloss(group_list)
                 loss_ce = loss_la(g_hat, g.squeeze().long())
                 #print(f' ce loss is {loss_ce.item()}')
             #if torch.isnan(loss_ce):
