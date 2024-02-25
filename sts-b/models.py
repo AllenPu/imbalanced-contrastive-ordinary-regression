@@ -92,9 +92,9 @@ class MultiTaskModel(nn.Module):
         if self.args.group_wise:
             groups = int(self.args.groups)
             self.groups = groups
-            #for i in range(groups):
-            #    layer_ = nn.Linear(d_inp, 1)
-            #    setattr(self, 'regressor_%s_pred_layer' % i, layer_)
+            for i in range(groups):
+                layer_ = nn.Linear(d_inp, 1)
+                setattr(self, 'regressor_%s_pred_layer' % i, layer_)
             setattr(self, 'regressor' , nn.Linear(d_inp, groups) )
             setattr(self, 'classifier' , nn.Linear(d_inp, groups) )
             if self.args.la:
@@ -168,12 +168,12 @@ class MultiTaskModel(nn.Module):
                 loss_ce = SoftCrossEntropy(group_, group_gt_)
                 out['ce'] = loss_ce
             # regression
-            #pred_list = []
+            pred_list = []
             #pred_list_gt = []
             if self.training:
-                #for i in range(bsz):
-                #    pred_layer_ = getattr(self, 'regressor' % group_gt[i].item())
-                #    pred_list.append(pred_layer_(pair_emb_s[i]))
+                for i in range(bsz):
+                    pred_layer_ = getattr(self, 'regressor' % group_gt[i].item())
+                    pred_list.append(pred_layer_(pair_emb_s[i]))
                 reg_pred = self.regressor(pair_emb_s)
                 print(f' reg_pred  is {reg_pred.shape}')
                 logits = torch.gather(reg_pred, index=group_gt.to(torch.int64),dim=1)
@@ -195,7 +195,8 @@ class MultiTaskModel(nn.Module):
                 #
                 #logits_gt = torch.cat(pred_list_gt)
             #
-            #logits = torch.cat(pred_list) 
+            logits_ = torch.cat(pred_list) 
+            print(f'  logits_ is {logits_.shape} logits is {logits.shape}')
             #
             #logits = logits.unsqueeze(-1)
             logits = logits.unsqueeze(-1)
