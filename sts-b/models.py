@@ -194,7 +194,7 @@ class MultiTaskModel(nn.Module):
             #logits = torch.cat(pred_list) 
             #
             logits = logits.unsqueeze(-1)
-            #print(" logits shape ", logits.shape, " label shape ", label.shape )
+            print(" logits shape ", logits.shape, " label shape ", label.shape )
             assert logits.shape == label.shape
         else:
             if self.training and self.FDS is not None:
