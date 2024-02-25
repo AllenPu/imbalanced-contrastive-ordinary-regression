@@ -18,7 +18,7 @@ from loss_contra import *
 from utils import *
 from train import test, write_log
 from util_devlove import shot_metrics, train_regressor, validate
-from draw_tsne import *
+#from draw_tsne import *
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
