@@ -152,7 +152,7 @@ class MultiTaskModel(nn.Module):
             if self.args.ranked_contra:
                 #loss_contra = Ranked_Contrastive_Loss(pair_emb, group_gt, self.args.temp) 
                 loss_contra =  RnCLoss_groupwise()
-                loss_con = loss_contra(pair_emb, group_gt, self.args.temp)
+                loss_con = loss_contra(pair_emb, group_gt)
                 if loss_contra is None:
                     #print('  group gt  ', group_gt)
                     loss_con = 0
