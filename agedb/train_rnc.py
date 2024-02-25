@@ -49,6 +49,7 @@ parser.add_argument('--scale', type=float, default=1, help='scale of the sharpne
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 parser.add_argument('--step', type=int, default=1)
+parser.add_argument('--la', action='store_true')
 
 
 
