@@ -122,6 +122,9 @@ def train_epoch(model, train_loader, opt, args):
                 #print(f' soft label loss is {loss_ce.item()}')
             if args.ce:
                 loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
+            if args.la :
+                loss_la = LAloss(cls_num_list)
+                loss_ce = loss_la(g_hat, g.squeeze().long())
                 #print(f' ce loss is {loss_ce.item()}')
             #if torch.isnan(loss_ce):
             #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
@@ -165,6 +168,7 @@ if __name__ == '__main__':
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
+    '''
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
     tsne_g_gt = torch.Tensor(0)
@@ -181,6 +185,7 @@ if __name__ == '__main__':
             tsne_g_gt = torch.cat((tsne_g_gt, g.data.cpu()), dim=0)
             draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args)
         break
+    '''
 
 
 
