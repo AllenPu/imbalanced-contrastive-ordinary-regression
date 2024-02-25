@@ -166,6 +166,7 @@ class STSShotAverage:
                     else:
                         metric[shot]['gmean'] = gmean(np.abs(pred_shot[shot] - label_shot[shot])) if pred_shot[shot].size > 0 else 0.
             if 'pearsonr' in self._metric:
+                print(f'pred_shot[shot] is {label_shot[shot].shape}, label_shot[shot] {label_shot[shot].shape}')
                 metric[shot]['pearsonr'] = pearsonr(pred_shot[shot], label_shot[shot])[0] if pred_shot[shot].size > 1 else 0.
             if 'spearmanr' in self._metric:
                 metric[shot]['spearmanr'] = spearmanr(pred_shot[shot], label_shot[shot])[0] if pred_shot[shot].size > 1 else 0.
