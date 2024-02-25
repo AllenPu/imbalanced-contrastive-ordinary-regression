@@ -189,8 +189,6 @@ class MultiTaskModel(nn.Module):
                 #    pred_list_gt.append(output_gt)
                 #
                 #logits_gt = torch.cat(pred_list_gt)
-            
-
             #
             #logits = torch.cat(pred_list) 
             #
@@ -216,7 +214,7 @@ class MultiTaskModel(nn.Module):
             loss = globals()[f"weighted_{self.args.loss}_loss"](
                 inputs=logits, targets=label / torch.tensor(5.).cuda(), weights=weight
             )
-            if not self.training:
+            if not self.training and self.args.group_wise :
                 loss_gt = globals()[f"weighted_{self.args.loss}_loss"](
                     inputs=logits_gt, targets=label / torch.tensor(5.).cuda(), weights=weight
                 )

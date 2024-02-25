@@ -152,7 +152,7 @@ if __name__ == '__main__':
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
-    write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
+    #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     print(' acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
         #
