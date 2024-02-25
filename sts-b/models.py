@@ -146,7 +146,7 @@ class MultiTaskModel(nn.Module):
             cls_layer = getattr(self, 'classifier' )
             group_ = cls_layer(pair_emb_s)
             #
-            #print(f' group predition {group_.shape}')
+            print(f' group predition {group_.shape}')
             #
             loss_ce = 0
             if self.args.ce:
@@ -175,7 +175,7 @@ class MultiTaskModel(nn.Module):
                 #    pred_layer_ = getattr(self, 'regressor' % group_gt[i].item())
                 #    pred_list.append(pred_layer_(pair_emb_s[i]))
                 reg_pred = self.regressor(pair_emb_s)
-                #print(f' reg_pred  is {reg_pred}')
+                print(f' reg_pred  is {reg_pred.shape}')
                 logits = torch.gather(reg_pred, index=group_gt.to(torch.int64),dim=1)
             else:
                 group_hat = torch.argmax(group_, dim=1).unsqueeze(-1)
