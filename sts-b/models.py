@@ -172,7 +172,7 @@ class MultiTaskModel(nn.Module):
             #pred_list_gt = []
             if self.training:
                 for i in range(bsz):
-                    pred_layer_ = getattr(self, 'regressor' % group_gt[i].item())
+                    pred_layer_ = getattr(self, 'regressor_%s_pred_layer' % group_gt[i].item())
                     pred_list.append(pred_layer_(pair_emb_s[i]))
                 reg_pred = self.regressor(pair_emb_s)
                 print(f' reg_pred  is {reg_pred.shape}')
