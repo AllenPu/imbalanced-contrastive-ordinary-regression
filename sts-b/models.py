@@ -182,26 +182,6 @@ class MultiTaskModel(nn.Module):
                 reg_pred = self.regressor(pair_emb_s)
                 logits = torch.gather(reg_pred, index=group_gt.to(torch.int64),dim=1)
                 logits_gt = torch.gather(reg_pred, index=group_hat.to(torch.int64),dim=1)
-                #for i in range(bsz):
-                #    pred_layer_ = getattr(
-                #        self, 'regressor_%s_pred_layer' % group_hat[i].item())
-                #    output_ = pred_layer_(pair_emb_s[i])
-                #    pred_list.append(output_)
-                    # gt
-                #    pred_layer_gt = getattr(
-                #        self, 'regressor_%s_pred_layer' % group_gt[i].item())
-                #    output_gt = pred_layer_gt(pair_emb_s[i])
-                #    pred_list_gt.append(output_gt)
-                #
-                #logits_gt = torch.cat(pred_list_gt)
-            #
-            #logits_ = torch.cat(pred_list) 
-            #print(f'  logits_ is {logits_.shape} logits is {logits.shape}')
-            #
-            #logits = logits.unsqueeze(-1)
-            #logits = logits.unsqueeze(-1)
-            #print(" logits shape ", logits.shape, " label shape ", label.shape )
-            #assert logits.shape == label.shape
         else:
             if self.training and self.FDS is not None:
                 if epoch >= self.start_smooth:
@@ -233,14 +213,7 @@ class MultiTaskModel(nn.Module):
         task.scorer(logits, label)
         if self.args.group_wise:
             out['loss'] = self.args.sigma*loss + loss_ce
-            #if not self.args.g_dis:
-            #    out['loss'] = self.args.sigma*loss + loss_ce
-            #else:
-            #    current_loss = self.args.sigma*loss + loss_ce
-            #    if current_loss < 1:
-            #        out['loss'] = loss + loss_ce
-            #    else:
-            #        out['loss'] = current_loss
+            #
             if not self.training:
                 logits_gt = logits_gt.squeeze(-1).data.cpu().numpy()
                 task.scorer_gt(logits_gt, label)

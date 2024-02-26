@@ -273,7 +273,7 @@ if __name__ == '__main__':
         results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
     #write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
     #            shot_dict_gt, shot_dict_cls, args)
-        if e%5 == 0 :
+        if e%5 == 0 or e == args.epoch-1:
             print(' current epoch is {}'.format(e))
             print(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
                     mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred)+"\n")
