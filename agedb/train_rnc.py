@@ -150,7 +150,7 @@ def test_group_acc(model, train_loader, prefix):
             y_chunk = torch.chunk(y_output, 2, dim=1)
             g_hat, y_pred = y_chunk[0], y_chunk[1]
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
-            pred.extend(g_hat.data.cpu().numpy())
+            pred.extend(g_index.data.cpu().numpy())
             labels.extend(g.data.cpu().numpy())
     pred = np.array(pred)
     labels = np.array(labels)
