@@ -18,7 +18,7 @@ from loss_contra import *
 from utils import *
 from train import test, write_log
 from util_devlove import shot_metrics, train_regressor, validate
-#from draw_tsne import *
+from draw_tsne import draw_tsne
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -154,9 +154,28 @@ def test_group_acc(model, train_loader, prefix):
             labels.extend(g.data.cpu().numpy())
     pred = np.array(pred)
     labels = np.array(labels)
-    np.save(f'pred{prefix}.npy', pred)
-    np.save(f'labels{prefix}.npy', labels)
+    np.save(f'./acc/pred{prefix}.npy', pred)
+    np.save(f'./acc/labels{prefix}.npy', labels)
 
+
+
+def draw_tsnes(model, train_loader):
+    tsne_z_pred = torch.Tensor(0)
+    tsne_g_pred = torch.Tensor(0)
+    tsne_g_gt = torch.Tensor(0)
+    for idx, (x,y,g) in enumerate(train_loader):
+        with torch.no_grad:
+            x, y = x.to(device), y.to(device)
+            y_output,  z = model(x)
+            y_chunk = torch.chunk(y_output, 2, dim=1)
+            g_hat, y_hat = y_chunk[0], y_chunk[1]
+            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+            tsne_z_pred = torch.cat((tsne_z_pred, z.data.cpu()), dim=0)
+            #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
+            tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
+            tsne_g_gt = torch.cat((tsne_g_gt, g.data.cpu()), dim=0)
+            draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args)
+        break
 
 
 
@@ -173,13 +192,13 @@ if __name__ == '__main__':
     if args.soft_label:
         prefix = '_soft_label'
     if args.la:
-        prefx = '_la'
+        prefix = '_la'
     if args.ce:
         prefix = '_ce'
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     model = train_epoch(model, train_loader, optimizer, args)
-    torch.save(model, f'best_{prefix}.pth')
+    torch.save(model, f'./models/best_{prefix}.pth')
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
