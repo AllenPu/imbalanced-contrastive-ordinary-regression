@@ -136,7 +136,7 @@ def train_encoder_one_epoch(model, optimizer, e, criterion, losses, args):
     for idx, (x, y, g, _) in enumerate(train_loader):
         #
         bsz = y.shape[0]
-        adjust_learning_rate(args, optimizer, e)
+        #adjust_learning_rate(args, optimizer, e)
         y, g = y.to(device), g.to(device)
         optimizer.zero_grad()
         #
@@ -243,7 +243,7 @@ def get_model(args):
     for (name, param) in model.encoder.named_parameters():
         param.requires_grad = False
     #
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+    optimizer = torch.optim.SGD(model.regessor.parameters(), lr=args.lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
