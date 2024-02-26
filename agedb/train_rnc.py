@@ -140,7 +140,7 @@ def train_epoch(model, train_loader, opt, args):
 
 def test_group_acc(model, train_loader, prefix):
     model = Encoder_regression(groups=args.groups, name='resnet18')
-    model.load_state_dict(torch.load(f'./models/best_{prefix}.pth'))
+    model = torch.load(f'./models/best_{prefix}.pth')
     model.eval()
     pred, labels = [], []
     for idx, (x, y, g) in enumerate(train_loader):
