@@ -4,7 +4,7 @@ import argparse
 import torch
 from network import ResNet_regression
 from datasets.agedb import AgeDB
-from train import get_dataset
+#from train import get_dataset
 
 
 parser = argparse.ArgumentParser('argument for training')
@@ -51,6 +51,7 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
 
 
 if __name__ == '__main__':
+    exec('from train import get_dataset')
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_dataset(
