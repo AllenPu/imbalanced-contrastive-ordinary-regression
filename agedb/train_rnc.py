@@ -138,6 +138,29 @@ def train_epoch(model, train_loader, opt, args):
 
 
 
+def test_group_acc(model, train_loader, prefix):
+    model = Encoder_regression(groups=args.groups, name='resnet18')
+    model.load_state_dict(torch.load(f'best_{prefix}.pth'))
+    model.eval()
+    pred, labels = [], []
+    for idx, (x, y, g) in enumerate(train_loader):
+        x, y, g = x.to(device), y.to(device), g.to(device)
+        with torch.no_grad():
+            y_output,  z = model(x)
+            y_chunk = torch.chunk(y_output, 2, dim=1)
+            g_hat, y_pred = y_chunk[0], y_chunk[1]
+            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+            pred.extend(g_hat.data.cpu().numpy())
+            labels.extend(g.data.cpu().numpy())
+    pred = np.array(pred)
+    labels = np.array(labels)
+    np.save(f'pred{prefix}.npy', pred)
+    np.save(f'labels{prefix}.npy', labels)
+
+
+
+
+
 
 
 
@@ -161,6 +184,7 @@ if __name__ == '__main__':
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
     #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
+    test_group_acc(model, train_loader, prefix)
     print(' acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
         #
