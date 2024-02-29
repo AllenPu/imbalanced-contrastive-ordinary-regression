@@ -296,7 +296,7 @@ def test_step(model, test_loader, train_labels, args):
     # CHECK THE PREDICTION ACC
     pred_g_gt, pred_g = [], []
     with torch.no_grad():
-        for idx, (inputs, targets, group,_) in enumerate(test_loader):
+        for idx, (inputs, targets, group) in enumerate(test_loader):
             #
             bsz = targets.shape[0]
             #
