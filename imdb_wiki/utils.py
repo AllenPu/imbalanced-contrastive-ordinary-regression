@@ -75,7 +75,7 @@ def shot_metric(pred, labels, train_labels, many_shot_thr=100, low_shot_thr=20):
     preds = np.hstack(pred)
     labels = np.hstack(labels)
     #
-    print(f' total length is {len(labels)}')
+    print(f' total length is {len(labels)} total pred is {len(preds)}')
     #
     train_labels = np.array(train_labels).astype(int)
     #
@@ -120,12 +120,13 @@ def shot_metric(pred, labels, train_labels, many_shot_thr=100, low_shot_thr=20):
             fw.append(i)
 
     print(f'many_shot_l1 count  {np.sum(many_shot_cnt)}')
-    print(f' many index {ma}')
+    #print(f' many index {ma}')
     print(f'median_shot_l1 count  {np.sum(median_shot_cnt)}')
-    print(f' md index {md}')
+    #print(f' md index {md}')
     print(f'low_shot_l1 count {np.sum(low_shot_cnt)}')
-    print(f' few index {fw}')
+    #print(f' few index {fw}')
     #
+    print(f' ')
     shot_dict = defaultdict(dict)
     shot_dict['many']['l1'] = np.sum(many_shot_l1) / np.sum(many_shot_cnt)
     shot_dict['many']['gmean'] = gmean(np.hstack(many_shot_gmean), axis=None).astype(float)
