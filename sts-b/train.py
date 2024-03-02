@@ -210,10 +210,6 @@ def main(arguments):
     trainer, train_params, opt_params = build_trainer(args, model, iterator)
     #print('tasks', tasks)
     # Train
-    _,_,_ = evaluate(
-        model, tasks, iterator, cuda_device=args.cuda, split="test", store_name=args.store_name, ranked_contra=args.ranked_contra)
-    assert 1== 23
-
     #
     if tasks and not args.evaluate:
         if args.retrain_fc and len(args.pretrained):
