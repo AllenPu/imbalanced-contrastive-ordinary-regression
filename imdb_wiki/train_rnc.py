@@ -266,6 +266,7 @@ if __name__ == '__main__':
     #else:
     #    criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
     #
+    model = model.to(device)
     acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \
             test_step(model, test_loader, train_labels, args)       
     assert 1 == 2
