@@ -18,4 +18,4 @@ echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 
-python train.py --lr 0.0005  --epoch 300 --aug sample --data_dir /home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data
+python train.py --lr 0.001  --epoch 300 --aug sample --data_dir /home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data
