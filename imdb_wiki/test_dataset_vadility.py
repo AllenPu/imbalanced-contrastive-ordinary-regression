@@ -27,6 +27,13 @@ test_loader = DataLoader(test_dataset, batch_size=256, shuffle=False,
                          num_workers=8, pin_memory=True, drop_last=False)
 print(f'done dataloader')
 
+
+for idx, (inputs, targets, group) in enumerate(val_loader):
+    inputs, targets, group = inputs.to(
+        device), targets.to(device), group.to(device)
+    print(f' {idx} done in test')
+
+'''
 for idx, (inputs, targets, group, _) in enumerate(val_loader):
     inputs, targets, group = inputs.to(
         device), targets.to(device), group.to(device)
@@ -38,3 +45,4 @@ for idx, (x, y, g, w) in enumerate(train_loader):
     x, y, g = x.to(device), y.to(device), g.to(device)
     if idx % 100 == 0:
         print(f' {idx} done in train')
+'''
