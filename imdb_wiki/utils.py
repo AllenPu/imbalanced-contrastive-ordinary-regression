@@ -119,14 +119,14 @@ def shot_metric(pred, labels, train_labels, many_shot_thr=100, low_shot_thr=20):
             median_shot_cnt.append(test_class_count[i])
             fw.append(i)
 
-    print(f'many_shot_l1 count  {np.sum(many_shot_cnt)}')
+    #print(f'many_shot_l1 count  {np.sum(many_shot_cnt)}')
     #print(f' many index {ma}')
-    print(f'median_shot_l1 count  {np.sum(median_shot_cnt)}')
+    #print(f'median_shot_l1 count  {np.sum(median_shot_cnt)}')
     #print(f' md index {md}')
-    print(f'low_shot_l1 count {np.sum(low_shot_cnt)}')
+    #print(f'low_shot_l1 count {np.sum(low_shot_cnt)}')
     #print(f' few index {fw}')
     #
-    print(f' ')
+    #print(f' ')
     shot_dict = defaultdict(dict)
     shot_dict['many']['l1'] = np.sum(many_shot_l1) / np.sum(many_shot_cnt)
     shot_dict['many']['gmean'] = gmean(np.hstack(many_shot_gmean), axis=None).astype(float)

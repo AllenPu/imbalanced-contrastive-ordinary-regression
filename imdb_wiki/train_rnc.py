@@ -80,7 +80,7 @@ parser.add_argument('--temp', type=float, help='temperature for contrastive loss
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
-parser.add_argument('--aug', action='store_true')
+parser.add_argument('--aug', default='sample',type=str, choices=['sample','group'])
 parser.add_argument('--aug_model', action='store_true')
 parser.add_argument('--epoch_cls', default=80,type=int)
 parser.add_argument('--epoch_reg', default=0, type=int)
@@ -209,12 +209,9 @@ def train_epoch(model, train_loader, opt, args):
                 #print(f' soft label loss is {loss_ce.item()}')
         if args.ce:
             loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
-                #print(f' ce loss is {loss_ce.item()}')
-            #if torch.isnan(loss_ce):
-            #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
-            #    assert 1==0
+
         loss_mse = mse(y_pred, y)
-            #print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
+
         loss = loss_mse + loss_ce
         loss.backward()
         opt.step()
@@ -258,26 +255,30 @@ if __name__ == '__main__':
     #
     train_loader, test_loader, val_loader, train_group_cls_num, train_labels = get_dataset(args)
     #
-    #model = Encoder('resnet50').to(device)
-    #optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,momentum=0.9, weight_decay=1e-4)
+    # start to the train encoder only
+    model = Encoder('resnet50').to(device)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,momentum=0.9, weight_decay=1e-4)
+    losses = AverageMeter()
+    if args.aug == 'sample':
+        # sample wise contrastive
+        criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2')
+    else:
+        # group wise contrastive
+        criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')    
+    for e in tqdm(range(args.epoch)):
+        model, losses  = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
+        if e%20 == 0:
+            print(f' In epoch {e} losses is {losses.avg}')
+        save_model(model, optimizer, args, save_file= f'ckpt_{str(args.aug)}_lr_{str(args.lr)}.pth')
+    #
+    '''
+    # start to train
     model, optimizer = get_model(args)
-    #if args.aug:
-    #    criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2')
-    #else:
-    #    criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
-    #
-    model = model.to(device)
-    acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \
-            test_step(model, test_loader, train_labels, args)       
-    assert 1 == 2
-    #
     for e in tqdm(range(args.epoch)):
         model = train_epoch(model, train_loader, optimizer, args)
         acc_gt, acc_pred, g_pred, mae_gt, mae_pred, shot_dict_pred, shot_dict_gt, shot_dict_cls, gmean_gt, gmean_pred, group_and_pred = \
             test_step(model, test_loader, train_labels, args)
         results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
-    #write_test_loggs('./output/'+store_name, results_test, shot_dict_pred,
-    #            shot_dict_gt, shot_dict_cls, args)
         if e%5 == 0 or e == args.epoch-1:
             print(' current epoch is {}'.format(e))
             print(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
@@ -298,12 +299,7 @@ if __name__ == '__main__':
             print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
                                                                          shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
         #
-
-
-        #model, losses = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
-        #if e%20 == 0:
-            #print(f' In epoch {e} losses is {losses.avg}')
-            #save_model(model, optimizer, args, save_file= f'ckpt_aug_{args.aug}.pth')
+    '''
     
 
 
