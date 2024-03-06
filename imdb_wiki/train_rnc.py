@@ -269,7 +269,7 @@ if __name__ == '__main__':
         model, losses  = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
         if e%20 == 0:
             print(f' In epoch {e} losses is {losses.avg}')
-        save_model(model, optimizer, args, save_file= f'ckpt_{str(args.aug)}_lr_{str(args.lr)}.pth')
+        save_model(model, optimizer, args, save_file= f'./checkpoint/ckpt_{str(args.aug)}_lr_{str(args.lr)}.pth')
     #
     '''
     # start to train
