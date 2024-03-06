@@ -28,7 +28,7 @@ test_loader = DataLoader(test_dataset, batch_size=256, shuffle=False,
 print(f'done dataloader')
 
 
-for idx, (inputs, targets, group) in enumerate(val_loader):
+for idx, (inputs, targets, group) in enumerate(test_loader):
     inputs, targets, group = inputs.to(
         device), targets.to(device), group.to(device)
     print(f' {idx} done in test')
