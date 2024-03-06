@@ -31,7 +31,8 @@ print(f'done dataloader')
 for idx, (inputs, targets, group) in enumerate(test_loader):
     inputs, targets, group = inputs.to(
         device), targets.to(device), group.to(device)
-    print(f' {idx} done in test')
+    if idx % 100 == 0:
+        print(f' {idx} done in test')
 
 '''
 for idx, (inputs, targets, group, _) in enumerate(val_loader):
