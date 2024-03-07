@@ -261,10 +261,10 @@ if __name__ == '__main__':
     losses = AverageMeter()
     if args.aug == 'sample':
         # sample wise contrastive
-        criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2')
+        criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2').to(device)
     else:
         # group wise contrastive
-        criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')   
+        criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2').to(device)    
     for e in tqdm(range(args.epoch)):
         model, losses  = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
         if e%20 == 0:
