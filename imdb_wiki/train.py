@@ -85,6 +85,8 @@ parser.add_argument('--diversity', type=float, default=0, help='scale of the div
 parser.add_argument('--smooth', type=bool, default=False, help='add guassain smooth to the ce for groups')
 parser.add_argument('--more_train', type=bool, default=False, help='add guassain smooth to the ce for groups')
 parser.add_argument('--aug', action='store_true', help='add strong data augmentation to data')
+parser.add_argument('--reg_loss', choices=['l1', 'l2', default='l1', help='which regression loss to  use'])
+
 
 
 
@@ -161,9 +163,6 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
     tol = 0
     tole = []
     #
-    if args.g_dis:
-        l1 = nn.MSELoss()
-    #
     for idx, (x, y, g, w) in enumerate(train_loader):
         bs = y.shape[0]
         opt.zero_grad()
@@ -205,36 +204,23 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         #print(f' mse loss is {mse_y.item()}')
         loss_list.append(args.sigma*mse_y)
         #
-        if args.la:
+        if args.la or args.ce:
             ce_g = ce_loss(g_hat, g.squeeze().long())
+            #
+            if args.smooth:
+                ce_g = ce_g * w.squeeze(-1)
+                ce_g = torch.mean(ce_g)
             loss_list.append(ce_g)
-        #
-        if args.ce:
-            ce_g = F.cross_entropy(g_hat, g.squeeze().long())
-            loss_list.append(ce_g)
-            #print(f'ce loss is {ce_g.item()}')
-        #
-        if args.smooth:
-            ce_g = F.cross_entropy(g_hat, g.squeeze().long(), reduction='none')
-            #print(f' shape of ce_g is {ce_g.shape} w shape is {w.shape}')
-            #ce_g_1 = (ce_g @ w )/bs
-            ce_g = ce_g * w.squeeze(-1)
-            #print(f' ce_g_1 shape is {ce_g_1.shape}')
-            ce_g = torch.mean(ce_g)
-            #print(f'ce_g is {ce_g} type is {type(ce_g)}')
-            loss_list.append(ce_g)
-            #print(f'smooth loss is {ce_g.item()}')
-        #
+                
+        # group wise contrastive loss
         if args.ranked_contra :
             ranked_contrastive_loss = args.contra_ratio * ce_loss(z, g)
             loss_list.append(ranked_contrastive_loss)  
-        #
+        # sample wise contrastive loss
         if args.aug:
             f1, f2 = torch.split(z, [bs, bs], dim=0)
             features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
             pairwise_contrastive_loss = args.contra_ratio * ce_loss(features, g)
-            #if e % 10 == 0:
-            #print(f' contrastive loss in {e} is {pairwise_contrastive_loss.item()}')
             loss_list.append(pairwise_contrastive_loss)  
         #
         if args.g_dis:
@@ -481,7 +467,13 @@ if __name__ == '__main__':
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_dataset(
         args)
     #
-    loss_mse = nn.MSELoss()
+    if args.reg_loss == 'l2':
+        loss_reg = nn.MSELoss()
+    if args.reg_loss == 'l1':
+        loss_reg = nn.L1Loss()
+    else:
+        print(f' no regression loss special')
+    #
     if args.ranked_contra :
         loss_ce = RnCLoss(temperature=args.temp).to(device)
         print(' Group wise Contrastive loss initiated ')
@@ -490,9 +482,8 @@ if __name__ == '__main__':
         print(' Pair wise Contrastive loss initiated ')            
     elif args.la:
         loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
-    else:
-        loss_ce = None
-    #oss_or = nn.MSELoss()
+    elif args.ce:
+        loss_ce = nn.CrossEntropyLoss()
     #
     model = ResNet_regression(args).to(device)
     #
@@ -513,7 +504,7 @@ if __name__ == '__main__':
     for e in tqdm(range(args.epoch)):
         #adjust_learning_rate(opt, e, args)
         model, tol = train_one_epoch(
-            model, train_loader, loss_ce, loss_mse, opt, args, e)
+            model, train_loader, loss_ce, loss_reg, opt, args, e)
         tole.append(tol)
         if e % 20 == 0 or e == (args.epoch - 1):
             cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
