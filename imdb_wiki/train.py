@@ -85,7 +85,7 @@ parser.add_argument('--diversity', type=float, default=0, help='scale of the div
 parser.add_argument('--smooth', type=bool, default=False, help='add guassain smooth to the ce for groups')
 parser.add_argument('--more_train', type=bool, default=False, help='add guassain smooth to the ce for groups')
 parser.add_argument('--aug', action='store_true', help='add strong data augmentation to data')
-parser.add_argument('--reg_loss', choices=['l1', 'l2'], default='l1', help='which regression loss to  use'])
+parser.add_argument('--reg_loss', choices=['l1', 'l2'], default='l1', help='which regression loss to  use')
 
 
 
