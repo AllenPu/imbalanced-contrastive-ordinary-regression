@@ -74,6 +74,7 @@ parser.add_argument('--gamma', type=float, default=5, help='tradeoff rate')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
 parser.add_argument('--ranked_contra', action='store_true')
+parser.add_argument('--aug', action='store_true', help='add strong data augmentation to data and pairwise sample contra')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', action='store_true')
@@ -84,7 +85,6 @@ parser.add_argument('--scale', type=float, default=1,
 parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss')
 parser.add_argument('--smooth', type=bool, default=False, help='add guassain smooth to the ce for groups')
 parser.add_argument('--more_train', type=bool, default=False, help='add guassain smooth to the ce for groups')
-parser.add_argument('--aug', action='store_true', help='add strong data augmentation to data')
 parser.add_argument('--reg_loss', choices=['l1', 'l2'], default='l1', help='which regression loss to  use')
 
 
