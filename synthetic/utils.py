@@ -93,9 +93,12 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
     oracle_df = make_dataframe(*unzip_dataloader(test_loader), 'Oracle')
 
     # plot oracle and predictions
-    sns.lineplot(data=pd.concat([oracle_df, *model_df], ignore_index=True), x='x', y='y', hue='Method', ax=ax1)
+    oracle_and_pred = pd.concat([oracle_df, *model_df], ignore_index=True)
+    print(f' the oracle_and_pred is in the shape {oracle_and_pred.shape}')
+    sns.lineplot(data=oracle_and_pred, x='x', y='y', hue='Method', ax=ax1)
 
     # plot data points
+    print(f' the shape of data points is {training_df.shape}')
     sns.scatterplot(data=training_df, x='x', y='y', color='#003ea1', alpha=0.2, linewidths=0, s=100, ax=ax1,
                     legend=False)
 
@@ -109,7 +112,8 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
     sns.histplot(data=training_df, y='y', kde=False, stat='density', hue='Method', common_norm=False, bins=bins, ax=ax2)
 
     # plot kdeplot
-    sns.kdeplot(data=pd.concat([training_df, *model_df, test_df], ignore_index=True), y='y', hue='Method',
+    kdeplot_df = pd.concat([training_df, *model_df, test_df], ignore_index=True)
+    sns.kdeplot(data=kdeplot_df, y='y', hue='Method',
                 common_norm=False, ax=ax2)
 
     ax2.set_ylim(Y_LB, Y_UB)
