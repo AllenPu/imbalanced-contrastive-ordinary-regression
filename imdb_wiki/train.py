@@ -78,7 +78,7 @@ parser.add_argument('--aug', type=bool, default=False, help='pairwise sample con
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', type=bool, default=False)
-parser.add_argument('--ce', type=bool, default=False,  help='if use the cross_entropy /la or not')
+parser.add_argument('--ce', type=bool, default=False, help='if use the cross_entropy or not')
 parser.add_argument('--output_file', default='./results_', help='the output directory')
 parser.add_argument('--scale', type=float, default=1,
                     help='scale of the sharpness in soft label')
