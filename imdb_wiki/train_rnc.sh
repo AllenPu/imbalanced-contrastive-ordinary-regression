@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=baselines
 #SBATCH --account=def-boyuwang
-#SBATCH --time=03-10:00
+#SBATCH --time=04-00:00
 #SBATCH --mem=32G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=6
@@ -18,4 +18,4 @@ echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 
-python train.py --lr 0.001  --epoch 300 --batch_size 256 --data_dir /home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data
+python train_rnc.py --lr 0.001  --epoch 400 --data_dir /home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data
