@@ -120,7 +120,12 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
     kdeplot_df = pd.concat([training_df, *model_df, test_df], ignore_index=True)
     sns.kdeplot(data=kdeplot_df, y='y', hue='Method',
                 common_norm=False, ax=ax2)
-
+    #
+    training_df.to_pickle('training_df.pkl')
+    test_df.to_pickle('test_df.pkl')
+    oracle_df.to_pickle('oracle_df.pkl')
+    model_df.to_pickle('model_df.pkl')
+    #
     ax2.set_ylim(Y_LB, Y_UB)
     ax2.set_xlabel(r'$p(y)$', fontsize=10)
     ax2.set_ylabel(r'$y$', fontsize=10)
