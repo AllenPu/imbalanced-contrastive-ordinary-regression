@@ -95,6 +95,7 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
 
     # plot oracle and predictions
     # shape is [7163,3]
+    print(f'df {model_df}')
     print(f'oracle_and_pred shape is {oracle_df.shape}, len {len(model_df)}')
     oracle_and_pred = pd.concat([oracle_df, *model_df], ignore_index=True)
     print(f' the oracle_and_pred is in the shape {oracle_and_pred.shape}')
