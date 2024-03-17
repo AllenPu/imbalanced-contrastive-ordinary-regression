@@ -168,8 +168,8 @@ def train_model(train_loader, eval_loader, test_loader):
         'BMC': BMCLossMD(init_noise_sigma=NOISE_SIGMA),
         # For learnable noise, we assume we don't know the ground truth noise scale
         # Therefore we multiply an offset 1.5 to the ground truth noise scale
-        'GAI Learnable Noise': GAILossMD(init_noise_sigma=1.5 * NOISE_SIGMA, gmm=gmm),
-        'BMC Learnable Noise': BMCLossMD(init_noise_sigma=1.5 * NOISE_SIGMA),
+        #'GAI Learnable Noise': GAILossMD(init_noise_sigma=1.5 * NOISE_SIGMA, gmm=gmm),
+        #'BMC Learnable Noise': BMCLossMD(init_noise_sigma=1.5 * NOISE_SIGMA),
     }
     criteria = {k: criteria[k] for k in CRITERIA_TO_USE}  # Only use selected criteria
 
