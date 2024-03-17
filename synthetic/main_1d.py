@@ -1,6 +1,6 @@
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
+import os
 from loss import *
 import copy
 from utils import *
@@ -14,8 +14,8 @@ TRAIN_DIST = 'normal'
 
 # =========== CONSTANTS ==============
 # Training
-#NUM_EPOCHS = 2000
-NUM_EPOCHS = 10
+NUM_EPOCHS = 2000
+#NUM_EPOCHS = 10
 PRINT_FREQ = NUM_EPOCHS // 5
 BATCH_SIZE = 256
 NUM_TRAIN_ITERS = 1024 // BATCH_SIZE
@@ -50,6 +50,18 @@ DIST_DICT = {
     'normal': torch.distributions.Normal(loc=Y_MEAN, scale=Y_SIGMA),
     'exp': torch.distributions.Exponential(EXP_RATE),
 }
+
+
+
+DIST_SHIFT = {
+    0 : 'High',
+    0.5 :  'High',
+    0.75 : 'Medium',
+    1. : 'Low',
+    1.5 : 'Medium',
+    2. : 'High'
+}
+
 
 CRITERIA_TO_USE = [
     'MSE',
@@ -193,8 +205,18 @@ def train_model(train_loader, eval_loader, test_loader):
 
 def main():
     train_loader, eval_loader, test_loader = prepare_data()
+    if TRAIN_DIST == 'normal':
+        level = str(DIST_SHIFT[EXP_RATE])
+    if TRAIN_DIST == 'exp':
+        level = str(DIST_SHIFT[Y_SIGMA])
+    else:
+        print(f' no path defined')
+        assert 1 ==  2
+    store_name = './TRAIN_DIST_' + str(TRAIN_DIST) + '_LEVEL_' + str(level) 
+    if not os.path.exists(store_name):
+        os.mkdir(store_name)
     models_trained = train_model(train_loader, eval_loader, test_loader)
-    visualize(models_trained, train_loader, test_loader, Y_LB, Y_UB, K, B)
+    visualize(models_trained, train_loader, test_loader, Y_LB, Y_UB, K, B, store_name)
 
 
 if __name__ == '__main__':

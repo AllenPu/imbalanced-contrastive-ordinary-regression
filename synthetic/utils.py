@@ -75,7 +75,7 @@ def unzip_dataloader(training_loader):
     return all_x, all_y
 
 
-def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
+def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_name='./'):
     sns.set_theme(palette='colorblind')
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
 
@@ -121,10 +121,10 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
     sns.kdeplot(data=kdeplot_df, y='y', hue='Method',
                 common_norm=False, ax=ax2)
     #
-    training_df.to_pickle('./1d/training_df.pkl')
-    test_df.to_pickle('./1d/test_df.pkl')
-    oracle_df.to_pickle('./1d/oracle_df.pkl')
-    model_df.to_pickle('./1d/model_df.pkl')
+    training_df.to_pickle(f'{store_name}/training_df.pkl')
+    test_df.to_pickle(f'{store_name}/test_df.pkl')
+    oracle_df.to_pickle(f'{store_name}/oracle_df.pkl')
+    model_df.to_pickle(f'{store_name}/model_df.pkl')
     #
     ax2.set_ylim(Y_LB, Y_UB)
     ax2.set_xlabel(r'$p(y)$', fontsize=10)
