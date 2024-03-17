@@ -19,4 +19,4 @@ echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 
 #python train.py --la --tau 0.5 --ranked_contra --lr $1  --groups $2 --epoch $3 --temp $4 
-python train.py --lr 0.001 --groups 20 --epoch 150 --sigma 2 --soft_label --ranked_contra --ce --output_file soft_0309_contra_
+python train.py --lr 0.001 --groups 20 --epoch 150 --sigma 2 --soft_label --ranked_contra --ce --output_file soft_0317_contra_
