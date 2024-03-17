@@ -58,8 +58,6 @@ parser.add_argument('--group_mode', default='i_g', type=str,
 parser.add_argument('--schedule', type=int, nargs='*',
                     default=[60, 80], help='lr schedule (when to drop lr by 10x)')
 #parser.add_argument('--regulize', type=bool, default=False, help='if to regulaize the previous classification results')
-parser.add_argument('--la', action='store_true',
-                    help='if use logit adj to train the imbalance')
 parser.add_argument('--fl', type=bool, default=False,
                     help='if use focal loss to train the imbalance')
 parser.add_argument('--model_depth', type=int, default=50,
@@ -79,6 +77,8 @@ parser.add_argument('--temp', type=float, help='temperature for contrastive loss
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', type=bool, default=False)
 parser.add_argument('--ce', type=bool, default=False, help='if use the cross_entropy or not')
+parser.add_argument('--la', type=bool, default=False,
+                    help='if use logit adj to train the imbalance')
 parser.add_argument('--output_file', default='./results_', help='the output directory')
 parser.add_argument('--scale', type=float, default=1,
                     help='scale of the sharpness in soft label')
