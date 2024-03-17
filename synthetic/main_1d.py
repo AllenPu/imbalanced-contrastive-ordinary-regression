@@ -15,7 +15,7 @@ TRAIN_DIST = 'normal'
 # =========== CONSTANTS ==============
 # Training
 #NUM_EPOCHS = 2000
-NUM_EPOCHS = 0
+NUM_EPOCHS = 1
 PRINT_FREQ = NUM_EPOCHS // 5
 BATCH_SIZE = 256
 NUM_TRAIN_ITERS = 1024 // BATCH_SIZE
