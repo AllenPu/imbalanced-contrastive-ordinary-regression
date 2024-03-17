@@ -73,11 +73,11 @@ parser.add_argument('--g_dis', type=bool, default=False,
 parser.add_argument('--gamma', type=float, default=5, help='tradeoff rate')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
-parser.add_argument('--ranked_contra', action='store_true')
-parser.add_argument('--aug', action='store_true', help='add strong data augmentation to data and pairwise sample contra')
+parser.add_argument('--ranked_contra', type=bool, default=False, help='group  wise contrastive')
+parser.add_argument('--aug', type=bool, default=False, help='pairwise sample contra')
 parser.add_argument('--temp', type=float, help='temperature for contrastive loss', default=0.07)
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
-parser.add_argument('--soft_label', action='store_true')
+parser.add_argument('--soft_label', type=bool, default=False)
 parser.add_argument('--ce', type=bool, default=False,  help='if use the cross_entropy /la or not')
 parser.add_argument('--output_file', default='./results_', help='the output directory')
 parser.add_argument('--scale', type=float, default=1,
@@ -148,7 +148,7 @@ def get_dataset(args):
     return train_loader, test_loader, val_loader, train_group_cls_num, train_labels
 
 
-def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
+def train_one_epoch(model, train_loader, mse_loss, opt, args, e=0):
     #sigma, la, g_dis, gamma, ranked_contra, contra_ratio, soft_label, ce = \
     #    args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.soft_label, args.ce
     ranges = int(100/args.groups)
@@ -162,6 +162,20 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
     #
     tol = 0
     tole = []
+    #
+    if e == 0:
+        if args.ranked_contra :
+            group_loss = RnCLoss(temperature=args.temp).to(device)
+            print(f' Group wise Contrastive loss initiated ')
+        elif args.aug:
+            sample_loss = RnCLoss_pairwise(temperature=args.temp).to(device)
+            print(f' Pair wise Contrastive loss initiated ')            
+        elif args.la:
+            print(f' Logit adjustment initiated ')
+            la_loss = LAloss(cls_num_list, tau=args.tau).to(device)
+        elif args.ce:
+            print(f' Cross Entropy initiated ')
+            ce_loss = nn.CrossEntropyLoss()
     #
     for idx, (x, y, g, w) in enumerate(train_loader):
         bs = y.shape[0]
@@ -201,26 +215,28 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, e=0):
         else:
             mse_y = mse_loss(y_predicted, y)
         #
-        #print(f' mse loss is {mse_y.item()}')
         loss_list.append(args.sigma*mse_y)
         #
-        if args.la or args.ce:
+        if args.la:
+            la_g = la_loss(g_hat, g.squeeze().long())
+            loss_list.append(la_g)
+        #
+        if args.ce:
             ce_g = ce_loss(g_hat, g.squeeze().long())
             #
             if args.smooth:
                 ce_g = ce_g * w.squeeze(-1)
                 ce_g = torch.mean(ce_g)
-            loss_list.append(ce_g)
-                
+            loss_list.append(ce_g)             
         # group wise contrastive loss
         if args.ranked_contra :
-            ranked_contrastive_loss = args.contra_ratio * ce_loss(z, g)
+            ranked_contrastive_loss = args.contra_ratio * group_loss(z, g)
             loss_list.append(ranked_contrastive_loss)  
         # sample wise contrastive loss
         if args.aug:
             f1, f2 = torch.split(z, [bs, bs], dim=0)
             features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
-            pairwise_contrastive_loss = args.contra_ratio * ce_loss(features, g)
+            pairwise_contrastive_loss = args.contra_ratio * sample_loss(features, g)
             loss_list.append(pairwise_contrastive_loss)  
         #
         if args.g_dis:
@@ -474,17 +490,6 @@ if __name__ == '__main__':
     else:
         print(f' no regression loss special')
     #
-    if args.ranked_contra :
-        loss_ce = RnCLoss(temperature=args.temp).to(device)
-        print(' Group wise Contrastive loss initiated ')
-    elif args.aug:
-        loss_ce = RnCLoss_pairwise(temperature=args.temp).to(device)
-        print(' Pair wise Contrastive loss initiated ')            
-    elif args.la:
-        loss_ce = LAloss(cls_num_list, tau=args.tau).to(device)
-    elif args.ce:
-        loss_ce = nn.CrossEntropyLoss()
-    #
     model = ResNet_regression(args).to(device)
     #
     model_val = ResNet_regression(args).to(device)
@@ -504,7 +509,7 @@ if __name__ == '__main__':
     for e in tqdm(range(args.epoch)):
         #adjust_learning_rate(opt, e, args)
         model, tol = train_one_epoch(
-            model, train_loader, loss_ce, loss_reg, opt, args, e)
+            model, train_loader, loss_reg, opt, args, e)
         tole.append(tol)
         if e % 20 == 0 or e == (args.epoch - 1):
             cls_acc, reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
