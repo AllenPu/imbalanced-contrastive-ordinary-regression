@@ -83,10 +83,12 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
     model_df = []
     x_test, _ = unzip_dataloader(test_loader)
     for model_name in model_dict:
+        print(f' model name is {model_name}')
         model = model_dict[model_name]
         model.eval()
         y = model(x_test)
         model_df.append(make_dataframe(x_test, y, model_name))
+    print(f' model df shape is {model_df.shape}')
 
     training_df = make_dataframe(*unzip_dataloader(train_loader), 'Training')
     test_df = make_dataframe(*unzip_dataloader(test_loader), 'Testing')
