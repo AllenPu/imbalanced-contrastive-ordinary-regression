@@ -88,7 +88,6 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
         model.eval()
         y = model(x_test)
         model_df.append(make_dataframe(x_test, y, model_name))
-    print(f' model df shape is {model_df.shape}')
 
     training_df = make_dataframe(*unzip_dataloader(train_loader), 'Training')
     test_df = make_dataframe(*unzip_dataloader(test_loader), 'Testing')
@@ -96,6 +95,7 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B):
 
     # plot oracle and predictions
     # shape is [7163,3]
+    print(f'oracle_and_pred shape is {oracle_df.shape}, len {len(model_df)}')
     oracle_and_pred = pd.concat([oracle_df, *model_df], ignore_index=True)
     print(f' the oracle_and_pred is in the shape {oracle_and_pred.shape}')
     sns.lineplot(data=oracle_and_pred, x='x', y='y', hue='Method', ax=ax1)

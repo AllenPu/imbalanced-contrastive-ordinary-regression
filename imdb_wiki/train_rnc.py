@@ -131,39 +131,6 @@ def get_dataset(args):
 
 
 
-def train_encoder_one_epoch(model, optimizer, e, criterion, losses, args):
-    #
-    for idx, (x, y, g, _) in enumerate(train_loader):
-        #
-        bsz = y.shape[0]
-        #adjust_learning_rate(args, optimizer, e)
-        y, g = y.to(device), g.to(device)
-        optimizer.zero_grad()
-        #
-        if args.aug:
-            images = torch.cat([x[0], x[1]], dim=0).to(device)
-            align = y
-            features = model(images)
-            f1, f2 = torch.split(features, [bsz, bsz], dim=0)
-            features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
-        else:
-            images = x.to(device)
-            align = g
-            features = model(images)
-        #features = model(images)
-        #f1, f2 = torch.split(features, [bsz, bsz], dim=0)
-        #features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
-
-        loss = criterion(features, align)
-        losses.update(loss.item(), bsz)
-
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-    return model, losses
-            
-
-
 
 def adjust_learning_rate(args, optimizer, epoch):
     lr = args.lr
@@ -219,6 +186,38 @@ def train_epoch(model, train_loader, opt, args):
     return model
 
 
+
+def train_encoder_one_epoch(model, optimizer, e, criterion, losses, args):
+    #
+    for idx, (x, y, g, _) in enumerate(train_loader):
+        #
+        bsz = y.shape[0]
+        #adjust_learning_rate(args, optimizer, e)
+        y, g = y.to(device), g.to(device)
+        optimizer.zero_grad()
+        #
+        if args.aug == 'sample':
+            images = torch.cat([x[0], x[1]], dim=0).to(device)
+            align = y
+            features = model(images)
+            f1, f2 = torch.split(features, [bsz, bsz], dim=0)
+            features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
+        else:
+            images = x.to(device)
+            align = g
+            features = model(images)
+        #features = model(images)
+        #f1, f2 = torch.split(features, [bsz, bsz], dim=0)
+        #features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
+
+        loss = criterion(features, align)
+        losses.update(loss.item(), bsz)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    return model, losses
+            
 
 
 def get_model(args):
