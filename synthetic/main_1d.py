@@ -217,12 +217,12 @@ def iterative_run():
     for TRAIN_DIST in ['normal', 'exp']:
         if TRAIN_DIST == 'normal':
             for Y_SIGMA in [0.5, 0.75, 1.] :
-                level = str(DIST_SHIFT[EXP_RATE])
+                level = str(DIST_SHIFT[Y_SIGMA])
                 train_loader, eval_loader, test_loader = prepare_data()
                 main(train_loader, eval_loader, test_loader, TRAIN_DIST, level)
         elif TRAIN_DIST == 'exp':
             for EXP_RATE in [2, 1.5, 1.]:
-                level = str(DIST_SHIFT[Y_SIGMA])
+                level = str(DIST_SHIFT[EXP_RATE])
                 train_loader, eval_loader, test_loader = prepare_data()
                 main(train_loader, eval_loader, test_loader, TRAIN_DIST, level)
         else:
