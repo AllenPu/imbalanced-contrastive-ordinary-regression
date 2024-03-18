@@ -204,7 +204,7 @@ def train_model(train_loader, eval_loader, test_loader):
 
 
 def main():
-    print(TRAIN_DIST)
+    print(TRAIN_DIST, type(TRAIN_DIST))
     train_loader, eval_loader, test_loader = prepare_data()
     if TRAIN_DIST is 'normal':
         level = str(DIST_SHIFT[EXP_RATE])
