@@ -7,7 +7,7 @@ from utils import *
 
 # Specify which training distribution to use
 # here is the main parameter
-TRAIN_DIST = 'normal'
+# TRAIN_DIST = 'normal'
 # TRAIN_DIST = 'exp'
 
 
@@ -203,16 +203,8 @@ def train_model(train_loader, eval_loader, test_loader):
     return models_trained
 
 
-def main():
-    print(TRAIN_DIST, type(TRAIN_DIST))
-    train_loader, eval_loader, test_loader = prepare_data()
-    if TRAIN_DIST == 'normal':
-        level = str(DIST_SHIFT[EXP_RATE])
-    elif TRAIN_DIST == 'exp':
-        level = str(DIST_SHIFT[Y_SIGMA])
-    else:
-        print(f' no path defined')
-        assert 1 ==  2
+def main(train_loader, eval_loader, test_loader, TRAIN_DIST, level):
+    #train_loader, eval_loader, test_loader = prepare_data()
     store_name = './TRAIN_DIST_' + str(TRAIN_DIST) + '_LEVEL_' + str(level) 
     if not os.path.exists(store_name):
         os.mkdir(store_name)
@@ -220,5 +212,25 @@ def main():
     visualize(models_trained, train_loader, test_loader, Y_LB, Y_UB, K, B, store_name)
 
 
+
+def iterative_run():
+    for TRAIN_DIST in ['normal', 'exp']:
+        if TRAIN_DIST == 'normal':
+            for Y_SIGMA in [0.5, 0.75, 1.] :
+                level = str(DIST_SHIFT[EXP_RATE])
+                train_loader, eval_loader, test_loader = prepare_data()
+                main(train_loader, eval_loader, test_loader, TRAIN_DIST, level)
+        elif TRAIN_DIST == 'exp':
+            for EXP_RATE in [2, 1.5, 1.]:
+                level = str(DIST_SHIFT[Y_SIGMA])
+                train_loader, eval_loader, test_loader = prepare_data()
+                main(train_loader, eval_loader, test_loader, TRAIN_DIST, level)
+        else:
+            print(f' no path defined')
+            assert 1 ==  2
+
+
+
 if __name__ == '__main__':
-    main()
+    #main()
+    iterative_run()

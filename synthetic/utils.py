@@ -95,15 +95,15 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
 
     # plot oracle and predictions
     # shape is [7163,3]
-    print(f'df {model_df}')
-    print(f'oracle_and_pred shape is {oracle_df.shape}')
+    #print(f'df {model_df}')
+    #print(f'oracle_and_pred shape is {oracle_df.shape}')
     oracle_and_pred = pd.concat([oracle_df, *model_df], ignore_index=True)
-    print(f' the oracle_and_pred is in the shape {oracle_and_pred.shape}')
+    #print(f' the oracle_and_pred is in the shape {oracle_and_pred.shape}')
     sns.lineplot(data=oracle_and_pred, x='x', y='y', hue='Method', ax=ax1)
 
     # plot data points
     # shape is [1024, 3]
-    print(f' the shape of data points is {training_df.shape}')
+    #print(f' the shape of data points is {training_df.shape}')
     sns.scatterplot(data=training_df, x='x', y='y', color='#003ea1', alpha=0.2, linewidths=0, s=100, ax=ax1,
                     legend=False)
 
