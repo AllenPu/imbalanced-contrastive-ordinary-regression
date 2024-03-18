@@ -68,8 +68,8 @@ CRITERIA_TO_USE = [
     'Reweight',
     'GAI',
     'BMC',
-    'GAI Learnable Noise',
-    'BMC Learnable Noise'
+    #'GAI Learnable Noise',
+    #'BMC Learnable Noise'
 ]
 
 
@@ -206,9 +206,9 @@ def train_model(train_loader, eval_loader, test_loader):
 def main():
     print(TRAIN_DIST, type(TRAIN_DIST))
     train_loader, eval_loader, test_loader = prepare_data()
-    if TRAIN_DIST is 'normal':
+    if TRAIN_DIST == 'normal':
         level = str(DIST_SHIFT[EXP_RATE])
-    if TRAIN_DIST is 'exp':
+    if TRAIN_DIST == 'exp':
         level = str(DIST_SHIFT[Y_SIGMA])
     else:
         print(f' no path defined')
