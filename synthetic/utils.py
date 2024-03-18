@@ -124,7 +124,8 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
     training_df.to_pickle(f'{store_name}/training_df.pkl')
     test_df.to_pickle(f'{store_name}/test_df.pkl')
     oracle_df.to_pickle(f'{store_name}/oracle_df.pkl')
-    model_df.to_pickle(f'{store_name}/model_df.pkl')
+    for i in range(len(model_df)):
+        model_df[i].to_pickle(f'{store_name}/model_df_{i}.pkl')
     #
     ax2.set_ylim(Y_LB, Y_UB)
     ax2.set_xlabel(r'$p(y)$', fontsize=10)
