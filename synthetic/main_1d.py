@@ -206,9 +206,9 @@ def train_model(train_loader, eval_loader, test_loader):
 def main():
     print(TRAIN_DIST)
     train_loader, eval_loader, test_loader = prepare_data()
-    if TRAIN_DIST == 'normal':
+    if TRAIN_DIST is 'normal':
         level = str(DIST_SHIFT[EXP_RATE])
-    if TRAIN_DIST == 'exp':
+    if TRAIN_DIST is 'exp':
         level = str(DIST_SHIFT[Y_SIGMA])
     else:
         print(f' no path defined')
