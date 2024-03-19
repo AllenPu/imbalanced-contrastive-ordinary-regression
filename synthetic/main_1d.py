@@ -7,7 +7,7 @@ from utils import *
 
 # Specify which training distribution to use
 # here is the main parameter
-# TRAIN_DIST = 'normal'
+TRAIN_DIST = 'normal'
 # TRAIN_DIST = 'exp'
 
 
@@ -91,6 +91,7 @@ class LinearModel(nn.Module):
 
 def prepare_data():
     # Training label samples
+    print(f'TRAIN_DIST {TRAIN_DIST}')
     y_train = DIST_DICT[TRAIN_DIST].sample((2 * NUM_TRAIN_SAMPLES, 1))
     y_train = y_train[y_train >= Y_LB]  # trim
     y_train = y_train[y_train <= Y_UB]  # trim
