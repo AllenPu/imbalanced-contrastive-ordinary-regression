@@ -223,7 +223,7 @@ def iterative_run():
                 main(train_loader, eval_loader, test_loader, TRAIN_DIST, level)
         elif TRAIN_DIST == 'exp':
             for EXP_RATE in [2, 1.5, 1.]:
-                level = str(DIST_SHIFT[EXP_RATE])
+                level = str(DIST_SHIFT[EXP_RATE]) + '_2'
                 train_loader, eval_loader, test_loader = prepare_data()
                 main(train_loader, eval_loader, test_loader, TRAIN_DIST, level)
         else:
