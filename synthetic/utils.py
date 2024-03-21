@@ -6,6 +6,7 @@ import seaborn as sns
 import pandas as pd
 import scipy.stats as st
 from sklearn.mixture import GaussianMixture
+import pickle
 
 
 class AverageMeter(object):
@@ -81,17 +82,35 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
 
     # Get model outputs
     model_df = []
+    vars = {}
+    current_var = []
     x_test, _ = unzip_dataloader(test_loader)
     for model_name in model_dict:
         print(f' model name is {model_name}')
         model = model_dict[model_name]
         model.eval()
         y = model(x_test)
-        model_df.append(make_dataframe(x_test, y, model_name))
+        df_ = make_dataframe(x_test, y, model_name)
+        model_df.append(df_)
+        print(f' the {model_name} has the variance of y is {np.var(df_['y'])}')
+        models = {}
+        for trial in range(10):
+            model.eval()
+            y = model(x_test)
+            models[model_name] = models.get(model_name,[]).append(make_dataframe(x_test, y, model_name+f'_trials_{trial}'))
+        for i in range(len(models[0])):
+            for model_name in model_dict:
+                for j in range(10):
+                    current_var.append(models[model_name][j]['y'][i])
+                vars[model_name] = np.var(current_var)
+    
+               
+
 
     training_df = make_dataframe(*unzip_dataloader(train_loader), 'Training')
     test_df = make_dataframe(*unzip_dataloader(test_loader), 'Testing')
     oracle_df = make_dataframe(*unzip_dataloader(test_loader), 'Oracle')
+
 
     # plot oracle and predictions
     # shape is [7163,3]
@@ -126,6 +145,9 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
     oracle_df.to_pickle(f'{store_name}/oracle_df.pkl')
     for i in range(len(model_df)):
         model_df[i].to_pickle(f'{store_name}/model_df_{i}.pkl')
+    with open('./vars.pkl', 'wb') as f:
+        pickle.dump(vars, f)
+    
     #
     ax2.set_ylim(Y_LB, Y_UB)
     ax2.set_xlabel(r'$p(y)$', fontsize=10)
