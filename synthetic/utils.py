@@ -146,7 +146,7 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
     oracle_df.to_pickle(f'{store_name}/oracle_df.pkl')
     for i in range(len(model_df)):
         model_df[i].to_pickle(f'{store_name}/model_df_{i}.pkl')
-    with open('./vars.pkl', 'wb') as f:
+    with open('./vars_{store_name}.pkl', 'wb') as f:
         pickle.dump(vars, f)
     
     #
