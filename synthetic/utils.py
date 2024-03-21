@@ -92,7 +92,9 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
         y = model(x_test)
         df_ = make_dataframe(x_test, y, model_name)
         model_df.append(df_)
+        print(df_['y'])
         print(f' the {model_name} has the variance of y is {np.var(df_['y'])}')
+        assert 1==2
         models = {}
         for trial in range(10):
             model.eval()
