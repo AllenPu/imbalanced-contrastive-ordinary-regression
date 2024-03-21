@@ -207,8 +207,8 @@ def train_model(train_loader, eval_loader, test_loader):
 def main(train_loader, eval_loader, test_loader, TRAIN_DIST, level):
     #train_loader, eval_loader, test_loader = prepare_data()
     store_name = './TRAIN_DIST_' + str(TRAIN_DIST) + '_LEVEL_' + str(level) 
-    #if not os.path.exists(store_name):
-    #    os.mkdir(store_name)
+    if not os.path.exists(store_name):
+        os.mkdir(store_name)
     models_trained = train_model(train_loader, eval_loader, test_loader)
     visualize(models_trained, train_loader, test_loader, Y_LB, Y_UB, K, B, store_name)
 
