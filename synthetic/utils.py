@@ -92,7 +92,7 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
         y = model(x_test)
         df_ = make_dataframe(x_test, y, model_name)
         model_df.append(df_)
-        y_var = np.var(df_['y_'])
+        y_var = np.var(df_['y'])
         print(f' the {model_name} has the variance of y as {y_var}')
         models = {}
         for trial in range(10):
