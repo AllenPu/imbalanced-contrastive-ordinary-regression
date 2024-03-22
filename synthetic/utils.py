@@ -98,7 +98,7 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
         for trial in range(10):
             model.eval()
             y = model(x_test)
-            models[model_name] = models.get(model_name,[]).append(make_dataframe(x_test, y, model_name+f'_trials_{trial}'))
+            models[model_name] = models.get(model_name, []).append(make_dataframe(x_test, y, model_name+f'_trials_{trial}'))
         for i in range(len(models[0])):
             for model_name in model_dict:
                 for j in range(10):
