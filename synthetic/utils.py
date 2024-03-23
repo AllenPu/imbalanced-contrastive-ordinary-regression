@@ -104,10 +104,9 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
         print(f'-------------------------------------------------------------------')
         #
         for i in range(len(models[model_name])):
-            for model_name in model_dict:
-                for j in range(trials):
-                    current_var.append(models[model_name][j]['y'][i])
-                vars[model_name] = np.var(current_var)
+            for j in range(trials):
+                current_var.append(models[model_name][j]['y'][i])
+            vars[model_name] = np.var(current_var)
         print(f'-------------------------------------------------------------------')
         assert 1 == 2
     
