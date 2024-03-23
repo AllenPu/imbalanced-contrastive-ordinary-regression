@@ -100,6 +100,7 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
             y = model(x_test)
             #
             cur_list = models.get(model_name, [])
+            print(f'cur list is {cur_list} type is {type(cur_list)}')
             models[model_name] = cur_list.append(make_dataframe(x_test, y, model_name+f'_trials_{trial}'))
         for i in range(len(models[0])):
             for model_name in model_dict:
