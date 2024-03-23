@@ -101,6 +101,7 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
             #
             cur_list.append(make_dataframe(x_test, y, model_name+f'_trials_{trial}'))
         models[model_name] = cur_list
+        print(f'-------------------------------------------------------------------')
         #
         for i in range(len(models[0])):
             for model_name in model_dict:
