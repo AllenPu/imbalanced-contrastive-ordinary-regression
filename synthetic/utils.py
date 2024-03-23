@@ -94,15 +94,14 @@ def visualize(model_dict, train_loader, test_loader, Y_LB, Y_UB, K, B, store_nam
         model_df.append(df_)
         y_var = np.var(df_['y'])
         print(f' the {model_name} has the variance of y as {y_var}')
-        models = {}
+        models, cur_list = {}, []
         for trial in range(10):
             model.eval()
             y = model(x_test)
             #
-            cur_list = models.get(model_name, [])
-            print(f'cur list is {cur_list} type is {type(cur_list)}')
-            print(f'y is {y}')
-            models[model_name] = cur_list.append(make_dataframe(x_test, y, model_name+f'_trials_{trial}'))
+            cur_list.append(make_dataframe(x_test, y, model_name+f'_trials_{trial}'))
+        models[model_name] = cur_list
+        #
         for i in range(len(models[0])):
             for model_name in model_dict:
                 for j in range(10):
