@@ -199,7 +199,7 @@ if __name__ == '__main__':
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
     model = train_epoch(model, train_loader, optimizer, args)
-    torch.save(model, f'./models/best_{prefix}.pth')
+    #torch.save(model, f'./models/best_{prefix}.pth')
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
