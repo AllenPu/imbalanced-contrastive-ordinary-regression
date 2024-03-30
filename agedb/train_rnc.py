@@ -197,16 +197,14 @@ if __name__ == '__main__':
         prefix = '_ce'
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
-    '''
+    print(f' Start to train !')
     model = train_epoch(model, train_loader, optimizer, args)
     torch.save(model, f'./models/best_{prefix}.pth')
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
-    '''
     #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
-    test_group_acc(model, train_loader, prefix)
-    '''
+    #test_group_acc(model, train_loader, prefix)
     print(' acc of the group assinment is {}, \
             mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
         #
@@ -222,7 +220,7 @@ if __name__ == '__main__':
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
-    '''
+    
     '''
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
