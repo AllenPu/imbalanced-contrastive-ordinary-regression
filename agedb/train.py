@@ -240,7 +240,7 @@ def test(model, test_loader, train_labels, args):
             #
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
             # newly added
-            group.extend(g_index.cpu().numpy())
+            group.extend(g.cpu().numpy())
             group_pred.extend(g_index.cpu().numpy())
             #
             y_hat = torch.gather(y_pred, dim=1, index=g_index)
