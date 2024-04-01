@@ -223,7 +223,7 @@ def test(model, test_loader, train_labels, args):
     criterion_gmean_pred = nn.L1Loss(reduction='none')
     gmean_loss_all_gt, gmean_loss_all_pred = [], [] 
     #
-    pred_gt, pred, labels = [], [], []
+    pred_gt, pred, labels, group, group_pred = [], [], [], [], []
     #
     with torch.no_grad():
         for idx, (x, y, g) in enumerate(test_loader):
@@ -239,6 +239,9 @@ def test(model, test_loader, train_labels, args):
             g_hat, y_pred = y_chunk[0], y_chunk[1]
             #
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+            # newly added
+            group.extend(g_index.cpu().numpy())
+            group_pred.extend(g_index.cpu().numpy())
             #
             y_hat = torch.gather(y_pred, dim=1, index=g_index)
             y_pred_gt = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
@@ -266,7 +269,8 @@ def test(model, test_loader, train_labels, args):
         shot_pred = shot_metric(pred, labels, train_labels)
         shot_pred_gt = shot_metric(pred_gt, labels, train_labels)
 
-    return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred
+    return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred, \
+         np.hstack(group), np.hstack(group_pred) #newly added
 
 
 def validate(model, val_loader, train_labels):
