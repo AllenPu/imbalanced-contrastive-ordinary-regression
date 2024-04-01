@@ -204,9 +204,9 @@ if __name__ == '__main__':
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
     #
-    print(f'shape is {g.shape}')
+    g, g_pred = torch.Tensor(g), torch.Tensor(g_pred)
     pred_abs = torch.abs(g - g_pred)
-    print(f'a')
+    print(f' shape {pred_abs.shape}')
     #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     #test_group_acc(model, train_loader, prefix)
     print(' acc of the group assinment is {}, \
