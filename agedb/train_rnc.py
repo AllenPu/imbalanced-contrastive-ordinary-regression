@@ -206,7 +206,12 @@ if __name__ == '__main__':
     #
     g, g_pred = torch.Tensor(g), torch.Tensor(g_pred)
     pred_abs = torch.abs(g - g_pred).tolist()
-    print(f' shape {pred_abs.shape}')
+    print(f' 0 is {pred_abs.count(0)}')
+    print(f' 1 is {pred_abs.count(1)}')
+    print(f' 2 is {pred_abs.count(2)}')
+    print(f' 3 is {pred_abs.count(3)}')
+    print(f' 4 is {pred_abs.count(4)}')
+    print(f' 5 is {pred_abs.count(5)}')
     #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     #test_group_acc(model, train_loader, prefix)
     print(' acc of the group assinment is {}, \
