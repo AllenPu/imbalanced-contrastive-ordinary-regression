@@ -240,8 +240,8 @@ def test(model, test_loader, train_labels, args):
             #
             g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
             # newly added
-            group.extend(g.cpu().numpy())
-            group_pred.extend(g_index.cpu().numpy())
+            #group.extend(g.cpu().numpy())
+            #group_pred.extend(g_index.cpu().numpy())
             #
             y_hat = torch.gather(y_pred, dim=1, index=g_index)
             y_pred_gt = torch.gather(y_pred, dim=1, index=g.to(torch.int64))
@@ -269,8 +269,8 @@ def test(model, test_loader, train_labels, args):
         shot_pred = shot_metric(pred, labels, train_labels)
         shot_pred_gt = shot_metric(pred_gt, labels, train_labels)
 
-    return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred, \
-         np.hstack(group), np.hstack(group_pred) #newly added
+    return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred
+        # np.hstack(group), np.hstack(group_pred) #newly added
 
 
 def validate(model, val_loader, train_labels):

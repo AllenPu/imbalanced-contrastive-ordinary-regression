@@ -200,19 +200,9 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, optimizer, args)
     #torch.save(model, f'./models/best_{prefix}.pth')
-    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred, g, g_pred = test(
+    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred, = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
-    #
-    g, g_pred = torch.Tensor(g), torch.Tensor(g_pred)
-    pred_abs = torch.abs(g - g_pred).tolist()
-    print(f' 0 is {pred_abs.count(0)}')
-    print(f' 1 is {pred_abs.count(1)}')
-    print(f' 2 is {pred_abs.count(2)}')
-    print(f' 3 is {pred_abs.count(3)}')
-    print(f' 4 is {pred_abs.count(4)}')
-    print(f' 5 is {pred_abs.count(5)}')
-    assert 1 == 2
     #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     #test_group_acc(model, train_loader, prefix)
     print(' acc of the group assinment is {}, \
