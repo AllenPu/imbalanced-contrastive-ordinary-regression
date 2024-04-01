@@ -212,6 +212,7 @@ if __name__ == '__main__':
     print(f' 3 is {pred_abs.count(3)}')
     print(f' 4 is {pred_abs.count(4)}')
     print(f' 5 is {pred_abs.count(5)}')
+    assert 1 == 2
     #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
     #test_group_acc(model, train_loader, prefix)
     print(' acc of the group assinment is {}, \
