@@ -31,7 +31,7 @@ parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
-parser.add_argument('--names', type=str, required=True)
+parser.add_argument('--names', type=str, required=True, help='names of the draw picture')
 
 def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     # tsne_z_pred : the embedding 
@@ -80,16 +80,12 @@ def get_data_loader(args):
     return train_loader, val_loader, test_loader, group_list, train_labels
 
 
-def get_model(args):
+def get_model(args, model_name):
     model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
-    ckpt = torch.load('last.pth')
-    new_state_dict = OrderedDict()
-    for k,v in ckpt['model'].items():
-        key = k.replace('module.','')
-        keys = key.replace('encoder.','')
-        new_state_dict[keys]=v
-    model.encoder.load_state_dict(new_state_dict)
+    ckpt = torch.load(model_name)
+    #
+    model.load_state_dict(ckpt)
     # freeze the pretrained part
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
@@ -108,7 +104,9 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_data_loader(args)
     #
-    model = get_model(args)
+    model_name = args.names
+    #
+    model = get_model(args, model_name)
     model = model.to(device)
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)

@@ -191,10 +191,13 @@ if __name__ == '__main__':
     store_name = args.output_file + '.txt'
     if args.soft_label:
         prefix = '_soft_label'
-    if args.la:
+    elif args.la:
         prefix = '_la'
-    if args.ce:
+    elif args.ce:
         prefix = '_ce'
+    else:
+        print(f'no classification criterion specified !!!')
+        assert 1==2
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
@@ -220,7 +223,7 @@ if __name__ == '__main__':
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
-    
+    torch.save(f'./')
     '''
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
