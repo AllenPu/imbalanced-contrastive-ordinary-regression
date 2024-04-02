@@ -121,11 +121,13 @@ def train_epoch(model, train_loader, opt, args):
                 g_soft_label = soft_labeling(g, args).to(device)
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
                 #print(f' soft label loss is {loss_ce.item()}')
-            if args.ce:
+            elif args.ce:
                 loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
-            if args.la :
+            elif args.la :
                 loss_la = LAloss(group_list)
                 loss_ce = loss_la(g_hat, g.squeeze().long())
+            else:
+                loss_ce = 0
                 #print(f' ce loss is {loss_ce.item()}')
             #if torch.isnan(loss_ce):
             #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
@@ -197,7 +199,7 @@ if __name__ == '__main__':
         prefix = '_ce'
     else:
         print(f'no classification criterion specified !!!')
-        assert 1==2
+        prefix = 'original_'
     store_name = store_name + prefix
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
