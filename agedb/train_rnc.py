@@ -224,7 +224,7 @@ if __name__ == '__main__':
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
-    torch.save(f'./checkpoint/{store_name}.pth')
+    torch.save(model, f'./checkpoint/{store_name}.pth')
     '''
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
