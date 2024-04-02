@@ -188,7 +188,7 @@ if __name__ == '__main__':
     setup_seed(args.seed)
     train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
-    store_name = args.output_file + '.txt'
+    store_name = 'groups_' + str(args.groups) + '_lr_' + str(args.lr) + '_epoch_' + str(args.epoch)
     if args.soft_label:
         prefix = '_soft_label'
     elif args.la:
@@ -198,6 +198,7 @@ if __name__ == '__main__':
     else:
         print(f'no classification criterion specified !!!')
         assert 1==2
+    store_name = store_name + prefix
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
@@ -223,7 +224,7 @@ if __name__ == '__main__':
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
-    torch.save(f'./')
+    torch.save(f'./checkpoint/{store_name}.pth')
     '''
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
