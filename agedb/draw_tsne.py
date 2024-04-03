@@ -20,7 +20,7 @@ parser.add_argument('--model_depth', type=int, default=50,
                     help='resnet 18 or resnnet 50')
 parser.add_argument('--sigma', default=1.0, type=float)
 parser.add_argument('--data_dir', type=str,
-                    default='/home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data', help='data directory')
+                    default='/home/rpu2/scratch/data/imbalanced-regression/agedb-dir/data', help='data directory')
 parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
 parser.add_argument('--dataset', type=str, default='imdb_wiki',
