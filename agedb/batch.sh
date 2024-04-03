@@ -3,7 +3,7 @@ for i in 2 5 10 15 20 25 40 50; do
         echo 'the group is ' $i 'the rpoch is ' $j
         echo '----------------------'
         #CUDA_VISIBLE_DEVICES=0 python train_rnc.py --groups $i --epoch $j --soft_label
-        python draw_tsne.py --groups $i --epoch $j
+        python draw_tsne.py --groups $i --epoch $j --soft_label
     done
 done
 
