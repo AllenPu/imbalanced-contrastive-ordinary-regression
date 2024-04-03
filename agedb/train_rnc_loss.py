@@ -215,7 +215,7 @@ if __name__ == '__main__':
     if args.single_output:
         model = train_epoch_single(model, train_loader, optimizer, args)
     else:
-        model = train_epoch(model, train_loader, optimizer, args)
+        model = train_epoch(model, train_loader, val_loader, optimizer, args)
 
 
     
