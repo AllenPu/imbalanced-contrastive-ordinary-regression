@@ -192,9 +192,9 @@ if __name__ == '__main__':
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
     if args.single_output:
-        model = train_epoch(model, train_loader, optimizer, args)
-    else:
         model = train_epoch_single(model, train_loader, optimizer, args)
+    else:
+        model = train_epoch(model, train_loader, optimizer, args)
 
 
     
