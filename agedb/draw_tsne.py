@@ -98,11 +98,11 @@ def get_data_loader(args):
 
 def get_model(args):
     if args.soft_label:
-        prefix = 'soft_label'
+        prefix = '_soft_label'
     elif args.ce:
-        prefix = 'ce'
+        prefix = '_ce'
     elif args.la :
-        prefix = 'la'
+        prefix = '_la'
     else:
         print(" no prefix")
         prefix = 'original_'
