@@ -12,25 +12,33 @@ import os
 
 
 parser = argparse.ArgumentParser('argument for training')
-parser.add_argument('--lr', type=float, default=1e-3,
-                    help='initial learning rate')
-parser.add_argument('--groups', type=int, default=10,
-                    help='number of split bins to the wole datasets')
-parser.add_argument('--model_depth', type=int, default=50,
-                    help='resnet 18 or resnnet 50')
-parser.add_argument('--sigma', default=1.0, type=float)
+parser.add_argument('--seed', default=3407)
 parser.add_argument('--data_dir', type=str,
                     default='/home/rpu2/scratch/data/imbalanced-regression/agedb-dir/data', help='data directory')
+parser.add_argument('--lr', type=float, default=1e-3,
+                    help='initial learning rate')
+parser.add_argument('--epoch', type=int, default=100,
+                    help='number of epochs to train')
+parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
-parser.add_argument('--dataset', type=str, default='imdb_wiki',
-                    choices=['imdb_wiki'], help='dataset name')
-parser.add_argument('--group_mode', default='i_g', type=str,
-                    help=' b_g is balanced group mode while i_g is imbalanced group mode')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
+parser.add_argument('--groups', type=int, default=10,
+                    help='number of split bins to the wole datasets')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
+parser.add_argument('--momentum', type=float, default=0.9,
+                    help='optimizer momentum')
+parser.add_argument('--weight_decay', type=float,
+                    default=1e-4, help='optimizer weight decay')
+parser.add_argument('--output_file', type=str,
+                    default='result_rnc', help='store')
+parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
+parser.add_argument('--soft_label', action='store_true')
+parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
+parser.add_argument('--step', type=int, default=1)
+parser.add_argument('--la', action='store_true')
 parser.add_argument('--names', type=str, required=True, help='names of the draw picture')
 
 def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
