@@ -127,14 +127,17 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
             g_pred = torch.argmax(g_hat, dim=1).unsqueeze(-1)
             if args.soft_label:
+                prefix = 'soft_label'
                 g_soft_label = soft_labeling(g, args).to(device)
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
                 #print(f' soft label loss is {loss_ce.item()}')
             elif args.ce:
+                prefix = 'ce'
                 loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
             elif args.la :
                 loss_la = LAloss(group_list)
                 loss_ce = loss_la(g_hat, g.squeeze().long())
+                prefix = 'la'
             elif args.mse:
                 loss_ce = mse(g_pred, g)
                 loss_ce = 0
@@ -162,7 +165,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 val_mse = torch.mean(torch.abs(y_hat - y))
                 val_cls_loss.update(val_cls.item(), bsz)
                 val_mse_loss.update(val_mse.item(), bsz)
-        with open('./loss.csv', 'w') as f:
+        with open(f'./{prefix}_loss.csv', 'w') as f:
             writer = csv.writer(f)
             writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
