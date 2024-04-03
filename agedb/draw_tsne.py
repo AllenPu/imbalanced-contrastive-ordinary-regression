@@ -93,7 +93,7 @@ def get_model(args, model_name):
     # load pretrained
     ckpt = torch.load(model_name)
     #
-    model.load_state_dict(ckpt)
+    model.load_state_dict(ckpt.state_dict())
     # freeze the pretrained part
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
