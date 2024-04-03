@@ -39,7 +39,7 @@ parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 parser.add_argument('--step', type=int, default=1)
 parser.add_argument('--la', action='store_true')
-parser.add_argument('--names', type=str, required=True, help='names of the draw picture')
+#parser.add_argument('--names', type=str, required=True, help='names of the draw picture')
 
 def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     # tsne_z_pred : the embedding 
@@ -96,10 +96,20 @@ def get_data_loader(args):
     return train_loader, val_loader, test_loader, group_list, train_labels
 
 
-def get_model(args, model_name):
+def get_model(args):
+    if args.soft_label:
+        prefix = 'soft_label'
+    elif args.ce:
+        prefix = 'ce'
+    elif args.la :
+        prefix = 'la'
+    else:
+        print(" no prefix")
+        prefix = 'original_'
     model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
-    ckpt = torch.load(model_name)
+    model_dir =  'groups_' + str(args.groups) + '_lr_' + str(args.lr) + '_epoch_' + str(args.epoch) + prefix
+    ckpt = torch.load(f'./checkpoint/{model_dir}.pth')
     #
     model.load_state_dict(ckpt.state_dict())
     # freeze the pretrained part
@@ -119,9 +129,7 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_data_loader(args)
     #
-    model_name = args.names
-    #
-    model = get_model(args, model_name)
+    model = get_model(args)
     model = model.to(device)
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
