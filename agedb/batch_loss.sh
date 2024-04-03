@@ -1,2 +1,2 @@
-CUDACUDA_VISIBLE_DEVICES=2 python traom_rnc_loss.py --single_output
-CUDACUDA_VISIBLE_DEVICES=2 python traom_rnc_loss.py
+CUDACUDA_VISIBLE_DEVICES=2 python train_rnc_loss.py --single_output
+CUDACUDA_VISIBLE_DEVICES=2 python train_rnc_loss.py
