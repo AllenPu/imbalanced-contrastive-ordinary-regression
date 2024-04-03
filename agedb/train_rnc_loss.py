@@ -50,6 +50,7 @@ parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 parser.add_argument('--step', type=int, default=1)
 parser.add_argument('--la', action='store_true')
+parser.add_argument('--mse', action='store_true')
 parser.add_argument('--single_output', action='store_true')
 
 
@@ -85,7 +86,10 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression(groups=args.groups, name='resnet18')
+    if args.single_output:
+        model = Encoder_regression_single(name='resnet18')
+    else:
+        model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
     ckpt = torch.load('last.pth')
     new_state_dict = OrderedDict()
@@ -120,7 +124,7 @@ def train_epoch(model, train_loader, opt, args):
             y_ =  torch.chunk(y_output,2,dim=-1)
             g_hat, y_hat = y_[0], y_[1]
             y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
-            #
+            g_pred = torch.argmax(g_hat, dim=1).unsqueeze(-1)
             if args.soft_label:
                 g_soft_label = soft_labeling(g, args).to(device)
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
@@ -130,7 +134,8 @@ def train_epoch(model, train_loader, opt, args):
             elif args.la :
                 loss_la = LAloss(group_list)
                 loss_ce = loss_la(g_hat, g.squeeze().long())
-            else:
+            elif args.mse:
+                loss_ce = mse(g_pred, g)
                 loss_ce = 0
                 #print(f' ce loss is {loss_ce.item()}')
             #if torch.isnan(loss_ce):
@@ -145,49 +150,24 @@ def train_epoch(model, train_loader, opt, args):
         print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg}')
     return model
 
-
-
-def test_group_acc(model, train_loader, prefix):
-    model = Encoder_regression(groups=args.groups, name='resnet18')
-    model = torch.load(f'./models/best_{prefix}.pth')
-    model.eval()
-    pred, labels = [], []
-    for idx, (x, y, g) in enumerate(train_loader):
-        x, y, g = x.to(device), y.to(device), g.to(device)
-        with torch.no_grad():
+def train_epoch_single(model, train_loader, opt, args):
+    model = model.to(device)
+    model.train()
+    mse = nn.MSELoss()
+    for e in tqdm(range(args.epoch)):
+        mse_loss = AverageMeter()
+        for idx, (x, y, g) in enumerate(train_loader):
+            bsz = x.shape[0]
+            x, y, g = x.to(device), y.to(device), g.to(device)
+            opt.zero_grad()
             y_output,  z = model(x)
-            y_chunk = torch.chunk(y_output, 2, dim=1)
-            g_hat, y_pred = y_chunk[0], y_chunk[1]
-            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
-            pred.extend(g_index.data.cpu().numpy())
-            labels.extend(g.data.cpu().numpy())
-    pred = np.array(pred)
-    labels = np.array(labels)
-    np.save(f'./acc/pred{prefix}.npy', pred)
-    np.save(f'./acc/labels{prefix}.npy', labels)
-
-
-
-def draw_tsnes(model, train_loader):
-    tsne_z_pred = torch.Tensor(0)
-    tsne_g_pred = torch.Tensor(0)
-    tsne_g_gt = torch.Tensor(0)
-    for idx, (x,y,g) in enumerate(train_loader):
-        with torch.no_grad:
-            x, y = x.to(device), y.to(device)
-            y_output,  z = model(x)
-            y_chunk = torch.chunk(y_output, 2, dim=1)
-            g_hat, y_hat = y_chunk[0], y_chunk[1]
-            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
-            tsne_z_pred = torch.cat((tsne_z_pred, z.data.cpu()), dim=0)
-            #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
-            tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
-            tsne_g_gt = torch.cat((tsne_g_gt, g.data.cpu()), dim=0)
-            draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args)
-        break
-
-
-
+            loss_mse = mse(y_output, y)
+            loss = loss_mse 
+            mse_loss.update(loss_mse.item(), bsz)
+            loss.backward()
+            opt.step()
+        print(f' At Epoch {e} single mse loss is {mse_loss.avg}')
+    return model
 
 
 
@@ -211,30 +191,10 @@ if __name__ == '__main__':
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
-    model = train_epoch(model, train_loader, optimizer, args)
-    #torch.save(model, f'./models/best_{prefix}.pth')
-    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred, = test(
-        model, test_loader, train_labels, args)
-    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
-    #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
-    #test_group_acc(model, train_loader, prefix)
-    print(' acc of the group assinment is {}, \
-            mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
-        #
-    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
-                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
-        #
-    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred_gt['many']['l1'],
-                                                                    shot_pred_gt['median']['l1'], shot_pred_gt['low']['l1']) + "\n")
-        #
-    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_pred_gt['many']['gmean'],
-                                                                    shot_pred_gt['median']['gmean'], shot_pred_gt['low']['gmean'])+ "\n")                                                       
-        #
-    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
-                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
-    #
-    torch.save(model, f'./checkpoint/{store_name}.pth')
-
+    if args.single_output:
+        model = train_epoch(model, train_loader, optimizer, args)
+    else:
+        model = train_epoch_single(model, train_loader, optimizer, args)
 
 
     
