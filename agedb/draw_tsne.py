@@ -99,7 +99,6 @@ def get_model(args, model_name):
 
 
 if __name__ == '__main__':
-    exec('from train import get_dataset')
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_data_loader(args)
