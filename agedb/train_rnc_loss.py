@@ -19,6 +19,7 @@ from utils import *
 from train import test, write_log
 from util_devlove import shot_metrics, train_regressor, validate
 from draw_tsne import draw_tsne
+import csv
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -108,13 +109,13 @@ def get_model(args):
 
 
 
-def train_epoch(model, train_loader, opt, args):
+def train_epoch(model, train_loader, val_loader, opt, args):
     model = model.to(device)
-    model.train()
     mse = nn.MSELoss()
     for e in tqdm(range(args.epoch)):
         cls_loss = AverageMeter()
         mse_loss = AverageMeter()
+        model.train()
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
@@ -147,7 +148,24 @@ def train_epoch(model, train_loader, opt, args):
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
-        print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg}')
+        #
+        model.eval()
+        val_cls_loss = AverageMeter()
+        val_mse_loss = AverageMeter()
+        for idx, (x, y, g) in enumerate(train_loader):
+            x, y, g = x.to(device), y.to(device), g.to(device)
+            with torch.no_grad():
+                y_output,_ = model(x.to(torch.float32))
+                y_chunk = torch.chunk(y_output, 2, dim=1)
+                g_hat, y_hat = y_chunk[0], y_chunk[1]
+                val_cls = F.cross_entropy(g_hat, g.squeeze().long())
+                val_mse = torch.mean(torch.abs(y_hat - y))
+                val_cls_loss.update(val_cls.item(), bsz)
+                val_mse_loss.update(val_mse.item(), bsz)
+        with open('./loss.csv', 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg])
+        print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
     return model
 
 def train_epoch_single(model, train_loader, opt, args):
