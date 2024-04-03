@@ -45,18 +45,26 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     # tsne_z_pred : the embedding 
     # tsne_g_pred : the predicted group
     # tsne_g_gt : the ground truth group
+    if args.soft_label:
+        prefix = 'soft_label'
+    elif args.ce:
+        prefix = 'ce'
+    elif args.la :
+        prefix = 'la'
+    else:
+        print(" no prefix")
     tsne = TSNE(n_components=2, init='pca', random_state=0)
     X_tsne_pred = tsne.fit_transform(tsne_z_pred)
     plt.figure(figsize=(10, 5))
     plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
                     c=tsne_g_gt, label="t-SNE true label")
     plt.legend()
-    plt.savefig(f'./images/tsne_x_gt_group_{args.groups}_true_label.png', dpi=120)
+    plt.savefig(f'./images/tsne_x_gt_group_{args.groups}_epoch_{args.epoch}_{prefix}__true_label.png', dpi=120)
     plt.figure(figsize=(10, 5))
     plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
                     c=tsne_g_pred, label="t-SNE pred label")
     plt.legend()
-    plt.savefig(f'./images/tsne_x_pred_group_{args.groups}_pred_lael.png', dpi=120)
+    plt.savefig(f'./images/tsne_x_pred_group_{args.groups}_epoch_{args.epoch}_{prefix}_pred_label.png', dpi=120)
     
 
 def get_data_loader(args):
