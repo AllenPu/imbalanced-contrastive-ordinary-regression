@@ -162,7 +162,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 y_chunk = torch.chunk(y_output, 2, dim=1)
                 g_hat, y_hat = y_chunk[0], y_chunk[1]
                 val_cls = F.cross_entropy(g_hat, g.squeeze().long())
-                val_mse = torch.mean(torch.abs(y_hat - y))
+                val_mse = F.mse_loss(y_pred, y)
                 val_cls_loss.update(val_cls.item(), bsz)
                 val_mse_loss.update(val_mse.item(), bsz)
         with open(f'./{prefix}_loss.csv', 'w') as f:
