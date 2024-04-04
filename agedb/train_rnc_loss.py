@@ -198,7 +198,7 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
                 val_mse_loss.update(val_mse.item(), bsz)
         with open('./single_loss.csv', 'a', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow([e,mse_loss.avg])
+            writer.writerow([e,mse_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e} single mse loss is {mse_loss.avg} val loss is {val_mse_loss.avg}')
     return model
 
