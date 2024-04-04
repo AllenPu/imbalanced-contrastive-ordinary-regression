@@ -175,7 +175,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
 def train_epoch_single(model, train_loader, opt, args):
     model = model.to(device)
     model.train()
-    mse = nn.MSELoss()
+    mse = nn.MSELoss()   
     for e in tqdm(range(args.epoch)):
         mse_loss = AverageMeter()
         for idx, (x, y, g) in enumerate(train_loader):
@@ -188,6 +188,9 @@ def train_epoch_single(model, train_loader, opt, args):
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
+        with open('./single_loss.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([e,mse_loss.avg])
         print(f' At Epoch {e} single mse loss is {mse_loss.avg}')
     return model
 
