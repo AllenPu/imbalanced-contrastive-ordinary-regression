@@ -166,9 +166,9 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 val_mse = F.mse_loss(y_gt, y)
                 val_cls_loss.update(val_cls.item(), bsz)
                 val_mse_loss.update(val_mse.item(), bsz)
-        with open(f'./{prefix}_loss.csv', 'a') as f:
+        with open(f'./{prefix}_loss.csv', 'a', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg]+"\n")
+            writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
     return model
 
