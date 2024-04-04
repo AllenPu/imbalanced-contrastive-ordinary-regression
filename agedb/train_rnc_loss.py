@@ -113,7 +113,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
     model = model.to(device)
     mse = nn.MSELoss()
     for e in tqdm(range(args.epoch)):
-        '''
+
         cls_loss = AverageMeter()
         mse_loss = AverageMeter()
         model.train()
@@ -153,7 +153,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             loss.backward()
             opt.step()
         #
-            '''
+       
         model.eval()
         val_cls_loss = AverageMeter()
         val_mse_loss = AverageMeter()
@@ -169,11 +169,11 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 val_mse = F.mse_loss(y_gt, y)
                 val_cls_loss.update(val_cls.item(), bsz)
                 val_mse_loss.update(val_mse.item(), bsz)
-        print(f' At Epoch {e}, val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
-        #with open(f'./{prefix}_loss.csv', 'a', newline='') as f:
-        #    writer = csv.writer(f)
-        #    writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg])
-        #print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
+        #print(f' At Epoch {e}, val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
+        with open(f'./{prefix}_loss.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg])
+        print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
     return model
 
 def train_epoch_single(model, train_loader, val_loader, opt, args):
