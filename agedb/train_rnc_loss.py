@@ -182,6 +182,11 @@ def train_epoch(model, train_loader, val_loader, opt, args):
         print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}  val mse loss gt is {val_mse_loss_gt.avg}')
     return model
 
+
+
+
+
+
 def train_epoch_single(model, train_loader, val_loader, opt, args):
     model = model.to(device)
     model.train()
