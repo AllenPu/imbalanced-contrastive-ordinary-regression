@@ -189,6 +189,8 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
     for e in tqdm(range(args.epoch)):
         mse_loss = AverageMeter()
         val_mse_loss = AverageMeter()
+        # how many labels are wrongly predicted
+        y_dis = {}
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
@@ -199,6 +201,12 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
+            #
+            # added for how many labels are wrongly predicted in training
+            dis = torch.abs(y - y_output)
+            for items in range(7):
+                y_dis[items] = y_dis.get(items,0) + (dis == items ).sum(dim=0)
+        '''
         val_mse_loss = AverageMeter()
         for idx, (x, y, g) in enumerate(val_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
@@ -210,6 +218,13 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
             writer = csv.writer(f)
             writer.writerow([e,mse_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e} single mse loss is {mse_loss.avg} val loss is {val_mse_loss.avg}')
+        '''
+        with open('./prediction_bias.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            write_list = []
+            for items in range(7):
+                write_list.append(y_dis[items])
+            writer.writerow(write_list)
     return model
 
 
