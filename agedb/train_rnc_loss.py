@@ -208,11 +208,12 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
             opt.step()
             #
             # added for how many labels are wrongly predicted in training
-            '''
+            
             dis = torch.abs(y - y_output)
             for items in range(7):
                 y_dis[items] = y_dis.get(items,0) + (dis == items ).sum(dim=0)
-            '''
+                print(f'dis is {dis} result is {(dis == items ).sum(dim=0)}')
+            assert 1==2
         
         val_mse_loss = AverageMeter()
         for idx, (x, y, g) in enumerate(val_loader):
