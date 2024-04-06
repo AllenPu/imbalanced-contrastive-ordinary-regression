@@ -164,13 +164,15 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 y_output,_ = model(x.to(torch.float32))
                 y_chunk = torch.chunk(y_output, 2, dim=1)
                 g_hat, y_hat = y_chunk[0], y_chunk[1]
-                y_gt = torch.gather(y_hat, dim=1, index=g.to(torch.int64))
+                g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+                y_gt = torch.gather(y_hat, dim=1, index=g_index.to(torch.int64))
+                # 
                 val_cls = F.cross_entropy(g_hat, g.squeeze().long())
                 val_mse = F.mse_loss(y_gt, y)
                 val_cls_loss.update(val_cls.item(), bsz)
                 val_mse_loss.update(val_mse.item(), bsz)
         #print(f' At Epoch {e}, val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
-        with open(f'./{prefix}_loss.csv', 'a', newline='') as f:
+        with open(f'./{prefix}_loss_2.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}')
