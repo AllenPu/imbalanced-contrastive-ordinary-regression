@@ -274,8 +274,8 @@ def shot_reg(label, pred, maj, med, min):
     #dis = np.floor(np.abs(labels - preds)).tolist()
     bsz = labels.shape[0]
     for i in range(bsz):
-        k_pred = check_shot(pred[i])
-        k_label = check_shot(label[i])
+        k_pred = check_shot(pred[i],maj, med, min)
+        k_label = check_shot(label[i],maj, med, min)
         if k_pred in pred_dict.keys():
             pred_dict[k_pred] = pred_dict[k_pred] + 1
         pred_shift = check_pred_shift(k_pred, k_label)
