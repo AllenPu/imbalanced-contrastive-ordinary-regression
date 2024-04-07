@@ -229,7 +229,7 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             writer.writerow([e,mse_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e} single mse loss is {mse_loss.avg} val loss is {val_mse_loss.avg}')
         '''
-        pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_min_to_med = shot_reg(labels, preds, maj, med)
+        pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_min_to_med = shot_reg(labels, preds, maj, med, mino)
         with open('./prediction_bias2.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             write_list = []
