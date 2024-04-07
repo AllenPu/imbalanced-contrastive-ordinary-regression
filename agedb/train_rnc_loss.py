@@ -271,7 +271,7 @@ def shot_reg(label, pred, maj, med, min):
     # how many preditions from min to med, min to maj, med to maj, min to med
     pred_label_dict = {'min to med':0, 'min to maj':0, 'med to maj':0, 'min to med':0}
     labels, preds = np.stack(label), np.hstack(pred)
-    dis = np.floor(np.abs(label - pred)).tolist()
+    #dis = np.floor(np.abs(labels - preds)).tolist()
     bsz = labels.shape[0]
     for i in range(bsz):
         k_pred = check_shot(pred[i])
