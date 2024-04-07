@@ -208,12 +208,13 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
             opt.step()
             #
             # added for how many labels are wrongly predicted in training
+            '''
             dis = torch.floor(torch.abs(y - y_output))
             for items in range(10):
                 y_dis[items] = y_dis.get(items,0) + (dis == items ).sum(dim=0).item()
                 #print(f'dis is {dis} result is {(dis == items ).sum(dim=0)}')
             
-        '''
+            '''
         val_mse_loss = AverageMeter()
         for idx, (x, y, g) in enumerate(val_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
@@ -232,9 +233,76 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
             for items in range(10):
                 write_list.append(y_dis[items])
             writer.writerow(write_list)
-        
+        '''
     return model
 
+
+
+
+def shot_count(train_labels, many_shot_thr=100, low_shot_thr=20):
+    #
+    train_labels = np.array(train_labels).astype(int)
+    #
+    train_class_count = []
+    #
+    maj_class, med_class, min_class = [], [], []
+    #
+    for l in np.unique(train_labels):
+        train_class_count.append(len(
+            train_labels[train_labels == l]))
+    #
+    for i in range(len(train_class_count)):
+        if train_class_count[i] > many_shot_thr:
+            maj_class.append(i)
+        elif train_class_count[i] < low_shot_thr:
+            min_class.append(i)
+        else:
+            med_class.append(i) 
+    #
+    return maj_class, med_class, min_class
+
+
+def shot_reg(label, pred, maj, med, min):
+    # how many preditions in this shots
+    pred_dict = {'maj':0, 'med':0, 'min':0}
+    # how many preditions from min to med, min to maj, med to maj, min to med
+    pred_label_dict = {'min to med':0, 'min to maj':0, 'med to maj':0, 'min to med':0}
+    labels, preds = np.stack(label), np.hstack(pred)
+    dis = np.floor(np.abs(label - pred)).tolist()
+    bsz = labels.shape[0]
+    for i in range(bsz):
+        k_pred = check_shot(pred[i])
+        k_label = check_shot(label[i])
+        if k_pred in pred_dict.keys():
+            pred_dict[k_pred] = pred_dict[k_pred] + 1
+        pred_shift = check_pred_shift(k_pred, k_label)
+        if pred_shift in pred_label_dict.keys():
+            pred_label_dict[pred_shift] = pred_label_dict[pred_shift] + 1
+    return pred_dict['maj'], pred_dict['med'], pred_dict['min'], pred_label_dict['min to med'], pred_label_dict['min to maj'], pred_label_dict['med to maj'], pred_label_dict['min to med']
+
+
+def check_shot(e, maj, med, min):
+    if e in maj:
+        return 'maj'
+    elif e in med:
+        return 'med'
+    else:
+        return 'min'
+    
+# check reditions from min to med, min to maj, med to maj
+def check_pred_shift(k_pred, k_label):
+    if k_pred is 'med' and k_label is 'min':
+        return 'min to med'
+    elif k_pred is 'maj' and k_label is 'med':
+        return 'med to maj'
+    elif k_pred is 'maj' and k_label is 'min':
+        return 'min to maj'
+    elif k_pred is 'med' and k_label is 'min':
+        return 'min to med'
+    else:
+        return 'others'
+
+    
 
 
 
