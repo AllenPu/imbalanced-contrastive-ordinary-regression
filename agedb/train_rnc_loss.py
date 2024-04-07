@@ -231,7 +231,7 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
         '''
         pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_med_to_min, pred_maj_to_min, pred_maj_to_med = \
             shot_reg(labels, preds, maj, med, mino)
-        with open('./prediction_bias2.csv', 'a', newline='') as f:
+        with open('./prediction_bias3.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             write_list = []
             #for items in range(10):
