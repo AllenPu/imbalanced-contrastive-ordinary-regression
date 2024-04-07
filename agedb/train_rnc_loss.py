@@ -187,15 +187,16 @@ def train_epoch(model, train_loader, val_loader, opt, args):
 
 
 
-def train_epoch_single(model, train_loader, val_loader, opt, args):
+def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args):
     model = model.to(device)
     model.train()
     mse = nn.MSELoss()   
+    maj, med, mino = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
         mse_loss = AverageMeter()
         val_mse_loss = AverageMeter()
         # how many labels are wrongly predicted
-        y_dis = {}
+        y_dis, labels, preds = {}, [], []
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
@@ -206,15 +207,16 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
+            preds.extend(y_output.data.cpu().numpy())
+            labels.extend(y.data.cpu().numpy())
             #
             # added for how many labels are wrongly predicted in training
-            '''
+        '''
             dis = torch.floor(torch.abs(y - y_output))
             for items in range(10):
                 y_dis[items] = y_dis.get(items,0) + (dis == items ).sum(dim=0).item()
                 #print(f'dis is {dis} result is {(dis == items ).sum(dim=0)}')
             
-            '''
         val_mse_loss = AverageMeter()
         for idx, (x, y, g) in enumerate(val_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
@@ -227,13 +229,14 @@ def train_epoch_single(model, train_loader, val_loader, opt, args):
             writer.writerow([e,mse_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e} single mse loss is {mse_loss.avg} val loss is {val_mse_loss.avg}')
         '''
-        with open('./prediction_bias.csv', 'a', newline='') as f:
+        pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_min_to_med = shot_reg(labels, preds, maj, med)
+        with open('./prediction_bias2.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             write_list = []
-            for items in range(10):
-                write_list.append(y_dis[items])
-            writer.writerow(write_list)
-        '''
+            #for items in range(10):
+            #    write_list.append(y_dis[items])
+            writer.writerow([e, pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_min_to_med ])
+        #'''
     return model
 
 
@@ -326,7 +329,7 @@ if __name__ == '__main__':
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
     if args.single_output:
-        model = train_epoch_single(model, train_loader,val_loader, optimizer, args)
+        model = train_epoch_single(model, train_loader,val_loader, train_labels, optimizer, args)
     else:
         model = train_epoch(model, train_loader, val_loader, optimizer, args)
 
