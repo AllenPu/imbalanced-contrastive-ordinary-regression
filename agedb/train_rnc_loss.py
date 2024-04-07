@@ -227,7 +227,6 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
                 val_mse_loss.update(val_mse.item(), bsz)
                 preds_val.extend(y_output.data.cpu().numpy())
                 labels_val.extend(y.data.cpu().numpy())
-        '''
         with open('./single_loss.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([e,mse_loss.avg, val_mse_loss.avg])
@@ -241,7 +240,7 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             #for items in range(10):
             #    write_list.append(y_dis[items])
             writer.writerow([e, pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_med_to_min, pred_maj_to_min, pred_maj_to_med])
-        #'''
+        '''
     return model
 
 
