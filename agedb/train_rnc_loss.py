@@ -229,81 +229,22 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             writer.writerow([e,mse_loss.avg, val_mse_loss.avg])
         print(f' At Epoch {e} single mse loss is {mse_loss.avg} val loss is {val_mse_loss.avg}')
         '''
-        pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_min_to_med = shot_reg(labels, preds, maj, med, mino)
+        pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_med_to_min, pred_maj_to_min, pred_maj_to_med = \
+            shot_reg(labels, preds, maj, med, mino)
         with open('./prediction_bias2.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             write_list = []
             #for items in range(10):
             #    write_list.append(y_dis[items])
-            writer.writerow([e, pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_min_to_med ])
+            writer.writerow([e, pred_maj, pred_med, pred_min, pred_min_to_med, pred_min_to_maj, pred_med_to_maj, pred_med_to_min, pred_maj_to_min, pred_maj_to_med])
         #'''
     return model
 
 
 
 
-def shot_count(train_labels, many_shot_thr=100, low_shot_thr=20):
-    #
-    train_labels = np.array(train_labels).astype(int)
-    #
-    train_class_count = []
-    #
-    maj_class, med_class, min_class = [], [], []
-    #
-    for l in np.unique(train_labels):
-        train_class_count.append(len(
-            train_labels[train_labels == l]))
-    #
-    for i in range(len(train_class_count)):
-        if train_class_count[i] > many_shot_thr:
-            maj_class.append(i)
-        elif train_class_count[i] < low_shot_thr:
-            min_class.append(i)
-        else:
-            med_class.append(i) 
-    #
-    return maj_class, med_class, min_class
 
 
-def shot_reg(label, pred, maj, med, min):
-    # how many preditions in this shots
-    pred_dict = {'maj':0, 'med':0, 'min':0}
-    # how many preditions from min to med, min to maj, med to maj, min to med
-    pred_label_dict = {'min to med':0, 'min to maj':0, 'med to maj':0, 'min to med':0}
-    labels, preds = np.stack(label), np.floor(np.hstack(pred))
-    #dis = np.floor(np.abs(labels - preds)).tolist()
-    bsz = labels.shape[0]
-    for i in range(bsz):
-        k_pred = check_shot(preds[i],maj, med, min)
-        k_label = check_shot(labels[i],maj, med, min)
-        if k_pred in pred_dict.keys():
-            pred_dict[k_pred] = pred_dict[k_pred] + 1
-        pred_shift = check_pred_shift(k_pred, k_label)
-        if pred_shift in pred_label_dict.keys():
-            pred_label_dict[pred_shift] = pred_label_dict[pred_shift] + 1
-    return pred_dict['maj'], pred_dict['med'], pred_dict['min'], pred_label_dict['min to med'], pred_label_dict['min to maj'], pred_label_dict['med to maj'], pred_label_dict['min to med']
-
-
-def check_shot(e, maj, med, min):
-    if e in maj:
-        return 'maj'
-    elif e in med:
-        return 'med'
-    else:
-        return 'min'
-    
-# check reditions from min to med, min to maj, med to maj
-def check_pred_shift(k_pred, k_label):
-    if k_pred is 'med' and k_label is 'min':
-        return 'min to med'
-    elif k_pred is 'maj' and k_label is 'med':
-        return 'med to maj'
-    elif k_pred is 'maj' and k_label is 'min':
-        return 'min to maj'
-    elif k_pred is 'med' and k_label is 'min':
-        return 'min to med'
-    else:
-        return 'others'
 
     
 
