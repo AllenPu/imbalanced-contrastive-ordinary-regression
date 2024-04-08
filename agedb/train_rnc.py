@@ -227,25 +227,6 @@ if __name__ == '__main__':
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
     torch.save(model, f'./checkpoint/{store_name}.pth')
-    '''
-    tsne_z_pred = torch.Tensor(0)
-    tsne_g_pred = torch.Tensor(0)
-    tsne_g_gt = torch.Tensor(0)
-    for idx, (x,y,g,_) in enumerate(train_loader):
-        with torch.no_grad:
-            x, y = x.to(device), y.to(device)
-            y_output,  z = model(x)
-            y_chunk = torch.chunk(y_output, 2, dim=1)
-            g_hat, y_hat = y_chunk[0], y_chunk[1]
-            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
-            tsne_z_pred = torch.cat((tsne_z_pred, z.data.cpu()), dim=0)
-            #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
-            tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
-            tsne_g_gt = torch.cat((tsne_g_gt, g.data.cpu()), dim=0)
-            draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args)
-        break
-    '''
-
 
 
     

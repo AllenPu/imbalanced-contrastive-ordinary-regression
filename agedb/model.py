@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import math
-
+import torch.nn.functional as F
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
@@ -190,10 +190,12 @@ class Encoder_regression(nn.Module):
 
 
 class Encoder_regression_single(nn.Module):
-    def __init__(self, name='resnet50'):
+    def __init__(self, name='resnet50', norm=False):
         super(Encoder_regression_single, self).__init__()
         backbone, dim_in = model_dict[name]
         self.encoder = backbone()
+        self.norm = norm
+        
         #self.regressor = nn.Sequential(nn.Linear(dim_in, 2048),
         #                               nn.ReLU(),
         #                               nn.Linear(2048, 512),
@@ -203,5 +205,7 @@ class Encoder_regression_single(nn.Module):
 
     def forward(self, x):
         feat = self.encoder(x)
+        if self.norm:
+            feat = F.normalize(feat, dim=-1)
         pred = self.regressor(feat)
         return pred, feat

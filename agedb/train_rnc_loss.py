@@ -53,6 +53,7 @@ parser.add_argument('--step', type=int, default=1)
 parser.add_argument('--la', action='store_true')
 parser.add_argument('--mse', action='store_true')
 parser.add_argument('--single_output', action='store_true')
+parser.add_argument('--norm', action='store_true')
 
 
 
@@ -88,7 +89,7 @@ def get_data_loader(args):
 
 def get_model(args):
     if args.single_output:
-        model = Encoder_regression_single(name='resnet18')
+        model = Encoder_regression_single(name='resnet18', norm=args.norm)
     else:
         model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
@@ -245,7 +246,26 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
 
 
 
-
+def test_output(model, test_loader, train_labels, args):
+    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred, = test(
+        model, test_loader, train_labels, args)
+    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
+    #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
+    #test_group_acc(model, train_loader, prefix)
+    print(' acc of the group assinment is {}, \
+            mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
+        #
+    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
+                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
+        #
+    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred_gt['many']['l1'],
+                                                                    shot_pred_gt['median']['l1'], shot_pred_gt['low']['l1']) + "\n")
+        #
+    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_pred_gt['many']['gmean'],
+                                                                    shot_pred_gt['median']['gmean'], shot_pred_gt['low']['gmean'])+ "\n")                                                       
+        #
+    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
 
 
 
@@ -276,6 +296,7 @@ if __name__ == '__main__':
         model = train_epoch_single(model, train_loader,val_loader, train_labels, optimizer, args)
     else:
         model = train_epoch(model, train_loader, val_loader, optimizer, args)
+        test_output(model, test_loader, train_labels, args)
 
 
     
