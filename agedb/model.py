@@ -169,7 +169,7 @@ class SupResNet(nn.Module):
     
 
 class Encoder_regression(nn.Module):
-    def __init__(self, groups=10, name='resnet50'):
+    def __init__(self, groups=10, name='resnet50', norm=False):
         super(Encoder_regression, self).__init__()
         backbone, dim_in = model_dict[name]
         self.output_dim = groups * 2
@@ -180,9 +180,12 @@ class Encoder_regression(nn.Module):
         #                               nn.ReLU(),
         #                               nn.Linear(512, self.output_dim))
         self.regressor = nn.Sequential(nn.Linear(dim_in, self.output_dim))
+        self.norm = norm
 
     def forward(self, x):
         feat = self.encoder(x)
+        if self.norm:
+            feat = F.normalize(feat, dim=-1)
         pred = self.regressor(feat)
         return pred, feat
     
