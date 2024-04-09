@@ -296,7 +296,6 @@ def test_output(model, test_loader, train_labels, args):
 def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot):
     bsz = y.shape[0]
     # calculate the frob norm of test on different shots
-    print(f' feature shape {feat.shape}')
     maj_index, med_index, min_index = [], [], []
     for i in range(bsz):
         if y[i] in majs:
@@ -311,12 +310,11 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot):
         ma = torch.mean(torch.norm(majority, dim=0, p='fro'))
         maj_shot.update(ma.item(), majority.shape[0])
     if len(med_index) != 0:
-        print(f'med_index len is {len(med_index)}')
-        median = torch.gather(feat, dim=0, index=torch.LongTensor(med_index).to(device))
+        median = torch.index_select(feat, dim=0, index=torch.LongTensor(med_index).to(device))
         md = torch.mean(torch.norm(median, dim=0, p='fro'))
         med_shot.update(md.item(), median.shape[0])
     if len(min_index) != 0:
-        minority = torch.gather(feat, dim=0, index=torch.LongTensor(min_index).to(device))
+        minority = torch.index_select(feat, dim=0, index=torch.LongTensor(min_index).to(device))
         mi = torch.mean(torch.norm(minority, dim=0, p='fro'))
         min_shot.update(mi.item(), minority.shape[0])
     return maj_shot, med_shot, min_shot
