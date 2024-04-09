@@ -306,15 +306,15 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot):
             min_index.append(i)
     #
     if len(maj_index) != 0:
-        majority = torch.index_select(feat, dim=0, index=torch.Tensor(maj_index).to(device))
+        majority = torch.index_select(feat, dim=0, index=torch.LongTensor(maj_index).to(device))
         ma = torch.mean(torch.norm(majority, dim=0, p='fro'))
         maj_shot.update(ma.item(), majority.shape[0])
     if len(med_index) != 0:
-        median = torch.gather(feat, dim=0, index=torch.Tensor(med_index).to(device))
+        median = torch.gather(feat, dim=0, index=torch.LongTensor(med_index).to(device))
         md = torch.mean(torch.norm(median, dim=0, p='fro'))
         med_shot.update(md.item(), median.shape[0])
     if len(min_index) != 0:
-        minority = torch.gather(feat, dim=0, index=torch.Tensor(min_index).to(device))
+        minority = torch.gather(feat, dim=0, index=torch.LongTensor(min_index).to(device))
         mi = torch.mean(torch.norm(minority, dim=0, p='fro'))
         min_shot.update(mi.item(), minority.shape[0])
     return maj_shot, med_shot, min_shot
