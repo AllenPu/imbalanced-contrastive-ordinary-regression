@@ -66,7 +66,8 @@ def get_data_loader(args):
     train_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_train, img_size=args.img_size,
                           split='train', reweight=args.reweight, group_num=args.groups)
     #
-    group_list = train_dataset.get_group_list()
+    #group_list = train_dataset.get_group_list()
+    group_list = []
     #
     val_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_val,
                         img_size=args.img_size, split='val', group_num=args.groups)
