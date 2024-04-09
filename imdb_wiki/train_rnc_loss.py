@@ -198,7 +198,7 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
         val_mse_loss = AverageMeter()
         # how many labels are wrongly predicted
         y_dis, labels, preds = {}, [], []
-        for idx, (x, y, g) in enumerate(train_loader):
+        for idx, (x, y, g, _) in enumerate(train_loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
