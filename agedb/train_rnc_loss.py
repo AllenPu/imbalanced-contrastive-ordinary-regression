@@ -115,7 +115,6 @@ def train_epoch(model, train_loader, val_loader, opt, args):
     model = model.to(device)
     mse = nn.MSELoss()
     for e in tqdm(range(args.epoch)):
-
         cls_loss = AverageMeter()
         mse_loss = AverageMeter()
         model.train()
@@ -154,8 +153,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
-        #
-       
+        #    
         model.eval()
         val_cls_loss = AverageMeter()
         val_mse_loss = AverageMeter()
@@ -193,7 +191,7 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
     model = model.to(device)
     model.train()
     mse = nn.MSELoss()   
-    maj, med, mino = shot_count(train_labels)
+    #maj, med, mino = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
         mse_loss = AverageMeter()
         val_mse_loss = AverageMeter()
@@ -250,18 +248,24 @@ def test_single(model, test_loader, train_labels):
     #
     test_mae_pred = AverageMeter()
     pred, label = [], []
+    # variables frob norm for each shot average
+    majs, meds, mino = shot_count(train_labels)
+    maj_shot, med_shot, min_shot  = AverageMeter(), AverageMeter(), AverageMeter()
     with torch.no_grad():
         for idx, (x, y, g) in enumerate(test_loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
-            y_output,_ = model(x.to(torch.float32))
+            y_output, feat = model(x.to(torch.float32))
             test_mae = F.l1_loss(y_output, y)
             pred.extend(y_output.cpu().numpy())
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
+            # calcualte frib norm for each shot average
+            maj_shot, med_shot, min_shot = cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot)
         pred_shot = shot_metric(pred, label, train_labels)
     many , med, low = pred_shot['many']['l1'], pred_shot['median']['l1'], pred_shot['low']['l1']
     print(f' the mae of prediction is {test_mae_pred.avg}, the many shot is {many} median is {med} minority is {low}')
+    print(f' the norm of maj is {maj_shot.avg}, the norm of med is {med_shot.avg}, the norm of low is {min_shot.avg}')
 
 
 
@@ -288,6 +292,32 @@ def test_output(model, test_loader, train_labels, args):
 
 
 
+
+def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot):
+    bsz = y.shape[0]
+    # calculate the frob norm of test on different shots
+    maj_index, med_index, min_index = [], [], []
+    for i in range(bsz):
+        if y[i] in majs:
+            maj_index.append(i)
+        elif y[i] in meds:
+            med_index.append(i)
+        else:
+            min_index.append(i)
+    #
+    majority = torch.index_select(feat, dim=0, index=torch.Tensor(maj_index))
+    median = torch.gather(feat, dim=0, index=torch.Tensor(med_index))
+    minority = torch.gather(feat, dim=0, index=torch.Tensor(min_index))
+    if majority.shape[0] != 0:
+        ma = torch.mean(torch.norm(majority, dim=0, p='fro'))
+        maj_shot.update(ma.item(), majority.shape[0])
+    if median.shape[0] != 0:
+        md = torch.mean(torch.norm(median, dim=0, p='fro'))
+        med_shot.update(md.item(), median.shape[0])
+    if minority.shape[0] != 0:
+        mi = torch.mean(torch.norm(minority, dim=0, p='fro'))
+        min_shot.update(mi.item(), minority.shape[0])
+    return maj_shot, med_shot, min_shot
     
 
 
