@@ -54,7 +54,7 @@ parser.add_argument('--la', action='store_true')
 parser.add_argument('--mse', action='store_true')
 parser.add_argument('--single_output', action='store_true')
 parser.add_argument('--norm', action='store_true')
-
+parser.add_argument('--scratch', action='store_true')
 
 
 def get_data_loader(args):
@@ -93,13 +93,14 @@ def get_model(args):
     else:
         model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
-    ckpt = torch.load('last.pth')
-    new_state_dict = OrderedDict()
-    for k,v in ckpt['model'].items():
-        key = k.replace('module.','')
-        keys = key.replace('encoder.','')
-        new_state_dict[keys]=v
-    model.encoder.load_state_dict(new_state_dict)
+    if args.scratch:
+        ckpt = torch.load('last.pth')
+        new_state_dict = OrderedDict()
+        for k,v in ckpt['model'].items():
+            key = k.replace('module.','')
+            keys = key.replace('encoder.','')
+            new_state_dict[keys]=v
+        model.encoder.load_state_dict(new_state_dict)
     # freeze the pretrained part
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
