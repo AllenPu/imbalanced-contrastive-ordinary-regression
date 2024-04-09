@@ -192,7 +192,7 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
     model = model.to(device)
     model.train()
     mse = nn.MSELoss()   
-    maj, med, mino = shot_count(train_labels)
+    #maj, med, mino = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
         mse_loss = AverageMeter()
         val_mse_loss = AverageMeter()
