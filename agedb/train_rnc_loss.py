@@ -93,7 +93,7 @@ def get_model(args):
     else:
         model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
-    if not args.pretrained:
+    if args.pretrained:
         ckpt = torch.load('last.pth')
         new_state_dict = OrderedDict()
         for k,v in ckpt['model'].items():
