@@ -259,7 +259,8 @@ def test_single(model, test_loader, train_labels):
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
         pred_shot = shot_metric(pred, label, train_labels)
-    print(f' the mae of prediction is {test_mae_pred.avg}, the many shot is {pred_shot['many']['l1']} median is {pred_shot['median']['l1']} minority is {pred_shot['low']['l1']}')
+    many , med, low = pred_shot['many']['l1'], pred_shot['median']['l1'], pred_shot['low']['l1']
+    print(f' the mae of prediction is {test_mae_pred.avg}, the many shot is {many} median is {med} minority is {low}')
 
 
 
