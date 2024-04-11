@@ -193,18 +193,23 @@ class Encoder_regression(nn.Module):
 
 
 class Encoder_regression_single(nn.Module):
-    def __init__(self, name='resnet50', norm=False):
+    def __init__(self, name='resnet50', norm=False, weight_norm= False):
         super(Encoder_regression_single, self).__init__()
         backbone, dim_in = model_dict[name]
         self.encoder = backbone()
         self.norm = norm
+        self.weight_norm = weight_norm
+        if self.weight_norm:
+            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
+        else:
+            self.regressor = nn.Sequential(nn.Linear(dim_in, 1))
         
         #self.regressor = nn.Sequential(nn.Linear(dim_in, 2048),
         #                               nn.ReLU(),
         #                               nn.Linear(2048, 512),
         #                               nn.ReLU(),
         #                               nn.Linear(512, self.output_dim))
-        self.regressor = nn.Sequential(nn.Linear(dim_in, 1))
+        
 
     def forward(self, x):
         feat = self.encoder(x)

@@ -54,6 +54,7 @@ parser.add_argument('--la', action='store_true')
 parser.add_argument('--mse', action='store_true')
 parser.add_argument('--single_output', action='store_true')
 parser.add_argument('--norm', action='store_true')
+parser.add_argument('--weight_norm', action='store_true')
 parser.add_argument('--pretrained', action='store_true')
 
 
@@ -89,7 +90,7 @@ def get_data_loader(args):
 
 def get_model(args):
     if args.single_output:
-        model = Encoder_regression_single(name='resnet18', norm=args.norm)
+        model = Encoder_regression_single(name='resnet18', norm=args.norm, weight_norm=args.weight_norm)
     else:
         model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
