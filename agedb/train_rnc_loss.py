@@ -20,6 +20,7 @@ from train import test, write_log
 from util_devlove import shot_metrics, train_regressor, validate
 from draw_tsne import draw_tsne
 import csv
+from OrdinalEntropy import *
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -53,6 +54,7 @@ parser.add_argument('--step', type=int, default=1)
 parser.add_argument('--la', action='store_true')
 parser.add_argument('--mse', action='store_true')
 parser.add_argument('--single_output', action='store_true')
+parser.add_argument('--oe', action='store_true', help='ordinal entropy')
 parser.add_argument('--norm', action='store_true')
 parser.add_argument('--weight_norm', action='store_true')
 parser.add_argument('--pretrained', action='store_true')
@@ -191,7 +193,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
 def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args):
     model = model.to(device)
     model.train()
-    mse = nn.MSELoss()   
+    mse = nn.MSELoss()
     #maj, med, mino = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
         mse_loss = AverageMeter()
@@ -205,6 +207,8 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             y_output,  z = model(x)
             loss_mse = mse(y_output, y)
             loss = loss_mse 
+            if args.oe:
+                loss += ordinalentropy(z, y)
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
