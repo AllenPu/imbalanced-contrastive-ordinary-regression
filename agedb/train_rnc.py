@@ -121,7 +121,7 @@ def train_epoch(model, train_loader, opt, args):
             if args.soft_label:
                 g_soft_label = soft_labeling(g, args).to(device)
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
-                print(f' soft label loss is {loss_ce.item()}')
+                #print(f' soft label loss is {loss_ce.item()}')
             elif args.ce:
                 loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
             elif args.la :
