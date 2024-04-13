@@ -235,6 +235,8 @@ def test(model, test_loader, train_labels, args):
             #
             y_output, _ = model(x)
             #
+            print(f' y shape is  {y.shape}')
+            #
             y_chunk = torch.chunk(y_output, 2, dim=1)
             g_hat, y_pred = y_chunk[0], y_chunk[1]
             #
