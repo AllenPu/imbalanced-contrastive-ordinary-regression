@@ -51,6 +51,7 @@ parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy
 parser.add_argument('--step', type=int, default=1)
 parser.add_argument('--la', action='store_true')
 parser.add_argument('--norm', action='store_true')
+parser.add_argument('--best', action='store_true')
 
 
 
@@ -87,6 +88,9 @@ def get_data_loader(args):
 def get_model(args):
     model = Encoder_regression(groups=args.groups, name='resnet18', norm=args.norm)
     # load pretrained
+    if args.best:
+        model.load_state_dict(torch.load('/models/best__soft_label.pth'))
+    '''
     ckpt = torch.load('last.pth')
     new_state_dict = OrderedDict()
     for k,v in ckpt['model'].items():
@@ -94,6 +98,7 @@ def get_model(args):
         keys = key.replace('encoder.','')
         new_state_dict[keys] =  v
     model.encoder.load_state_dict(new_state_dict)
+    '''
     # freeze the pretrained part
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
@@ -133,7 +138,7 @@ def train_epoch(model, train_loader, opt, args):
             #if torch.isnan(loss_ce):
             #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
             #    assert 1==0
-            print(f' loss ce is  {loss_ce.item()}')
+            # print(f' loss ce is  {loss_ce.item()}')
             loss_mse = mse(y_pred, y)
             loss = loss_mse + loss_ce
             loss.backward()
