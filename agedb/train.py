@@ -249,7 +249,7 @@ def test(model, test_loader, train_labels, args):
             acc3 = accuracy(g_hat, g, topk=(1,))
             mae_y = torch.mean(torch.abs(y_hat - y))
             mae_y_gt = torch.mean(torch.abs(y_pred_gt - y))
-            mse_y_pred = F.mse_loss(y_pred, y)
+            mse_y_pred = F.mse_loss(y_hat, y)
             #
             pred.extend(y_hat.data.cpu().numpy())
             pred_gt.extend(y_pred_gt.data.cpu().numpy())
