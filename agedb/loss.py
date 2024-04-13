@@ -18,7 +18,7 @@ class LAloss(nn.Module):
         #print(" x shape is {} taegt shape is {} iota is {}" .format(x.shape, target.shape, self.iota_list))
         output = x + self.iota_list
 
-        return F.cross_entropy(output, target)
+        return F.cross_entropy(output, target, reduction='sum')
     
 
 def Ranked_Contrastive_Loss(z, g, temp):
