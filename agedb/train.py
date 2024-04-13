@@ -249,6 +249,7 @@ def test(model, test_loader, train_labels, args):
             acc3 = accuracy(g_hat, g, topk=(1,))
             mae_y = torch.mean(torch.abs(y_hat - y))
             mae_y_gt = torch.mean(torch.abs(y_pred_gt - y))
+            mse_y_pred = F.mse_loss(y_pred, y)
             #
             pred.extend(y_hat.data.cpu().numpy())
             pred_gt.extend(y_pred_gt.data.cpu().numpy())
@@ -259,6 +260,8 @@ def test(model, test_loader, train_labels, args):
             gmean_loss_all_gt.extend(loss_all_gt.cpu().numpy())
             gmean_loss_all_pred.extend(loss_all_pred.cpu().numpy())
             #
+            mse_pred.update(mse_y_pred.item(), bsz)
+            #
             acc_g.update(acc3[0].item(), bsz)
             acc_mae_gt.update(mae_y_gt.item(), bsz)
             acc_mae_pred.update(mae_y.item(), bsz)
@@ -268,6 +271,7 @@ def test(model, test_loader, train_labels, args):
         gmean_pred = gmean(np.hstack(gmean_loss_all_pred), axis=None).astype(float)
         shot_pred = shot_metric(pred, labels, train_labels)
         shot_pred_gt = shot_metric(pred_gt, labels, train_labels)
+    print(f' MSE is {mse_pred.avg}')
 
     return acc_g.avg, acc_mae_gt.avg, acc_mae_pred.avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred
         # np.hstack(group), np.hstack(group_pred) #newly added
