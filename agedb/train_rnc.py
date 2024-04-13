@@ -89,7 +89,7 @@ def get_model(args):
     model = Encoder_regression(groups=args.groups, name='resnet18', norm=args.norm)
     # load pretrained
     if args.best:
-        model.load_state_dict(torch.load('/models/best__soft_label.pth'))
+        model.load_state_dict(torch.load('./models/best__soft_label.pth'))
     '''
     ckpt = torch.load('last.pth')
     new_state_dict = OrderedDict()
