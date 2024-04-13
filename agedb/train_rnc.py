@@ -95,8 +95,8 @@ def get_model(args):
         new_state_dict[keys]=v
     model.encoder.load_state_dict(new_state_dict)
     # freeze the pretrained part
-    for (name, param) in model.encoder.named_parameters():
-        param.requires_grad = False
+    #for (name, param) in model.encoder.named_parameters():
+    #    param.requires_grad = False
     #
     optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
@@ -121,7 +121,7 @@ def train_epoch(model, train_loader, opt, args):
             if args.soft_label:
                 g_soft_label = soft_labeling(g, args).to(device)
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
-                #print(f' soft label loss is {loss_ce.item()}')
+                print(f' soft label loss is {loss_ce.item()}')
             elif args.ce:
                 loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
             elif args.la :
