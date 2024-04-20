@@ -217,8 +217,9 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
-            preds.extend(y_output.data.cpu().numpy())
-            labels.extend(y.data.cpu().numpy())
+            #
+            #preds.extend(y_output.data.cpu().numpy())
+            #labels.extend(y.data.cpu().numpy())
             #
             # added for how many labels are wrongly predicted in training
         '''
