@@ -272,11 +272,11 @@ def test_single(model, test_loader, train_labels):
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             # calcualte frib norm for each shot average
-            maj_shot, med_shot, min_shot = cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot)
+            maj_shot, med_shot, min_shot, = cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot)
         pred_shot = shot_metric(pred, label, train_labels)
     many , med, low = pred_shot['many']['l1'], pred_shot['median']['l1'], pred_shot['low']['l1']
     print(f' the mae of prediction is {test_mae_pred.avg}, the many shot is {many} median is {med} minority is {low}')
-    print(f' the norm of maj is {maj_shot}, the norm of med is {med_shot}, the norm of low is {min_shot}')
+    print(f' the norm of maj is {maj_shot/len(majs)}, the norm of med is {med_shot/len(meds)}, the norm of low is {min_shot/len(mino)}')
     #print(f' the norm of maj is {maj_shot.avg}, the norm of med is {med_shot.avg}, the norm of low is {min_shot.avg}')
 
 
@@ -332,7 +332,7 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot):
         mi = torch.norm(minority, p='fro')**2
         min_shot = math.sqrt(mi**2 + mi)
         #min_shot.update(mi.item(), minority.shape[0])
-    return maj_shot, med_shot, min_shot
+    return maj_shot, med_shot, min_shot, len(maj_index, len(med_index), len(min_index))
     
 
 
