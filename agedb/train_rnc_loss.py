@@ -212,7 +212,7 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             if args.oe:
                 loss += ordinalentropy(z, y)
             if args.frob:
-                frobenius_norm = torch.norm(z, p='fro')
+                frobenius_norm = torch.mean(torch.norm(z, p='fro', dim=-1))
                 loss += args.frob_lambda * frobenius_norm
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
