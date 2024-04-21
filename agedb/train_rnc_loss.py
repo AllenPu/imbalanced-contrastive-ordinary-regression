@@ -261,6 +261,7 @@ def test_single(model, test_loader, train_labels):
     pred, label = [], []
     # variables frob norm for each shot average
     majs, meds, mino = shot_count(train_labels)
+    maj_shot_nuc, med_shot_nuc, min_shot_nuc = AverageMeter(), AverageMeter(), AverageMeter()
     maj_shot, med_shot, min_shot  = AverageMeter(), AverageMeter(), AverageMeter()
     #maj_shot, med_shot, min_shot = 0, 0, 0
     with torch.no_grad():
@@ -273,12 +274,13 @@ def test_single(model, test_loader, train_labels):
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             # calcualte frib norm for each shot average
-            maj_shot, med_shot, min_shot = cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot)
+            maj_shot, med_shot, min_shot,  maj_shot_nuc, med_shot_nuc, min_shot_nuc = cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc)
         pred_shot = shot_metric(pred, label, train_labels)
     many , med, low = pred_shot['many']['l1'], pred_shot['median']['l1'], pred_shot['low']['l1']
     print(f' the mae of prediction is {test_mae_pred.avg}, the many shot is {many} median is {med} minority is {low}')
     #print(f' the norm of maj is {maj_shot/len(majs)}, the norm of med is {med_shot/len(meds)}, the norm of low is {min_shot/len(mino)}')
     print(f' the norm of maj is {maj_shot.avg}, the norm of med is {med_shot.avg}, the norm of low is {min_shot.avg}')
+    print(f' the singular of maj is {maj_shot_nuc.avg}, the norm of med is {med_shot_nuc.avg}, the norm of low is {min_shot_nuc.avg}')
 
 
 
@@ -306,7 +308,7 @@ def test_output(model, test_loader, train_labels, args):
 
 
 
-def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot):
+def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc):
     bsz = y.shape[0]
     # calculate the frob norm of test on different shots
     maj_index, med_index, min_index = [], [], []
@@ -321,19 +323,25 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot):
     if len(maj_index) != 0:
         majority = torch.index_select(feat, dim=0, index=torch.LongTensor(maj_index).to(device))
         ma = torch.mean(torch.norm(majority, p='fro', dim=-1))
+        ma_nuc = torch.norm(majority, p='nuc')/majority.shape[0]
         #maj_shot = math.sqrt(maj_shot**2 + ma)
-        #maj_shot.update(ma.item(), majority.shape[0])
+        maj_shot.update(ma.item(), majority.shape[0])
+        maj_shot_nuc.update(ma_nuc, majority.shape[0])
     if len(med_index) != 0:
         median = torch.index_select(feat, dim=0, index=torch.LongTensor(med_index).to(device))
         md = torch.mean(torch.norm(median, p='fro', dim=-1))
+        md_nuc = torch.norm(median, p='nuc')/median.shape[0]
         #med_shot = math.sqrt(med_shot**2 + md)
         med_shot.update(md.item(), median.shape[0])
+        med_shot_nuc.update(md_nuc, median.shape[0])
     if len(min_index) != 0:
         minority = torch.index_select(feat, dim=0, index=torch.LongTensor(min_index).to(device))
         mi = torch.mean(torch.norm(minority, p='fro', dim=-1))
+        mi_nuc = torch.norm(minority, p='nuc')/minority.shape[0]
         #min_shot = math.sqrt(mi**2 + mi)
         min_shot.update(mi.item(), minority.shape[0])
-    return maj_shot, med_shot, min_shot
+        min_shot_nuc.update(mi_nuc, minority.shape[0])
+    return maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc
 
 
 
