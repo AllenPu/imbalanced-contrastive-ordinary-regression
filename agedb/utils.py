@@ -12,6 +12,7 @@ from torch.distributions import Categorical, kl
 import torch.nn as nn
 softmax = nn.Softmax(dim=-1)
 import torch.nn.functional as F
+from utils import *
 
 
 class AverageMeter(object):
