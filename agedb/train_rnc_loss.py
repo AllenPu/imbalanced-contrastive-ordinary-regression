@@ -210,7 +210,9 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             loss_mse = mse(y_output, y)
             loss = loss_mse 
             if args.oe:
-                loss += ordinalentropy(z, y)
+                loss_oe = ordinalentropy(z, y)
+                loss += loss_oe
+                print(f' oe loss  is  {loss_oe.item()}')
             if args.frob:
                 frobenius_norm = torch.mean(torch.norm(z, p='fro', dim=-1))
                 loss += args.frob_lambda * frobenius_norm
