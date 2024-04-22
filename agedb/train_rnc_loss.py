@@ -274,7 +274,8 @@ def test_single(model, test_loader, train_labels):
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             # calcualte frib norm for each shot average
-            maj_shot, med_shot, min_shot,  maj_shot_nuc, med_shot_nuc, min_shot_nuc = cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc)
+            maj_shot, med_shot, min_shot,  maj_shot_nuc, med_shot_nuc, min_shot_nuc = \
+                cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc, device)
         pred_shot = shot_metric(pred, label, train_labels)
     many , med, low = pred_shot['many']['l1'], pred_shot['median']['l1'], pred_shot['low']['l1']
     print(f' the mae of prediction is {test_mae_pred.avg}, the many shot is {many} median is {med} minority is {low}')
