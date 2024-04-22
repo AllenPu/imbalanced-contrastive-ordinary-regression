@@ -529,21 +529,21 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_s
     if len(maj_index) != 0:
         majority = torch.index_select(feat, dim=0, index=torch.LongTensor(maj_index).to(device))
         ma = torch.mean(torch.norm(majority, p='fro', dim=-1))
-        ma_nuc = torch.mean(torch.norm(majority, p='nuc'))
+        ma_nuc = torch.norm(majority, p='nuc')/majority.shape[0]
         #maj_shot = math.sqrt(maj_shot**2 + ma)
         maj_shot.update(ma.item(), majority.shape[0])
         maj_shot_nuc.update(ma_nuc.item(), majority.shape[0])
     if len(med_index) != 0:
         median = torch.index_select(feat, dim=0, index=torch.LongTensor(med_index).to(device))
         md = torch.mean(torch.norm(median, p='fro', dim=-1))
-        md_nuc = torch.mean(torch.norm(median, p='nuc'))
+        md_nuc = torch.norm(median, p='nuc')/median.shape[0]
         #med_shot = math.sqrt(med_shot**2 + md)
         med_shot.update(md.item(), median.shape[0])
         med_shot_nuc.update(md_nuc.item(), median.shape[0])
     if len(min_index) != 0:
         minority = torch.index_select(feat, dim=0, index=torch.LongTensor(min_index).to(device))
         mi = torch.mean(torch.norm(minority, p='fro', dim=-1))
-        mi_nuc = torch.mean(torch.norm(minority, p='nuc'))
+        mi_nuc = torch.norm(minority, p='nuc')/minority.shape[0]
         #min_shot = math.sqrt(mi**2 + mi)
         min_shot.update(mi.item(), minority.shape[0])
         min_shot_nuc.update(mi_nuc.item(), minority.shape[0])
