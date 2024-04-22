@@ -548,25 +548,4 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_s
         min_shot.update(mi.item(), minority.shape[0])
         min_shot_nuc.update(mi_nuc.item(), minority.shape[0])
     return maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc
-
-
-
-def qr_reduction(feature, majs, meds, mino, device):
-    bsz = y.shape[0]
-    # calculate the frob norm of test on different shots
-    maj_index, med_index, min_index = [], [], []
-    for i in range(bsz):
-        if y[i] in majs:
-            maj_index.append(i)
-        elif y[i] in meds:
-            med_index.append(i)
-        else:
-            min_index.append(i)
-    #
-    if len(maj_index) != 0:
-        majority = torch.index_select(feature, dim=0, index=torch.LongTensor(maj_index).to(device))
-
-    if len(med_index) != 0:
-        median = torch.index_select(feature, dim=0, index=torch.LongTensor(med_index).to(device))
-    if len(min_index) != 0:
-        minority = torch.index_select(feature, dim=0, index=torch.LongTensor(min_index).to(device))
+   
