@@ -59,7 +59,7 @@ parser.add_argument('--norm', action='store_true')
 parser.add_argument('--weight_norm', action='store_true')
 parser.add_argument('--pretrained', action='store_true')
 parser.add_argument('--frob', action='store_true')
-parser.add_argument('--frob_lambda', default=1.0, type=float)
+parser.add_argument('--frob_lambda', default=0, type=float)
 
 
 def get_data_loader(args):
@@ -213,9 +213,6 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
                 loss_oe = ordinalentropy(z, y)
                 loss += loss_oe
                 #print(f' oe loss  is  {loss_oe.item()}')
-            if args.frob:
-                frobenius_norm = torch.mean(torch.norm(z, p='fro', dim=-1))
-                loss += args.frob_lambda * frobenius_norm
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
