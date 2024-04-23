@@ -225,8 +225,9 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
         # cal frob norm
             maj_shot, med_shot, min_shot,  maj_shot_nuc, med_shot_nuc, min_shot_nuc = \
                 cal_frob_norm(y, z, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc, device)
-        print(f' In  epoch {e} the norm of maj is {maj_shot.avg}, the norm of med is {med_shot.avg}, the norm of low is {min_shot.avg}')
-        print(f' In  epoch {e} the singular of maj is {maj_shot_nuc.avg}, the norm of med is {med_shot_nuc.avg}, the norm of low is {min_shot_nuc.avg}')   
+        if e%10 == 0:
+            print(f' In  epoch {e} the norm of maj is {maj_shot.avg}, the norm of med is {med_shot.avg}, the norm of low is {min_shot.avg}')
+            print(f' In  epoch {e} the singular of maj is {maj_shot_nuc.avg}, the norm of med is {med_shot_nuc.avg}, the norm of low is {min_shot_nuc.avg}')   
         # cal frob norm  
            
              #
