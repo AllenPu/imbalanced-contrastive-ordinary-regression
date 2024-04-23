@@ -202,6 +202,12 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
         val_mse_loss = AverageMeter()
         # how many labels are wrongly predicted
         y_dis, labels, preds = {}, [], []
+        #
+        # cal frob norm
+        majs, meds, mino = shot_count(train_labels)
+        maj_shot_nuc, med_shot_nuc, min_shot_nuc = AverageMeter(), AverageMeter(), AverageMeter()
+        maj_shot, med_shot, min_shot  = AverageMeter(), AverageMeter(), AverageMeter()
+        # cal frob norm
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             x, y, g = x.to(device), y.to(device), g.to(device)
@@ -216,7 +222,14 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
-            #
+        # cal frob norm
+            maj_shot, med_shot, min_shot,  maj_shot_nuc, med_shot_nuc, min_shot_nuc = \
+                cal_frob_norm(y, z, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc, device)
+        print(f' In  epoch {e} the norm of maj is {maj_shot.avg}, the norm of med is {med_shot.avg}, the norm of low is {min_shot.avg}')
+        print(f' In  epoch {e} the singular of maj is {maj_shot_nuc.avg}, the norm of med is {med_shot_nuc.avg}, the norm of low is {min_shot_nuc.avg}')   
+        # cal frob norm  
+           
+             #
             #preds.extend(y_output.data.cpu().numpy())
             #labels.extend(y.data.cpu().numpy())
             #
