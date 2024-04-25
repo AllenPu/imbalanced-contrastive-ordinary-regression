@@ -67,7 +67,7 @@ class AgeDB(data.Dataset):
         group_ = min(math.floor(label/self.group_range), self.group_num-1)
         group = np.asarray([group_]).astype('float32')
         #print(f' size  {img.shape}')
-        
+        print(f' index is {index}')
         return imgs, label, group
 
     def get_transform(self):
