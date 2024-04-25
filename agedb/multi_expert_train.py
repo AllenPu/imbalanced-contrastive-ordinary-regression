@@ -200,7 +200,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     test_mae_pred = AverageMeter()
     # gmean
     criterion_gmean = nn.L1Loss(reduction='none')
-    pred, label = [], []
+    pred, label, gmeans = [], [], []
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
@@ -215,8 +215,9 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             loss_gmean = criterion_gmean(aggregation_output, y)
+            gmeans.extend(loss_gmean.cpu().numpy())
     shot_pred = shot_metric(pred, label, train_labels)
-    gmean_pred = gmean(np.hstack(loss_gmean), axis=None).astype(float)
+    gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
     #
