@@ -171,7 +171,8 @@ def test_output(model, test_loader, train_labels, args):
     for idx, (x,y,g) in enumerate(test_loader):
         x, y = x.to(device), y.to(device)
         xx = torch.chunk(x, 2, dim=1)
-        x1, x2 = xx[0].unsqueeze(1), xx[1].unsqueeze(1)
+        x1, x2 = xx[0].squeeze(1), xx[1].squeeze(1)
+        print(f' x1 shape is {x1.shape}')
         y1, y2 = model(x1), model(x2)
         expert1_output1 = y1[:,0]
         expert2_output1 = y1[:,1]
