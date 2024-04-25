@@ -231,7 +231,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    cudnn.benchmark = True
+    #cudnn.benchmark = True
     setup_seed(args.seed)
     train_loader, val_loader, test_loader, test_loader1,group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
