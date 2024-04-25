@@ -140,7 +140,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 y_gt = torch.gather(y, dim=1, index=g.to(torch.int64)) 
                 loss_mse = mse(y_pred, y_gt)
                 loss += loss_mse
-                metric = globals[f'{k}' + '_loss']
+                metric = globals()[f'{k}' + '_loss']
                 metric.update(loss_mse.item(), bsz_g)
             #cls_loss.update(loss_ce.item(), bsz)
             loss.backward()
