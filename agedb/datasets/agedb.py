@@ -58,7 +58,7 @@ class AgeDB(data.Dataset):
         if self.multi_crop:
             transform1, transform2 = self.aug_transform()
             img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
-            imgs = [img1, img2]
+            imgs = torch.cat((img1, img2), dim=0)
             #print(f' size  {img.shape}')
             # shape : bsz, 2,  3， 244， 244
         else:
@@ -90,7 +90,8 @@ class AgeDB(data.Dataset):
 
     def aug_transform(self):
         train_transform = transforms.Compose([
-            #transforms.RandomCrop(192, padding=4),
+            transforms.Resize((self.img_size, self.img_size)),
+            transforms.RandomCrop(self.img_size, padding=4),
             transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
             transforms.RandomGrayscale(p=0.2),
             transforms.RandomApply([GaussianBlur([.1, 2.])], p=0.2),
