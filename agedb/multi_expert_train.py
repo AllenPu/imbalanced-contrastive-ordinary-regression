@@ -141,6 +141,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 loss_mse = mse(y_pred, y_gt)
                 loss += loss_mse
                 metric = locals()[f'{k}' + '_loss']
+                print(f'{k} mse is {loss_mse.item()} ')
                 metric.update(loss_mse.item(), bsz_g)
             #cls_loss.update(loss_ce.item(), bsz)
             loss.backward()
