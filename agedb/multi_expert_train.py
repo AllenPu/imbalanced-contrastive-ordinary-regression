@@ -31,7 +31,7 @@ parser.add_argument('--data_dir', type=str,
                     default='/home/rpu2/scratch/data/imbalanced-regression/agedb-dir/data', help='data directory')
 parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate')
-parser.add_argument('--batch_size', type=int, default=128, help='batch size')
+parser.add_argument('--batch_size', type=int, default=256, help='batch size')
 parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
 parser.add_argument('--workers', type=int, default=32,
