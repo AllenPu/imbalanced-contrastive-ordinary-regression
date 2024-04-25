@@ -122,7 +122,7 @@ def get_model(args):
 
 
 
-def train_epoch(model, train_loader, val_loader, opt, args):
+def train_epoch(model, train_loader, train_labels, opt, args):
     model = torch.nn.DataParallel(model).cuda()
     #model = model.cuda()
     mse = nn.MSELoss()
@@ -240,7 +240,7 @@ if __name__ == '__main__':
     train_loader, val_loader, test_loader, test_loader1,group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
     print(f' Start to train !')
-    model = train_epoch(model, train_loader, val_loader, optimizer, args)
+    model = train_epoch(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader1, test_loader, train_labels, args)
 
 
