@@ -158,6 +158,9 @@ def shot_count(train_labels, many_shot_thr=100, low_shot_thr=20):
             min_class.append(i)
         else:
             med_class.append(i) 
+    print(f' maj class {maj_class}')
+    print(f' med class {med_class}')
+    print(f' min lcass {min_class}')
     #
     return maj_class, med_class, min_class
 
