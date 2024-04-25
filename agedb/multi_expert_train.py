@@ -180,7 +180,7 @@ def test_output(model, test_loader, train_labels, args):
         expert1_output2 = y2[:,0]
         expert2_output2 = y2[:,1]
         expert3_output2 = y2[:,2]
-        print(f' aggregation_weight is {aggregation_weight}')
+        #print(f' aggregation_weight is {aggregation_weight}')
         aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
         aggregation_output0 = aggregation_softmax[0].cuda() * expert1_output1 + aggregation_softmax[1].cuda() * expert2_output1 + aggregation_softmax[2].cuda() * expert3_output1
         aggregation_output1 = aggregation_softmax[0].cuda() * expert1_output2 + aggregation_softmax[1].cuda() * expert2_output2 + aggregation_softmax[2].cuda() * expert3_output2
