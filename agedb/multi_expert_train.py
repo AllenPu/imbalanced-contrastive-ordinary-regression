@@ -168,6 +168,7 @@ def test_output(model, test_loader, train_labels, args):
     aggregation_weight.data.fill_(1/3)
     opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
     for idx, (x,y,g) in enumerate(test_loader):
+        print(f'batch {idx}')
         x, y = x.to(device), y.to(device)
         xx = torch.chunk(x, 2, dim=1)
         x1, x2 = xx[0].unsqueeze(1), xx[1].unsqueeze(1)
