@@ -125,7 +125,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
     for e in tqdm(range(args.epoch)):
         maj_loss, med_loss, min_loss = AverageMeter(), AverageMeter(), AverageMeter()
         model.train()
-        for idx, (x, y, g) in enumerate(train_loader):
+        for idx, (x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
             index_list = find_regressors_index(y, maj_shot, med_shot, min_shot)
             loss = 0
@@ -134,13 +134,11 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             y_output = model(x)
             #
             for k in index_list.keys():
-                g = index_list[k].to(device)
+                g = index_list[k][:,0].unsqueeze(-1).to(device)
+                print(f' group shape {group.shape} g shape  {g.shape}')
                 bsz_g = g.shape[0]
-                print(f' g index {g}')
                 y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64)) 
                 y_gt = torch.gather(y, dim=1, index=g.to(torch.int64)) 
-                print(f' y pred is {y_pred}')
-                print(f' y gt is  {y_gt}')
                 loss_mse = mse(y_pred, y_gt)
                 loss += loss_mse
                 metric = locals()[f'{k}' + '_loss']
