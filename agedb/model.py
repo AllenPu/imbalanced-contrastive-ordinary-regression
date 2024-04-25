@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import math
 import torch.nn.functional as F
+from datasets.agedb import shot_count
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
@@ -209,6 +210,28 @@ class Encoder_regression_single(nn.Module):
         #                               nn.Linear(2048, 512),
         #                               nn.ReLU(),
         #                               nn.Linear(512, self.output_dim))
+        
+
+    def forward(self, x):
+        feat = self.encoder(x)
+        if self.norm:
+            feat = F.normalize(feat, dim=-1)
+        pred = self.regressor(feat)
+        return pred, feat
+    
+
+class Encoder_regression_multi_expert(nn.Module):
+    def __init__(self, name='resnet50', norm=False, weight_norm= False):
+        super(Encoder_regression_multi_expert, self).__init__()
+        backbone, dim_in = model_dict[name]
+        self.encoder = backbone()
+        self.norm = norm
+        self.weight_norm = weight_norm
+        self.majority, self.median, self.minority = shot_count
+        if self.weight_norm:
+            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+        else:
+            self.regressor = nn.Sequential(nn.Linear(dim_in, 3))
         
 
     def forward(self, x):
