@@ -123,8 +123,8 @@ def get_model(args):
 
 
 def train_epoch(model, train_loader, val_loader, opt, args):
-    model = torch.nn.DataParallel(model).cuda()
-    #model = model.cuda()
+    #model = torch.nn.DataParallel(model).cuda()
+    model = model.cuda()
     mse = nn.MSELoss()
     model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
