@@ -172,7 +172,6 @@ def test_output(model, test_loader, train_labels, args):
         x, y = x.to(device), y.to(device)
         xx = torch.chunk(x, 2, dim=1)
         x1, x2 = xx[0].squeeze(1), xx[1].squeeze(1)
-        print(f' x1 shape is {x1.shape}')
         y1, y2 = model(x1), model(x2)
         expert1_output1 = y1[:,0]
         expert2_output1 = y1[:,1]
@@ -180,6 +179,7 @@ def test_output(model, test_loader, train_labels, args):
         expert1_output2 = y2[:,0]
         expert2_output2 = y2[:,1]
         expert3_output2 = y2[:,2]
+        print(f' aggregation_weight is {aggregation_weight}')
         aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
         aggregation_output0 = aggregation_softmax[0].cuda() * expert1_output1 + aggregation_softmax[1].cuda() * expert2_output1 + aggregation_softmax[2].cuda() * expert3_output1
         aggregation_output1 = aggregation_softmax[0].cuda() * expert1_output2 + aggregation_softmax[1].cuda() * expert2_output2 + aggregation_softmax[2].cuda() * expert3_output2
