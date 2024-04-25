@@ -121,53 +121,41 @@ def get_model(args):
 def train_epoch(model, train_loader, val_loader, opt, args):
     model = torch.nn.DataParallel(model).cuda()
     mse = nn.MSELoss()
+    model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
-        maj_loss, med_loss, min_loss = AverageMeter(), AverageMeter(), AverageMeter()
-        model.train()
         for idx, (x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
-            index_list = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            loss = 0
-            x, y = x.to(device), y.to(device)
+            g = find_regressors_index(y, maj_shot, med_shot, min_shot)
+            x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
             y_output = model(x)
             #
-            for k in index_list.keys():
-                g = index_list[k][:,0].unsqueeze(-1).to(device)
-                print(f' group {group} g  {g}')
-                bsz_g = g.shape[0]
-                y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64)) 
-                y_gt = torch.gather(y, dim=1, index=g.to(torch.int64)) 
-                print(f' y pred is {y_pred}')
-                loss_mse = mse(y_pred, y_gt)
-                loss += loss_mse
-                metric = locals()[f'{k}' + '_loss']
-                print(f'{k} mse is {loss_mse.item()} ')
-                metric.update(loss_mse.item(), bsz_g)
-            #cls_loss.update(loss_ce.item(), bsz)
-            loss.backward()
+            y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
+            #
+            loss_mse = mse(y_pred, y)
+            #
+            loss_mse.backward()
             opt.step()
-        print(f' In epoch {e}, the majority mse loss is {maj_loss.avg}, the median mse loss is {med_loss.avg}, the minority mse loss is {min_loss.avg}')
     return model
 
 
 
 def find_regressors_index(y, maj_shot, med_shot, min_shot ):
-    return_index_list =  {}
+    g_index = torch.Tensor(size=(y.shape[0],1))
     maj = torch.tensor(np.isin(y.numpy(),np.array(maj_shot)))
-    maj_index = torch.nonzero(maj == True)
+    maj_index = torch.nonzero(maj == True)[:,0]  
     if len(maj_index) != 0:
-        return_index_list['maj'] = maj_index
+        g_index[maj_index] = 0
     med = torch.tensor(np.isin(y.numpy(),np.array(med_shot)))
-    med_index = torch.nonzero(med == True)
+    med_index = torch.nonzero(med == True)[:,0]
     if len(med_index) != 0:
-        return_index_list['med'] = med_index
+        g_index[med_index] = 1
     min = torch.tensor(np.isin(y.numpy(),np.array(min_shot)))
-    min_index = torch.nonzero(min == True)
+    min_index = torch.nonzero(min == True)[:,0]
     if len(min_index) != 0:
-        return_index_list['min'] = min_index
-    return return_index_list
+        g_index[min_index] = 2
+    return g_index
 
 
 
