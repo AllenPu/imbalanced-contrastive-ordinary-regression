@@ -119,7 +119,7 @@ def get_model(args):
 
 
 def train_epoch(model, train_loader, val_loader, opt, args):
-    model = model.to(device)
+    model = torch.nn.DataParallel(model).cuda()
     mse = nn.MSELoss()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
@@ -131,7 +131,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             loss = 0
             x, y = x.to(device), y.to(device)
             opt.zero_grad()
-            y_output,  z = model(x)
+            y_output = model(x)
             #
             for k in index_list.keys():
                 g = index_list[k].to(device)

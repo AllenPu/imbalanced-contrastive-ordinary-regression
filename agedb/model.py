@@ -239,4 +239,4 @@ class Encoder_regression_multi_expert(nn.Module):
         if self.norm:
             feat = F.normalize(feat, dim=-1)
         pred = self.regressor(feat)
-        return pred, feat
+        return pred
