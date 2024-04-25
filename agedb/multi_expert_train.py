@@ -80,7 +80,9 @@ def get_data_loader(args):
     test_dataset = AgeDB(data_dir=args.data_dir, df=df_test,
                          img_size=args.img_size, split='test', group_num=args.groups)
     #
-    test_dataset.enable_multi_crop(args.enable)
+    test_dataset1 = AgeDB(data_dir=args.data_dir, df=df_test,
+                         img_size=args.img_size, split='test', group_num=args.groups)
+    test_dataset1.enable_multi_crop(args.enable)
     #
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.workers, pin_memory=True, drop_last=False)
@@ -88,10 +90,12 @@ def get_data_loader(args):
                             num_workers=args.workers, pin_memory=True, drop_last=False)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False,
                              num_workers=args.workers, pin_memory=True, drop_last=False)
+    test_loader1 = DataLoader(test_dataset1, batch_size=args.batch_size, shuffle=False,
+                             num_workers=args.workers, pin_memory=True, drop_last=False)
     print(f"Training data size: {len(train_dataset)}")
     print(f"Validation data size: {len(val_dataset)}")
     print(f"Test data size: {len(test_dataset)}")
-    return train_loader, val_loader, test_loader, group_list, train_labels
+    return train_loader, val_loader, test_loader, test_loader1, group_list, train_labels
 
 
 
@@ -162,14 +166,14 @@ def find_regressors_index(y, maj_shot, med_shot, min_shot ):
 
 
 
-def test_output(model, test_loader, train_labels, args):
+def test_output(model, test_loader1, test_loader, train_labels, args):
     model.eval()
     #cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     mse = torch.nn.MSELoss()
     aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
     aggregation_weight.data.fill_(1/3)
     opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
-    for idx, (x,y,g) in enumerate(test_loader):
+    for idx, (x,y,g) in enumerate(test_loader1):
         x, y = x.to(device), y.to(device)
         xx = torch.chunk(x, 2, dim=1)
         x1, x2 = xx[0].squeeze(1), xx[1].squeeze(1)
@@ -190,7 +194,6 @@ def test_output(model, test_loader, train_labels, args):
         opt.zero_grad()
         loss.backward()
         opt.step()
-    test_loader.enable_multi_crop(False)
     # mae
     test_mae_pred = AverageMeter()
     # gmean
@@ -226,11 +229,11 @@ def test_output(model, test_loader, train_labels, args):
 if __name__ == '__main__':
     args = parser.parse_args()
     setup_seed(args.seed)
-    train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
+    train_loader, val_loader, test_loader, test_loader1,group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
     print(f' Start to train !')
     model = train_epoch(model, train_loader, val_loader, optimizer, args)
-    test_output(model, test_loader, train_labels, args)
+    test_output(model, test_loader1, test_loader, train_labels, args)
 
 
     
