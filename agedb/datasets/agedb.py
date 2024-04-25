@@ -59,14 +59,14 @@ class AgeDB(data.Dataset):
             transform1, transform2 = self.aug_transform()
             img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
             img = torch.cat((img1, img2), dim=0)
-            print(f' size  {img.shape}')
+            #print(f' size  {img.shape}')
             # shape : bsz, 2, 224, 224, 3
         else:
             img = transform(img)
         label = np.asarray([row['age']]).astype('float32')
         group_ = min(math.floor(label/self.group_range), self.group_num-1)
         group = np.asarray([group_]).astype('float32')
-        print(f' size  {img.shape}')
+        #print(f' size  {img.shape}')
         
         return img, label, group
 
