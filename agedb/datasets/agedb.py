@@ -58,7 +58,7 @@ class AgeDB(data.Dataset):
         if self.multi_crop:
             transform1, transform2 = self.aug_transform()
             img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
-            imgs = torch.cat((img1, img2), dim=0)
+            imgs = [img1, img2]
             #print(f' size  {img.shape}')
             # shape : bsz, 2,  3， 244， 244
         else:
@@ -67,7 +67,6 @@ class AgeDB(data.Dataset):
         group_ = min(math.floor(label/self.group_range), self.group_num-1)
         group = np.asarray([group_]).astype('float32')
         #print(f' size  {img.shape}')
-        print(f' index is {index}')
         return imgs, label, group
 
     def get_transform(self):
