@@ -135,7 +135,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             #
             for k in index_list.keys():
                 g = index_list[k][:,0].unsqueeze(-1).to(device)
-                print(f' group shape {group.shape} g shape  {g.shape}')
+                print(f' group {group} g  {g}')
                 bsz_g = g.shape[0]
                 y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64)) 
                 y_gt = torch.gather(y, dim=1, index=g.to(torch.int64)) 
