@@ -139,28 +139,7 @@ class AgeDB(data.Dataset):
         return weights
     
 
-def shot_count(train_labels, many_shot_thr=100, low_shot_thr=20):
-    #
-    train_labels = np.array(train_labels).astype(int)
-    #
-    train_class_count = []
-    #
-    maj_class, med_class, min_class = [], [], []
-    #
-    for l in np.unique(train_labels):
-        train_class_count.append(len(
-            train_labels[train_labels == l]))
-    #
-    for i in range(len(train_class_count)):
-        if train_class_count[i] > many_shot_thr:
-            maj_class.append(np.unique(train_labels)[i])
-        elif train_class_count[i] < low_shot_thr:
-            min_class.append(np.unique(train_labels)[i])
-        else:
-            med_class.append(np.unique(train_labels)[i]) 
-    print('--------------------------------------------------------------')
-    #
-    return maj_class, med_class, min_class
+
 
 
 class GaussianBlur(object):
