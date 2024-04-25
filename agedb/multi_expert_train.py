@@ -190,7 +190,6 @@ def test_output(model, test_loader, train_labels, args):
         opt.zero_grad()
         loss.backward()
         opt.step()
-    aggregation_weight.eval()
     test_loader.enable_multi_crop(False)
     # mae
     test_mae_pred = AverageMeter()
