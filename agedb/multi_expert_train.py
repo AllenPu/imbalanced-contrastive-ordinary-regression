@@ -194,6 +194,8 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         opt.zero_grad()
         loss.backward()
         opt.step()
+    #
+    aggregation_weight.requires_grad=False
     # mae
     test_mae_pred = AverageMeter()
     # gmean
@@ -213,7 +215,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             loss_gmean = criterion_gmean(aggregation_output, y)
-    shot_pred = shot_metrics(pred, label, train_labels)
+    shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(loss_gmean), axis=None).astype(float)
     print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
