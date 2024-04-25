@@ -132,6 +132,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
         for idx, (x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
             g = find_regressors_index(y, maj_shot, med_shot, min_shot)
+            print(f'y is {y} and g is {g}')
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             opt.zero_grad()
             y_output = model(x)
