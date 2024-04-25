@@ -60,7 +60,7 @@ class AgeDB(data.Dataset):
             img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
             img = torch.cat((img1, img2), dim=0)
             #print(f' size  {img.shape}')
-            # shape : bsz, 2, 224, 224, 3
+            # shape : bsz, 2,  3， 244， 244
         else:
             img = transform(img)
         label = np.asarray([row['age']]).astype('float32')
