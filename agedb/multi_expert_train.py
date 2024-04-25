@@ -83,7 +83,7 @@ def get_data_loader(args):
     test_dataset.enable_multi_crop(args.enable)
     #
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
-                              num_workers=args.workers, pin_memory=True, drop_last=False, train_labels = train_labels)
+                              num_workers=args.workers, pin_memory=True, drop_last=False)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False,
                             num_workers=args.workers, pin_memory=True, drop_last=False)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False,
