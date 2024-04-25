@@ -132,7 +132,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
         for idx, (x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
             g = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            x, y, g = x.to(device), y.to(device), g.to(device)
+            x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             opt.zero_grad()
             y_output = model(x)
             #
@@ -174,7 +174,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     aggregation_weight.data.fill_(1/3)
     opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
     for idx, (x,y,g) in enumerate(test_loader1):
-        x, y = x.to(device), y.to(device)
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
         xx = torch.chunk(x, 2, dim=1)
         x1, x2 = xx[0].squeeze(1), xx[1].squeeze(1)
         y1, y2 = model(x1), model(x2)
@@ -204,7 +204,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
-            x, y = x.to(device), y.to(device)
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
             y_pred = model(x)
             expert1 = y_pred[:,0]
             expert2 = y_pred[:,1]
