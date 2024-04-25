@@ -153,14 +153,12 @@ def shot_count(train_labels, many_shot_thr=100, low_shot_thr=20):
     #
     for i in range(len(train_class_count)):
         if train_class_count[i] > many_shot_thr:
-            maj_class.append(i)
+            maj_class.append(np.unique(train_labels)[i])
         elif train_class_count[i] < low_shot_thr:
-            min_class.append(i)
+            min_class.append(np.unique(train_labels)[i])
         else:
-            med_class.append(i) 
-    print(f' maj class {maj_class}')
-    print(f' med class {med_class}')
-    print(f' min lcass {min_class}')
+            med_class.append(np.unique(train_labels)[i]) 
+
     #
     return maj_class, med_class, min_class
 
