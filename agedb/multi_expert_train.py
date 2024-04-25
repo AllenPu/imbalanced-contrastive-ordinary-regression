@@ -139,6 +139,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
                 bsz_g = g.shape[0]
                 y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64)) 
                 y_gt = torch.gather(y, dim=1, index=g.to(torch.int64)) 
+                print(f' y pred is {y_pred}')
                 loss_mse = mse(y_pred, y_gt)
                 loss += loss_mse
                 metric = locals()[f'{k}' + '_loss']
