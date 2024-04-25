@@ -227,7 +227,6 @@ class Encoder_regression_multi_expert(nn.Module):
         self.encoder = backbone()
         self.norm = norm
         self.weight_norm = weight_norm
-        self.majority, self.median, self.minority = shot_count
         if self.weight_norm:
             self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
         else:
