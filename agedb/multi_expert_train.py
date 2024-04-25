@@ -128,14 +128,14 @@ def train_epoch(model, train_loader, val_loader, opt, args):
     mse = nn.MSELoss()
     model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
-    #print(f' maj class {maj_shot}')
-    #print(f' med class { med_shot}')
-    #print(f' min class { min_shot}')
+    print(f' maj class {maj_shot}')
+    print(f' med class { med_shot}')
+    print(f' min class { min_shot}')
     for e in tqdm(range(args.epoch)):
         for idx, (x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
             g = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            print(f'y is {y} and g is {g}')
+            #print(f'y is {y} and g is {g}')
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             opt.zero_grad()
             y_output = model(x)
