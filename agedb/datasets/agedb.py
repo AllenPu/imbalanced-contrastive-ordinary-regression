@@ -52,9 +52,6 @@ class AgeDB(data.Dataset):
     def __getitem__(self, index):
         index = index % len(self.df)
         row = self.df.iloc[index]
-        img = Image.open(os.path.join(
-            self.data_dir, row['path'])).convert('RGB')
-        transform = self.get_transform()
         if self.multi_crop:
             transform1, transform2 = self.aug_transform()
             img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
@@ -62,6 +59,9 @@ class AgeDB(data.Dataset):
             #print(f' size  {img.shape}')
             # shape : bsz, 2,  3， 244， 244
         else:
+            img = Image.open(os.path.join(
+            self.data_dir, row['path'])).convert('RGB')
+            transform = self.get_transform()
             img = transform(img)
         label = np.asarray([row['age']]).astype('float32')
         group_ = min(math.floor(label/self.group_range), self.group_num-1)
