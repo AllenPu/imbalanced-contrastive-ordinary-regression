@@ -88,7 +88,8 @@ class AgeDB(data.Dataset):
 
 
     def aug_transform(self):
-        train_transform = transforms.Compose([transforms.RandomCrop(self.img_size, padding=16),
+        train_transform = transforms.Compose([
+            transforms.RandomCrop(192, padding=4),
             transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
             transforms.RandomGrayscale(p=0.2),
             transforms.RandomApply([GaussianBlur([.1, 2.])], p=0.2),
