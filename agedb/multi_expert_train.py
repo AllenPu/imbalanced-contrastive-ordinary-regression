@@ -165,9 +165,8 @@ def test_output(model, test_loader, train_labels, args):
     model.eval()
     cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
-    aggregation_weight.data.fill_(1/3) 
-    opt = torch.optim.SGD(aggregation_weight.parameters(), lr= 0.025,
-                                momentum=0.9, weight_decay=5e-4)
+    aggregation_weight.data.fill_(1/3)
+    opt = torch.optim.SGD(aggregation_weight, lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
     for idx, (x,y,g) in enumerate(test_loader):
         x, y = x.to(device), y.to(device)
         xx = torch.chunk(x, 2, dim=1)
