@@ -96,7 +96,7 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression_multi_expert(groups=3, name='resnet50')
+    model = Encoder_regression_multi_expert(name='resnet18')
     # load pretrained
     ''''
     if args.pretrained:
