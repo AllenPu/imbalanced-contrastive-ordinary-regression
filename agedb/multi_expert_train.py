@@ -164,7 +164,8 @@ def find_regressors_index(y, maj_shot, med_shot, min_shot ):
 
 def test_output(model, test_loader, train_labels, args):
     model.eval()
-    cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+    #cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+    mse = torch.nn.MSELoss()
     aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
     aggregation_weight.data.fill_(1/3)
     opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
@@ -183,8 +184,9 @@ def test_output(model, test_loader, train_labels, args):
         aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
         aggregation_output0 = aggregation_softmax[0].cuda() * expert1_output1 + aggregation_softmax[1].cuda() * expert2_output1 + aggregation_softmax[2].cuda() * expert3_output1
         aggregation_output1 = aggregation_softmax[0].cuda() * expert1_output2 + aggregation_softmax[1].cuda() * expert2_output2 + aggregation_softmax[2].cuda() * expert3_output2
-        cos_similarity = cos(aggregation_output0, aggregation_output1).mean()
-        loss =  - cos_similarity
+        #cos_similarity = cos(aggregation_output0, aggregation_output1).mean()
+        mse_similarity = mse(aggregation_output0, aggregation_output1).mean()
+        loss =  - mse_similarity
         opt.zero_grad()
         loss.backward()
         opt.step()
