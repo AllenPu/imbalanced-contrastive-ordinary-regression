@@ -70,7 +70,7 @@ def get_data_loader(args):
     train_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_train, img_size=args.img_size,
                           split='train', reweight=args.reweight, group_num=args.groups)
     #
-    group_list = train_dataset.get_group_list()
+    #group_list = train_dataset.get_group_list()
     #
     val_dataset = IMDBWIKI(data_dir=args.data_dir, df=df_val,
                         img_size=args.img_size, split='val', group_num=args.groups)
@@ -92,7 +92,7 @@ def get_data_loader(args):
     print(f"Training data size: {len(train_dataset)}")
     print(f"Validation data size: {len(val_dataset)}")
     print(f"Test data size: {len(test_dataset)}")
-    return train_loader, val_loader, test_loader, test_loader1, group_list, train_labels
+    return train_loader, val_loader, test_loader, test_loader1, train_labels
 
 
 
@@ -216,7 +216,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     #cudnn.benchmark = True
     setup_seed(args.seed)
-    train_loader, val_loader, test_loader, test_loader1,group_list, train_labels = get_data_loader(args)
+    train_loader, val_loader, test_loader, test_loader1, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
