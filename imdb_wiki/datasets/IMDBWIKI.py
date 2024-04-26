@@ -70,6 +70,8 @@ class IMDBWIKI(data.Dataset):
         
     def __len__(self):
         return len(self.df)
+    
+
 
     def __getitem__(self, index):
         index = index % len(self.df)
@@ -79,9 +81,10 @@ class IMDBWIKI(data.Dataset):
         transform = self.get_transform()
         if not self.aug:
             img = transform(img)
-        elif self.split == 'train' and self.aug :
-            img1, img2 = transform(img), transform(img)
-            img = [img1, img2]
+        else :
+            transform1, transform2 = self.aug_transform()
+            img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
+            img = torch.cat((img1, img2), dim=0)
         label = np.asarray([row['age']]).astype('float32')
         # imbalanced each group
         if self.group_mode  == 'i_g':
@@ -111,6 +114,15 @@ class IMDBWIKI(data.Dataset):
 
     def get_group(self):
         return self.group_list
+
+
+
+
+    def enable_multi_crop(self, enable=False):
+        if enable:
+            self.aug=True
+
+
 
 
     def get_transform(self):
@@ -144,6 +156,20 @@ class IMDBWIKI(data.Dataset):
                 transforms.Normalize([.5, .5, .5], [.5, .5, .5]),
             ])
         return transform
+    
+
+    def aug_transform(self):
+        train_transform = transforms.Compose([
+            transforms.Resize((self.img_size, self.img_size)),
+            transforms.RandomCrop(self.img_size, padding=4),
+            transforms.RandomApply([transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=0.8),
+            transforms.RandomGrayscale(p=0.2),
+            transforms.RandomApply([GaussianBlur([.1, 2.])], p=0.2),
+            transforms.RandomHorizontalFlip(), 
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.4914, 0.4822, 0.4465],std=[0.2023, 0.1994, 0.2010]),
+            ])
+        return train_transform, train_transform
 
 
     def weights_prepare(self, reweight='sqrt_inv', max_target=121, lds=False, lds_kernel='gaussian', lds_ks=5, lds_sigma=2):
@@ -224,6 +250,18 @@ class IMDBWIKI(data.Dataset):
         #print(f' mapping is {mapping}')
         #print(f' group is {self.group_list}')
         return new_class, new_class_bin, mapping
+    
+
+class GaussianBlur(object):
+    """Gaussian blur augmentation in SimCLR https://arxiv.org/abs/2002.05709"""
+    def __init__(self, sigma=[.1, 2.]):
+        self.sigma = sigma
+
+    def __call__(self, x):
+        sigma = random.uniform(self.sigma[0], self.sigma[1])
+        x = x.filter(ImageFilter.GaussianBlur(radius=sigma))
+        return x
+
 
 
  

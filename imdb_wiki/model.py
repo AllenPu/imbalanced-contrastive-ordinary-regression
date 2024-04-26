@@ -212,3 +212,28 @@ class Encoder_regression_single(nn.Module):
             feat = F.normalize(feat, dim=-1)
         pred = self.regressor(feat)
         return pred, feat
+    
+
+
+
+
+
+class Encoder_regression_multi_expert(nn.Module):
+    def __init__(self, name='resnet50', norm=False, weight_norm= False):
+        super(Encoder_regression_multi_expert, self).__init__()
+        backbone, dim_in = model_dict[name]
+        self.encoder = backbone()
+        self.norm = norm
+        self.weight_norm = weight_norm
+        if self.weight_norm:
+            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+        else:
+            self.regressor = nn.Sequential(nn.Linear(dim_in, 3))
+        
+
+    def forward(self, x):
+        feat = self.encoder(x)
+        if self.norm:
+            feat = F.normalize(feat, dim=-1)
+        pred = self.regressor(feat)
+        return pred
