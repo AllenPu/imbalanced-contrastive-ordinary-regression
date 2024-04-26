@@ -219,7 +219,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             gmeans.extend(loss_gmean.cpu().numpy())
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
-    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
+    print(' Prediction Many: All {}  MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
     #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
