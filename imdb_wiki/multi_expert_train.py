@@ -16,9 +16,6 @@ from collections import OrderedDict
 from loss import *
 from loss_contra import *
 from utils import *
-from train import test, write_log
-#from util_devlove import shot_metrics, train_regressor, validate
-from draw_tsne import draw_tsne
 import csv
 #from OrdinalEntropy import *
 import numpy  as np
