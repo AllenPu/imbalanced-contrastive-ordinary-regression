@@ -116,14 +116,22 @@ def get_model(args):
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
     #
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+    optimizer_encoder = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer_maj = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer_med = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer_min = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = [optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min]
     return model, optimizer
 
 
 
 def train_epoch(model, train_loader, train_labels, opt, args):
     model = torch.nn.DataParallel(model).cuda()
+    optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min = optimizer
     #model = model.cuda()
     mse = nn.MSELoss()
     model.train()
@@ -142,8 +150,33 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             loss_mse = mse(y_pred, y)
             #
             loss_mse.backward()
-            opt.step()
+            optimizer_encoder.step()
+            optimizer_maj.step()
+            optimizer_med.step()
+            optimizer_min.step()
+        validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e)
+
     return model
+
+
+
+
+def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot,e):
+    pred, label, val_mae = [], [], AverageMeter()
+    for idx, (x,y,_) in enumerate(val_loader):
+        bsz = x.shape[0]
+        with torch.no_grad():
+            g = find_regressors_index(y, maj_shot, med_shot, min_shot)
+            x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
+            y_output = model(x)
+            y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
+            pred.extend(y_pred.cpu().numpy())
+            label.extend(y.cpu().numpy())
+            mae = F.l1_loss(y_pred, y)
+            val_mae.update(mae, bsz)
+    shot_pred = shot_metric(pred, label, train_labels)
+    print(f' In Epoch {e} total MAE is {val_mae.avg} MAE {shot_pred['many']['l1']} Median: MAE {shot_pred['median']['l1']} Low: MAE {shot_pred['low']['l1']}')
+
 
 
 

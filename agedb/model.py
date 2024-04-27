@@ -228,14 +228,20 @@ class Encoder_regression_multi_expert(nn.Module):
         self.norm = norm
         self.weight_norm = weight_norm
         if self.weight_norm:
-            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_maj = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_med = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
         else:
-            self.regressor = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_maj = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_med = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_min = nn.Sequential(nn.Linear(dim_in, 3))
         
 
     def forward(self, x):
         feat = self.encoder(x)
         if self.norm:
             feat = F.normalize(feat, dim=-1)
-        pred = self.regressor(feat)
-        return pred
+        pred_maj = self.regressor_maj(feat)
+        pred_med = self.regressor_med(feat)
+        pred_min = self.regressor_min(feat)
+        return torch.cat((pred_maj, pred_med, pred_min), dim=-1)
