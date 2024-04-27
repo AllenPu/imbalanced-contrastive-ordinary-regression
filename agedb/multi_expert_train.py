@@ -142,7 +142,11 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             g = find_regressors_index(y, maj_shot, med_shot, min_shot)
             #print(f'y is {y} and g is {g}')
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
-            opt.zero_grad()
+            #
+            optimizer_encoder.zero_grad()
+            optimizer_maj.zero_grad()
+            optimizer_med.zero_grad()
+            optimizer_min.zero_grad()
             y_output = model(x)
             #
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
