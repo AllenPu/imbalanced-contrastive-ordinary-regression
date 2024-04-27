@@ -100,7 +100,7 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression_multi_expert(name='resnet18')
+    model = Encoder_regression_multi_expert(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
     # load pretrained
     ''''
     if args.pretrained:
