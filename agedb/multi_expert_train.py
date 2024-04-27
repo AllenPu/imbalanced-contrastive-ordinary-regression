@@ -118,11 +118,11 @@ def get_model(args):
     #
     optimizer_encoder = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_maj = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
+    optimizer_maj = torch.optim.SGD(model.regressor_maj.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_med = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
+    optimizer_med = torch.optim.SGD(model.regressor_med.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_min = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
+    optimizer_min = torch.optim.SGD(model.regressor_min.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer = [optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min]
     return model, optimizer
