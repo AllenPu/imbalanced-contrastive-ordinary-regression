@@ -130,6 +130,7 @@ def get_model(args):
 
 
 def train_epoch(model, train_loader, train_labels, opt, args):
+    store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
     model = torch.nn.DataParallel(model).cuda()
     optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min = optimizer
     #model = model.cuda()
@@ -158,14 +159,14 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             optimizer_maj.step()
             optimizer_med.step()
             optimizer_min.step()
-        validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e)
+        validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name)
 
     return model
 
 
 
 
-def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot,e):
+def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name):
     pred, label, val_mae = [], [], AverageMeter()
     for idx, (x,y,_) in enumerate(val_loader):
         bsz = x.shape[0]
@@ -182,8 +183,10 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot,e):
     maj, med, low = shot_pred['many']['l1'], shot_pred['median']['l1'], shot_pred['low']['l1']
     print(f' In Epoch {e} total validation MAE is {val_mae.avg} MAE {maj} Median: MAE {med} Low: MAE {low}')
     _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
-    print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
-
+    #print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
+    with open(f'{store_name}.csv', 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
 
 
 def find_regressors_index(y, maj_shot, med_shot, min_shot ):
@@ -256,6 +259,10 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             test_mae_pred.update(test_mae,bsz)
             loss_gmean = criterion_gmean(aggregation_output, y)
             gmeans.extend(loss_gmean.cpu().numpy())
+    store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
+    e = 0
+    maj_shot, med_shot, min_shot = shot_count(train_labels)
+    validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name):
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     print(' Prediction Many: All {}  MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
