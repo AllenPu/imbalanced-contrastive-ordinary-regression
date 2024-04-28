@@ -121,7 +121,7 @@ def get_model(args):
 
 
 def train_epoch(model, train_loader, train_labels, optimizer, args):
-    store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + '_epoch_' +str(args.epoch)
+    store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + '_epoch_' +str(args.epoch) + '_warm_up_' + str(args.warm_up)
     model = torch.nn.DataParallel(model).cuda()
     optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min = optimizer
     #model = model.cuda()
