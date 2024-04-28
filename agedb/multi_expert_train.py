@@ -169,7 +169,7 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
     maj, med, low = shot_pred['many']['l1'], shot_pred['median']['l1'], shot_pred['low']['l1']
     print(f' In Epoch {e} total validation MAE is {val_mae.avg} MAE {maj} Median: MAE {med} Low: MAE {low}')
     _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
-    #print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
+    print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
     with open(f'{store_name}.csv', 'a', newline='') as f:
         writer = csv.writer(f)
         writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
@@ -197,6 +197,7 @@ def find_regressors_index(y, maj_shot, med_shot, min_shot ):
 
 def test_output(model, test_loader1, test_loader, train_labels, args):
     model.eval()
+    maj_shot, med_shot, min_shot = shot_count(train_labels)
     #cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     mse = torch.nn.MSELoss()
     aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
@@ -219,7 +220,9 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         aggregation_output1 = aggregation_softmax[0].cuda() * expert1_output2 + aggregation_softmax[1].cuda() * expert2_output2 + aggregation_softmax[2].cuda() * expert3_output2
         #cos_similarity = cos(aggregation_output0, aggregation_output1).mean()
         mse_similarity = mse(aggregation_output0, aggregation_output1).mean()
-        loss =  - mse_similarity
+        center = torch.mean(torch.cat((aggregation_output0, aggregation_output1),dim=-1), dim=-1)
+        center_loss = torch.sum((aggregation_output0-center)(aggregation_output1-center))
+        loss =  mse_similarity + center_loss
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -247,12 +250,10 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             gmeans.extend(loss_gmean.cpu().numpy())
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
     e = 0
-    maj_shot, med_shot, min_shot = shot_count(train_labels)
+    #
     validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name)
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
-    _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
-    print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
     #
     print(' Prediction Many: All {}  MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
