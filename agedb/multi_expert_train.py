@@ -165,6 +165,7 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
             y_output = model(x)
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
             pred.extend(y_pred.cpu().numpy())
+            print(y_pred[:10])
             label.extend(y.cpu().numpy())
             mae = F.l1_loss(y_pred, y)
             val_mae.update(mae, bsz)
