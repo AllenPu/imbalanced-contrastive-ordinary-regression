@@ -472,9 +472,7 @@ def shot_reg(label, pred, maj, med, min):
     # how many preditions from min to med, min to maj, med to maj, min to med
     pred_label_dict = {'min to med':0, 'min to maj':0, 'med to maj':0, 'med to min':0, 'maj to min':0, 'maj to med':0}
     #
-    print(f' Before {pred[:100]}')
     pred = int_tensors(pred)
-    print(f' After {pred[:100]}')
     #
     labels, preds = np.stack(label), np.floor(np.hstack(pred))
     #dis = np.floor(np.abs(labels - preds)).tolist()
