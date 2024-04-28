@@ -519,7 +519,7 @@ def check_pred_shift(k_pred, k_label):
 
 def int_tensors(pred):
     pred = torch.Tensor(pred).unsqueeze(-1)
-    pred = pred - torch.floor(pred)
+    #pred = pred - torch.floor(pred)
     zero = torch.zeros_like(pred)
     one = torch.ones_like(pred)
     diff = pred - torch.floor(pred)
