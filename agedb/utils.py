@@ -472,14 +472,7 @@ def shot_reg(label, pred, maj, med, min):
     # how many preditions from min to med, min to maj, med to maj, min to med
     pred_label_dict = {'min to med':0, 'min to maj':0, 'med to maj':0, 'med to min':0, 'maj to min':0, 'maj to med':0}
     #
-    pred = pred - torch.floor(pred)
-    zero = torch.zeros_like(pred)
-    one = torch.ones_like(pred)
-    diff = pred - torch.floor(pred)
-    diff = torch.where(diff > 0.5, one, diff)
-    diff = torch.where(diff < 0.5, zero, diff)
-    pred = torch.floor(pred) + diff
-    pred = torch.clamp(pred, 0, 100)
+    pred = int_tensors(pred)
     #
     labels, preds = np.stack(label), np.floor(np.hstack(pred))
     #dis = np.floor(np.abs(labels - preds)).tolist()
@@ -521,6 +514,19 @@ def check_pred_shift(k_pred, k_label):
     else:
         return 'others'
       
+
+def int_tensors(pred):
+    pred = torch.Tensor(pred).unsquueze(-1)
+    pred = pred - torch.floor(pred)
+    zero = torch.zeros_like(pred)
+    one = torch.ones_like(pred)
+    diff = pred - torch.floor(pred)
+    diff = torch.where(diff > 0.5, one, diff)
+    diff = torch.where(diff < 0.5, zero, diff)
+    pred = torch.floor(pred) + diff
+    pred = torch.clamp(pred, 0, 100)
+    pred = pred.squeeze().tolist()
+    return pred
 
 
 def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc, device):
