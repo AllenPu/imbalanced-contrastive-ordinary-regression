@@ -245,3 +245,34 @@ class Encoder_regression_multi_expert(nn.Module):
         pred_med = self.regressor_med(feat)
         pred_min = self.regressor_min(feat)
         return torch.cat((pred_maj, pred_med, pred_min), dim=-1)
+    
+
+
+class Encoder_regression_guided_multi_regression(nn.Module):
+    def __init__(self, name='resnet50', norm=False, weight_norm= False):
+        super(Encoder_regression_guided_multi_regression, self).__init__()
+        backbone, dim_in = model_dict[name]
+        self.encoder = backbone()
+        self.norm = norm
+        self.weight_norm = weight_norm
+        if self.weight_norm:
+            self.cls_head = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_maj = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_med = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+        else:
+            self.cls_head = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_maj = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_med = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_min = nn.Sequential(nn.Linear(dim_in, 3))
+        
+
+    def forward(self, x):
+        feat = self.encoder(x)
+        if self.norm:
+            feat = F.normalize(feat, dim=-1)
+        cls_pred = self.cls_head(feat)
+        pred_maj = self.regressor_maj(feat)
+        pred_med = self.regressor_med(feat)
+        pred_min = self.regressor_min(feat)
+        return cls_pred, torch.cat((pred_maj, pred_med, pred_min), dim=-1)

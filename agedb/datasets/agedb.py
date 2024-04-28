@@ -7,11 +7,12 @@ from torch.utils import data
 import torchvision.transforms as transforms
 import pandas as pd
 from torch.utils.data import DataLoader
-from utils import get_lds_kernel_window
+from utils import get_lds_kernel_window, shot_count, check_shot
 import math
 import torch
 from PIL import ImageFilter 
 import random
+
 
 class AgeDB(data.Dataset):
     def __init__(self, df, data_dir, img_size, split='train', reweight='none', group_num=10, max_age=100):
@@ -24,15 +25,24 @@ class AgeDB(data.Dataset):
         self.group_num = group_num
         self.multi_crop = False
         if self.split == 'train':
+            # set up the three shot 
+            maj_shot, med_shot, min_shot = shot_count(self.df['age'])
+            three_shots = {}
+            #
             group_dic = {x: 0 for x in range(group_num)}
             for i in range(len(self.df)):
                 row = self.df.iloc[i]
                 age = min(row['age'], 100)
+                #
+                shot_key = check_shot(age, maj_shot, med_shot, min_shot)
+                three_shots[shot_key] = three_shots.get(shot_key, 0) + 1
+                #
                 group_id = math.floor(age/self.group_range)
                 group_dic[min(group_id, group_num-1)] += 1
             list_group = sorted(group_dic.items(),
                                 key=lambda group_dic: group_dic[0])
             self.group_list = [i[1] for i in list_group]
+            self.three_shots = three_shots
         else:
             pass
 
@@ -40,6 +50,14 @@ class AgeDB(data.Dataset):
     def enable_multi_crop(self, enable=False):
         if enable:
             self.multi_crop=True
+
+
+
+    def get_three_shots_num_list(self):
+        l = []
+        for i in  ['maj', 'med', 'min']:
+            l.append(self.three_shots[i])
+        return l
 
 
     def __len__(self):
@@ -138,6 +156,8 @@ class AgeDB(data.Dataset):
         weights = [scaling * x for x in weights]
         return weights
     
+
+
 
 
 
