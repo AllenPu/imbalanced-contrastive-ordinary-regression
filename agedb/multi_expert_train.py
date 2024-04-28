@@ -132,7 +132,7 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
         for idx, (x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
             #print(f'y is {y} and g is {g}')
-            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            x = x.cuda(non_blocking=True)
             #
             optimizer_encoder.zero_grad()
             optimizer_maj.zero_grad()
@@ -141,12 +141,13 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
             y_output = model(x)
             #
             if e < args.warm_up:
+                y = y.cuda(non_blocking=True)
                 yy = y.repeat(1,3)
                 #print(y_output.shape, yy.shape)
                 loss_mse = mse(y_output, yy)
             else:
                 g = find_regressors_index(y, maj_shot, med_shot, min_shot )
-                g = g.cuda(non_blocking=True)
+                y, g = y.cuda(non_blocking=True), g.cuda(non_blocking=True)
                 y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
                 loss_mse = mse(y_pred, y)
             #
