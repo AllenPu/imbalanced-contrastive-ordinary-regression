@@ -142,7 +142,7 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
             #
             if e < args.warm_up:
                 yy = y.repeat(1,3)
-                print(y_output.shape, yy.shape)
+                #print(y_output.shape, yy.shape)
                 loss_mse = mse(y_output, yy)
             else:
                 g = find_regressors_index(y, maj_shot, med_shot, min_shot )
