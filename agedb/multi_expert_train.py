@@ -22,6 +22,9 @@ from draw_tsne import draw_tsne
 import csv
 from OrdinalEntropy import *
 import numpy  as np
+import datetime
+
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
@@ -269,6 +272,11 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    #
+    today=datetime.date.today()
+    #
+    model_name =  'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + \
+        '_epoch_' + str(args.epoch) + '_lr_' + str(args.lr) + '_' + str(today)
     #cudnn.benchmark = True
     setup_seed(args.seed)
     train_loader, val_loader, test_loader, test_loader1,group_list, train_labels = get_data_loader(args)
