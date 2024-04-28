@@ -262,7 +262,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
     e = 0
     maj_shot, med_shot, min_shot = shot_count(train_labels)
-    validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name):
+    validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name)
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     print(' Prediction Many: All {}  MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
