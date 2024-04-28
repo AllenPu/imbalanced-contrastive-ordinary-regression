@@ -292,6 +292,7 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader1, test_loader, train_labels, args)
+    print(model_name)
 
 
     
