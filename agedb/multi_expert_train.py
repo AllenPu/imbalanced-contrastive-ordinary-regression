@@ -63,6 +63,8 @@ parser.add_argument('--norm', action='store_true')
 parser.add_argument('--weight_norm', action='store_true')
 parser.add_argument('--enable', action='store_false')
 parser.add_argument('--write_down', action='store_true', help=' write down the validation result to the csv file')
+parser.add_argument('--warm_up', type=int, default=20,
+                    help='number of epochs to warm up')
 
 
 
@@ -118,7 +120,7 @@ def get_model(args):
 
 
 
-def train_epoch(model, train_loader, train_labels, opt, args):
+def train_epoch(model, train_loader, train_labels, optimizer, args):
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + '_epoch_' +str(args.epoch)
     model = torch.nn.DataParallel(model).cuda()
     optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min = optimizer
@@ -129,7 +131,6 @@ def train_epoch(model, train_loader, train_labels, opt, args):
     for e in tqdm(range(args.epoch)):
         for idx, (x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
-            g = find_regressors_index(y, maj_shot, med_shot, min_shot)
             #print(f'y is {y} and g is {g}')
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             #
@@ -139,9 +140,12 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             optimizer_min.zero_grad()
             y_output = model(x)
             #
-            y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
-            #
-            loss_mse = mse(y_pred, y)
+            if e < args.warm_up:
+                yy = y.repeat(1,3)
+                loss_mse = mse(y_pred, yy)
+            else:
+                y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
+                loss_mse = mse(y_pred, y)
             #
             loss_mse.backward()
             optimizer_encoder.step()
