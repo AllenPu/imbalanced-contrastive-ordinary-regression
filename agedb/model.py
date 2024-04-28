@@ -228,13 +228,13 @@ class Encoder_regression_multi_expert(nn.Module):
         self.norm = norm
         self.weight_norm = weight_norm
         if self.weight_norm:
-            self.regressor_maj = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
-            self.regressor_med = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
-            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_maj = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
+            self.regressor_med = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
+            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
         else:
-            self.regressor_maj = nn.Sequential(nn.Linear(dim_in, 3))
-            self.regressor_med = nn.Sequential(nn.Linear(dim_in, 3))
-            self.regressor_min = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_maj = nn.Sequential(nn.Linear(dim_in, 1))
+            self.regressor_med = nn.Sequential(nn.Linear(dim_in, 1))
+            self.regressor_min = nn.Sequential(nn.Linear(dim_in, 1))
         
 
     def forward(self, x):
@@ -257,14 +257,14 @@ class Encoder_regression_guided_multi_regression(nn.Module):
         self.weight_norm = weight_norm
         if self.weight_norm:
             self.cls_head = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
-            self.regressor_maj = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
-            self.regressor_med = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
-            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
+            self.regressor_maj = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
+            self.regressor_med = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
+            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, ), name='weight')
         else:
             self.cls_head = nn.Sequential(nn.Linear(dim_in, 3))
-            self.regressor_maj = nn.Sequential(nn.Linear(dim_in, 3))
-            self.regressor_med = nn.Sequential(nn.Linear(dim_in, 3))
-            self.regressor_min = nn.Sequential(nn.Linear(dim_in, 3))
+            self.regressor_maj = nn.Sequential(nn.Linear(dim_in, 1))
+            self.regressor_med = nn.Sequential(nn.Linear(dim_in, 1))
+            self.regressor_min = nn.Sequential(nn.Linear(dim_in, 1))
         
 
     def forward(self, x):
