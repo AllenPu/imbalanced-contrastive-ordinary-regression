@@ -471,6 +471,15 @@ def shot_reg(label, pred, maj, med, min):
     pred_dict = {'maj':0, 'med':0, 'min':0}
     # how many preditions from min to med, min to maj, med to maj, min to med
     pred_label_dict = {'min to med':0, 'min to maj':0, 'med to maj':0, 'med to min':0, 'maj to min':0, 'maj to med':0}
+    #
+    pred = pred - torch.floor(pred)
+    zero = torch.zeros_like(pred)
+    one = torch.ones_like(pred)
+    diff = pred - torch.floor(pred)
+    diff = torch.where(diff > 0.5, one, diff)
+    diff = torch.where(diff < 0.5, zero, diff)
+    pred = torch.floor(pred) + diff
+    #
     labels, preds = np.stack(label), np.floor(np.hstack(pred))
     #dis = np.floor(np.abs(labels - preds)).tolist()
     bsz = labels.shape[0]
