@@ -479,6 +479,7 @@ def shot_reg(label, pred, maj, med, min):
     diff = torch.where(diff > 0.5, one, diff)
     diff = torch.where(diff < 0.5, zero, diff)
     pred = torch.floor(pred) + diff
+    pred = torch.clamp(pred, 0, 100)
     #
     labels, preds = np.stack(label), np.floor(np.hstack(pred))
     #dis = np.floor(np.abs(labels - preds)).tolist()
