@@ -102,20 +102,6 @@ def get_data_loader(args):
 def get_model(args):
     model = Encoder_regression_multi_expert(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
     # load pretrained
-    ''''
-    if args.pretrained:
-        ckpt = torch.load('last.pth')
-        new_state_dict = OrderedDict()
-        for k,v in ckpt['model'].items():
-            key = k.replace('module.','')
-            keys = key.replace('encoder.','')
-            new_state_dict[keys]=v
-        model.encoder.load_state_dict(new_state_dict)
-    '''
-    # freeze the pretrained part
-    #for (name, param) in model.encoder.named_parameters():
-    #    param.requires_grad = False
-    #
     optimizer_encoder = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer_maj = torch.optim.SGD(model.regressor_maj.parameters(), lr=args.lr,
