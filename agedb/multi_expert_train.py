@@ -59,7 +59,7 @@ parser.add_argument('--oe', action='store_true', help='ordinal entropy')
 parser.add_argument('--norm', action='store_true')
 parser.add_argument('--weight_norm', action='store_true')
 parser.add_argument('--enable', action='store_false')
-
+parser.add_argument('--write_down', action='store_true', help=' write down the validation result to the csv file')
 
 
 
@@ -145,14 +145,14 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             optimizer_maj.step()
             optimizer_med.step()
             optimizer_min.step()
-        validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name)
+        validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
 
     return model
 
 
 
 
-def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name):
+def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False):
     pred, label, val_mae = [], [], AverageMeter()
     for idx, (x,y,_) in enumerate(val_loader):
         bsz = x.shape[0]
@@ -170,9 +170,10 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
     print(f' In Epoch {e} total validation MAE is {val_mae.avg} MAE {maj} Median: MAE {med} Low: MAE {low}')
     _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
     print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
-    with open(f'{store_name}.csv', 'a', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
+    if write_down:
+        with open(f'{store_name}.csv', 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
 
 
 def find_regressors_index(y, maj_shot, med_shot, min_shot ):
@@ -251,7 +252,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
     e = 0
     #
-    validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name)
+    validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False)
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
