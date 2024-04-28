@@ -224,7 +224,6 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         #print(f' aggregation_weight is {aggregation_weight}')
         #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
         loss_cos = cos(y1_pred, y2_pred)
-        loss =  mse_similarity + center_loss
         #opt.zero_grad()
         #loss.backward()
         #opt.step()
