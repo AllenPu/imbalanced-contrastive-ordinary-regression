@@ -234,8 +234,8 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         mse_similarity = mse(aggregation_output0, aggregation_output1).mean()
         #
         center = torch.mean(torch.cat((aggregation_output0, aggregation_output1),dim=-1), dim=-1)
-        center_loss = torch.sum((aggregation_output0-center)*(aggregation_output1-center))
-        loss =  mse_similarity + center_loss
+        #center_loss = torch.sum((aggregation_output0-center)*(aggregation_output1-center))
+        loss =  mse_similarity #+ center_loss
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -258,7 +258,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             test_mae = F.l1_loss(aggregation_output, y)
             pred.extend(aggregation_output.cpu().numpy())
             label.extend(y.cpu().numpy())
-            test_mae_pred.update(test_mae,bsz)
+            test_mae_pred.update(test_mae.item(),bsz)
             loss_gmean = criterion_gmean(aggregation_output, y)
             gmeans.extend(loss_gmean.cpu().numpy())
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
@@ -268,7 +268,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
-    print(' Prediction Many: All {}  MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
+    print(' Prediction All {} Many MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
     #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
