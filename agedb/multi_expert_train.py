@@ -36,11 +36,11 @@ parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate for encoder')
 #
 parser.add_argument('--maj_lr', type=float, default=1e-3,
-                    help='initial learning rate')
+                    help='initial learning rate for majority')
 parser.add_argument('--med_lr', type=float, default=1e-3,
-                    help='initial learning rate')
+                    help='initial learning rate for median')
 parser.add_argument('--low_lr', type=float, default=1e-3,
-                    help='initial learning rate')
+                    help='initial learning rate low')
 #
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
 parser.add_argument('--img_size', type=int, default=224,
@@ -129,7 +129,6 @@ def get_model(args):
 
 
 def train_epoch(model, train_loader, train_labels, optimizer, args):
-    store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + '_epoch_' +str(args.epoch) + '_warm_up_' + str(args.warm_up)
     model = torch.nn.DataParallel(model).cuda()
     optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min = optimizer
     #model = model.cuda()
@@ -176,6 +175,7 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
 
 def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False):
     pred, label, val_mae = [], [], AverageMeter()
+    best = 100
     for idx, (x,y,_) in enumerate(val_loader):
         bsz = x.shape[0]
         with torch.no_grad():
@@ -189,6 +189,8 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
             val_mae.update(mae.item(), bsz)
     shot_pred = shot_metric(pred, label, train_labels)
     maj, med, low = shot_pred['many']['l1'], shot_pred['median']['l1'], shot_pred['low']['l1']
+    if val_mae.avg < best:
+        torch.save(model, f'./{store_name}.pth')
     print(f' In Epoch {e} total validation MAE is {val_mae.avg} MAE {maj} Median: MAE {med} Low: MAE {low}')
     _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
     print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
@@ -244,7 +246,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         #cos_similarity = cos(aggregation_output0, aggregation_output1).mean()
         mse_similarity = mse(aggregation_output0, aggregation_output1).mean()
         #
-        center = torch.mean(torch.cat((aggregation_output0, aggregation_output1),dim=-1), dim=-1)
+        #center = torch.mean(torch.cat((aggregation_output0, aggregation_output1),dim=-1), dim=-1)
         #center_loss = torch.sum((aggregation_output0-center)*(aggregation_output1-center))
         loss = -mse_similarity #+ center_loss
         print(' negative loss ')
@@ -296,6 +298,8 @@ if __name__ == '__main__':
     #
     today=datetime.date.today()
     #
+    store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + '_epoch_' +str(args.epoch) + '_warm_up_' + str(args.warm_up)
+    #
     model_name =  'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + \
         '_epoch_' + str(args.epoch) + '_lr_' + str(args.lr) + '_' + str(today)
     #cudnn.benchmark = True
@@ -305,6 +309,10 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader1, test_loader, train_labels, args)
+    print('--------------------test best--------------------')
+    model_val_best = torch.load(f'./{store_name}.pth')
+    test_output(model_val_best, test_loader1, test_loader, train_labels, args)
+    print('--------------------val best--------------------')
     print(model_name)
 
 
