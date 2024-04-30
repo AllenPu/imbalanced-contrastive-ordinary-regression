@@ -474,9 +474,9 @@ def shot_reg(label, pred, maj, med, min):
     #
     pred = int_tensors(pred)
     #
-    print(maj)
-    print(med)
-    print(min)
+    #print(maj)
+    #print(med)
+    #print(min)
     #
     labels, preds = np.stack(label), np.floor(np.hstack(pred))
     #
@@ -531,7 +531,7 @@ def int_tensors(pred):
     diff = torch.where(diff < 0.5, zero, diff)
     pred = torch.floor(pred) + diff
     pred = torch.clamp(pred, 0, 100)
-    pred = pred.squeeze().tolist()
+    #pred = pred.squeeze().tolist()
     return pred
 
 
