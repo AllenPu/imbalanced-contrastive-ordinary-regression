@@ -158,7 +158,8 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
             optimizer_min.step()
         validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     
-    torch.save(model, f'./{store_name}.pth')
+    
+    #torch.save(model, f'./{store_name}.pth')
 
     return model
 
