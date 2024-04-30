@@ -260,6 +260,9 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     # gmean
     criterion_gmean = nn.L1Loss(reduction='none')
     pred, label, gmeans = [], [], []
+    #
+    aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
+    #
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
