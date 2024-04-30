@@ -477,8 +477,9 @@ def shot_reg(label, pred, maj, med, min):
     #print(maj)
     #print(med)
     #print(min)
+    #print(f' size of label {type(label)} size of pred {type(pred)}')
     #
-    labels, preds = np.stack(label), np.hstack(pred)
+    labels, preds = np.stack(label), np.stack(pred)
     #
     print(f' labels {labels[:100]} preds {preds[:100]}')
     #dis = np.floor(np.abs(labels - preds)).tolist()
