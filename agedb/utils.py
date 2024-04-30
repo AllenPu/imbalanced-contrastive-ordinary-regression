@@ -474,7 +474,13 @@ def shot_reg(label, pred, maj, med, min):
     #
     pred = int_tensors(pred)
     #
+    print(maj)
+    print(med)
+    print(min)
+    #
     labels, preds = np.stack(label), np.floor(np.hstack(pred))
+    #
+    print(f' labels {labels[:100]} preds {preds[:100]}')
     #dis = np.floor(np.abs(labels - preds)).tolist()
     bsz = labels.shape[0]
     for i in range(bsz):

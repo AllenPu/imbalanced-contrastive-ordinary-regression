@@ -175,7 +175,7 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
             pred.extend(y_pred.cpu().numpy())
             label.extend(y.cpu().numpy())
             mae = F.l1_loss(y_pred, y)
-            val_mae.update(mae, bsz)
+            val_mae.update(mae.item(), bsz)
     shot_pred = shot_metric(pred, label, train_labels)
     maj, med, low = shot_pred['many']['l1'], shot_pred['median']['l1'], shot_pred['low']['l1']
     print(f' In Epoch {e} total validation MAE is {val_mae.avg} MAE {maj} Median: MAE {med} Low: MAE {low}')
