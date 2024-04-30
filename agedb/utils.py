@@ -481,7 +481,7 @@ def shot_reg(label, pred, maj, med, min):
     #
     labels, preds = np.stack(label), np.stack(pred)
     #
-    print(f' labels {labels[:100]} preds {preds[:100]}')
+    #print(f' labels {labels[:100]} preds {preds[:100]}')
     #dis = np.floor(np.abs(labels - preds)).tolist()
     bsz = labels.shape[0]
     for i in range(bsz):
