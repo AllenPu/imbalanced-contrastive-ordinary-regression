@@ -33,7 +33,15 @@ parser.add_argument('--seed', default=3407)
 parser.add_argument('--data_dir', type=str,
                     default='/home/rpu2/scratch/data/imbalanced-regression/agedb-dir/data', help='data directory')
 parser.add_argument('--lr', type=float, default=1e-3,
+                    help='initial learning rate for encoder')
+#
+parser.add_argument('--maj_lr', type=float, default=1e-3,
                     help='initial learning rate')
+parser.add_argument('--med_lr', type=float, default=5e-4,
+                    help='initial learning rate')
+parser.add_argument('--low_lr', type=float, default=5e-4,
+                    help='initial learning rate')
+#
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
 parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
@@ -109,11 +117,11 @@ def get_model(args):
     # load pretrained
     optimizer_encoder = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_maj = torch.optim.SGD(model.regressor_maj.parameters(), lr=args.lr,
+    optimizer_maj = torch.optim.SGD(model.regressor_maj.parameters(), lr=args.maj_lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_med = torch.optim.SGD(model.regressor_med.parameters(), lr=args.lr,
+    optimizer_med = torch.optim.SGD(model.regressor_med.parameters(), lr=args.med_lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_min = torch.optim.SGD(model.regressor_min.parameters(), lr=args.lr,
+    optimizer_min = torch.optim.SGD(model.regressor_min.parameters(), lr=args.low_lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer = [optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min]
     return model, optimizer
