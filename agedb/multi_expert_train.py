@@ -191,7 +191,7 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
     maj, med, low = shot_pred['many']['l1'], shot_pred['median']['l1'], shot_pred['low']['l1']
     if val_mae.avg < best:
         torch.save(model, f'./{store_name}.pth')
-    print(f' In Epoch {e} total validation MAE is {val_mae.avg} MAE {maj} Median: MAE {med} Low: MAE {low}')
+    print(f' In Epoch {e} total validation MAE is {val_mae.avg} Many MAE {maj} Median: MAE {med} Low: MAE {low}')
     _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
     print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
     if write_down:
@@ -249,7 +249,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         #center = torch.mean(torch.cat((aggregation_output0, aggregation_output1),dim=-1), dim=-1)
         #center_loss = torch.sum((aggregation_output0-center)*(aggregation_output1-center))
         loss = -mse_similarity #+ center_loss
-        print(' negative loss ')
+        #print(' negative loss ')
         opt.zero_grad()
         loss.backward()
         opt.step()
