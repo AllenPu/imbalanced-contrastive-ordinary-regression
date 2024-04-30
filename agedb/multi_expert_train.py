@@ -35,11 +35,11 @@ parser.add_argument('--data_dir', type=str,
 parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate for encoder')
 #
-parser.add_argument('--maj_lr', type=float, default=5e-3,
+parser.add_argument('--maj_lr', type=float, default=1e-3,
                     help='initial learning rate')
-parser.add_argument('--med_lr', type=float, default=5e-4,
+parser.add_argument('--med_lr', type=float, default=1e-3,
                     help='initial learning rate')
-parser.add_argument('--low_lr', type=float, default=5e-4,
+parser.add_argument('--low_lr', type=float, default=1e-3,
                     help='initial learning rate')
 #
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
