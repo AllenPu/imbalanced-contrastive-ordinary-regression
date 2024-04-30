@@ -238,7 +238,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         #
         center = torch.mean(torch.cat((aggregation_output0, aggregation_output1),dim=-1), dim=-1)
         #center_loss = torch.sum((aggregation_output0-center)*(aggregation_output1-center))
-        loss = - mse_similarity #+ center_loss
+        loss = mse_similarity #+ center_loss
         opt.zero_grad()
         loss.backward()
         opt.step()
