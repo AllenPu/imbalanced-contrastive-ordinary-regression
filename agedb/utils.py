@@ -531,7 +531,7 @@ def int_tensors(pred):
     diff = torch.where(diff < 0.5, zero, diff)
     pred = torch.floor(pred) + diff
     pred = torch.clamp(pred, 0, 100)
-    #pred = pred.squeeze().tolist()
+    pred = pred.tolist()
     return pred
 
 
