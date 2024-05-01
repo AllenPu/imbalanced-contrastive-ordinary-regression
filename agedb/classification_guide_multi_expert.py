@@ -141,6 +141,8 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #
             cls_pred, y_output = model(x)
             #
+            print(f' shape {cls_pred.shape}, {g.shape}')
+            #
             loss_la = la(cls_pred, g.unsqueeze(-1))
             #
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
