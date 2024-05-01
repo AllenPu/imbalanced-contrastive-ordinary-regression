@@ -143,11 +143,15 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #
             loss_la = la(cls_pred, g.squeeze().long())
             #
+            pred = F.softmax(cls_pred, dim=-1)
+            cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)
+            loss_aggregate_mse = mse(cls_aggregate, y)
+            #
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
             #
             loss_mse = mse(y_pred, y)
             #
-            loss = loss_mse + loss_la
+            loss = loss_mse + loss_la + loss_aggregate_mse
             #
             loss.backward()
             optimizer_encoder.step()
@@ -213,7 +217,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     #
     cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     mse = torch.nn.MSELoss()
-    aggregation_weight = torch.nn.Parameter(torch.FloatTensor(2), requires_grad=True)
+    aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
     aggregation_weight.data.fill_(1/3)
    # model.cls_head.requires_grad = True
     opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
