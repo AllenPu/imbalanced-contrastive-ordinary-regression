@@ -168,7 +168,7 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
         with torch.no_grad():
             g = find_regressors_index(y, maj_shot, med_shot, min_shot)
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
-            y_output = model(x)
+            cls_pred, y_output = model(x)
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
             pred.extend(y_pred.cpu().numpy())
             label.extend(y.cpu().numpy())
