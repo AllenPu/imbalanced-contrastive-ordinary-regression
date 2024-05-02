@@ -313,7 +313,7 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
     e = 0
-    validates(model, val_loader, train_labels, e, store_name, write_down=args.write_down)
+    validates(model, test_loader, train_labels, e, store_name, write_down=args.write_down)
     #test_output(model, test_loader1, test_loader, train_labels, args)
     #print('--------------------test best--------------------')
     #model_val_best = torch.load(f'./{store_name}.pth')
