@@ -234,7 +234,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         #expert13, expert23 = y1[:,2], y2[:,2]
         #print(f' aggregation_weight is {aggregation_weight}')
         #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
-        loss_ce = cos(y1_pred, y2_pred)
+        loss_ce = cos(y1_pred, y2_pred).mean()
         #aug_1 = aggregation_softmax[0].cuda() * expert11 + aggregation_softmax[1].cuda() * expert12 + aggregation_softmax[2].cuda() * expert13
         #aug_2 = aggregation_softmax[0].cuda() * expert21 + aggregation_softmax[1].cuda() * expert22 + aggregation_softmax[2].cuda() * expert23
         #loss_mse = mse(aug_1, aug_2).mean()
