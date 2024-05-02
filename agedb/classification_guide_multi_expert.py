@@ -244,7 +244,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         loss.backward()
         opt.step()
     #
-    model.module.cls_head.module.requires_grad = False
+    model.module.cls_head.requires_grad = False
     #aggregation_weight.requires_grad = False
     # mae
     test_mae_pred = AverageMeter()
