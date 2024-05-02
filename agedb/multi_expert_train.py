@@ -163,7 +163,7 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
             optimizer_maj.step()
             optimizer_med.step()
             optimizer_min.step()
-        validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
+        validates(model, val_loader, train_labels, e, store_name, write_down=args.write_down)
     
     
     #torch.save(model, f'./{store_name}.pth')
@@ -173,9 +173,10 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
 
 
 
-def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False):
+def validates(model, val_loader, train_labels, e, store_name, write_down=False):
     pred, label, val_mae = [], [], AverageMeter()
     best = 100
+    maj_shot, med_shot, min_shot = shot_count(train_labels)
     for idx, (x,y,_) in enumerate(val_loader):
         bsz = x.shape[0]
         with torch.no_grad():
@@ -311,11 +312,13 @@ if __name__ == '__main__':
     model, optimizer = get_model(args)
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
-    test_output(model, test_loader1, test_loader, train_labels, args)
-    print('--------------------test best--------------------')
-    model_val_best = torch.load(f'./{store_name}.pth')
-    test_output(model_val_best, test_loader1, test_loader, train_labels, args)
-    print('--------------------val best--------------------')
+    e = 0
+    validates(model, val_loader, train_labels, e, store_name, write_down=args.write_down)
+    #test_output(model, test_loader1, test_loader, train_labels, args)
+    #print('--------------------test best--------------------')
+    #model_val_best = torch.load(f'./{store_name}.pth')
+    #test_output(model_val_best, test_loader1, test_loader, train_labels, args)
+    #print('--------------------val best--------------------')
     print(model_name)
 
 
