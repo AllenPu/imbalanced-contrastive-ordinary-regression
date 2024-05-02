@@ -219,9 +219,9 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     mse = torch.nn.MSELoss()
     #aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
     #aggregation_weight.data.fill_(1/3)
-    model.cls_head.requires_grad = True
+    model.module.cls_head.requires_grad = True
     #opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
-    opt = torch.optim.SGD(model.cls_head.parameters(), lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
+    opt = torch.optim.SGD(model.module.cls_head.parameters(), lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
     for idx, (x,y,g) in enumerate(test_loader1):
         x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
         xx = torch.chunk(x, 2, dim=1)
@@ -244,7 +244,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         loss.backward()
         opt.step()
     #
-    model.cls_head.requires_grad = False
+    model.cls_head.module.requires_grad = False
     #aggregation_weight.requires_grad = False
     # mae
     test_mae_pred = AverageMeter()
