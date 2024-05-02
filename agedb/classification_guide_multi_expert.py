@@ -217,49 +217,54 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     #
     cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     mse = torch.nn.MSELoss()
-    aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
-    aggregation_weight.data.fill_(1/3)
-   # model.cls_head.requires_grad = True
-    opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
+    #aggregation_weight = torch.nn.Parameter(torch.FloatTensor(3), requires_grad=True)
+    #aggregation_weight.data.fill_(1/3)
+    model.cls_head.requires_grad = True
+    #opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
+    opt = torch.optim.SGD(model.cls_head.parameters(), lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
     for idx, (x,y,g) in enumerate(test_loader1):
         x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
         xx = torch.chunk(x, 2, dim=1)
         x1, x2 = xx[0].squeeze(1), xx[1].squeeze(1)
         y1_pred, y1 = model(x1)
         y2_pred, y2 = model(x2)
-        expert11, expert21 = y1[:,0], y2[:,0]
-        expert12, expert22 = y1[:,1], y2[:,1]
-        expert13, expert23 = y1[:,2], y2[:,2]
+        y1_pred, y2_pred = F.softmax(y1_pred, dim=-1), F.softmax(y2_pred, dim=-1)
+        #expert11, expert21 = y1[:,0], y2[:,0]
+        #expert12, expert22 = y1[:,1], y2[:,1]
+        #expert13, expert23 = y1[:,2], y2[:,2]
         #print(f' aggregation_weight is {aggregation_weight}')
-        aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
+        #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
         loss_ce = cos(y1_pred, y2_pred)
-        aug_1 = aggregation_softmax[0].cuda() * expert11 + aggregation_softmax[1].cuda() * expert12 + aggregation_softmax[2].cuda() * expert13
-        aug_2 = aggregation_softmax[0].cuda() * expert21 + aggregation_softmax[1].cuda() * expert22 + aggregation_softmax[2].cuda() * expert23
-        loss_mse = mse(aug_1, aug_2).mean()
+        #aug_1 = aggregation_softmax[0].cuda() * expert11 + aggregation_softmax[1].cuda() * expert12 + aggregation_softmax[2].cuda() * expert13
+        #aug_2 = aggregation_softmax[0].cuda() * expert21 + aggregation_softmax[1].cuda() * expert22 + aggregation_softmax[2].cuda() * expert23
+        #loss_mse = mse(aug_1, aug_2).mean()
         #
-        loss = -loss_ce + loss_mse
+        loss = -loss_ce # + loss_mse
         opt.zero_grad()
         loss.backward()
         opt.step()
     #
-    aggregation_weight.requires_grad = False
+    model.cls_head.requires_grad = False
+    #aggregation_weight.requires_grad = False
     # mae
     test_mae_pred = AverageMeter()
     # gmean
     criterion_gmean = nn.L1Loss(reduction='none')
     pred, label, gmeans = [], [], []
     #
-    aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
+    #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
     #
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-            y_pred = model(x)
-            expert1 = y_pred[:,0]
-            expert2 = y_pred[:,1]
-            expert3 = y_pred[:,2]
-            aggregation_output = aggregation_softmax[0].cuda() * expert1 + aggregation_softmax[1].cuda() * expert2 + aggregation_softmax[2].cuda() * expert3
+            cls_pred, y_pred = model(x)
+            #expert1 = y_pred[:,0]
+            #expert2 = y_pred[:,1]
+            #expert3 = y_pred[:,2]
+            cls = F.softmax(cls_pred, dim=-1)
+            aggregation_output = torch.sum(torch.mul(cls, y_pred), dim=-1)
+            #aggregation_output = aggregation_softmax[0].cuda() * expert1 + aggregation_softmax[1].cuda() * expert2 + aggregation_softmax[2].cuda() * expert3
             test_mae = F.l1_loss(aggregation_output, y)
             pred.extend(aggregation_output.cpu().numpy())
             label.extend(y.cpu().numpy())
