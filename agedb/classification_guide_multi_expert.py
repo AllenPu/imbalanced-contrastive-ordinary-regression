@@ -244,24 +244,27 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         loss.backward()
         opt.step()
     #
-    aggregation_weight.requires_grad = False
+    model.module.cls_head.requires_grad = False
+    #aggregation_weight.requires_grad = False
     # mae
     test_mae_pred = AverageMeter()
     # gmean
     criterion_gmean = nn.L1Loss(reduction='none')
     pred, label, gmeans = [], [], []
     #
-    aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
+    #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
     #
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-            y_pred = model(x)
-            expert1 = y_pred[:,0]
-            expert2 = y_pred[:,1]
-            expert3 = y_pred[:,2]
-            aggregation_output = aggregation_softmax[0].cuda() * expert1 + aggregation_softmax[1].cuda() * expert2 + aggregation_softmax[2].cuda() * expert3
+            cls_pred, y_pred = model(x)
+            #expert1 = y_pred[:,0]
+            #expert2 = y_pred[:,1]
+            #expert3 = y_pred[:,2]
+            cls = F.softmax(cls_pred, dim=-1)
+            aggregation_output = torch.sum(torch.mul(cls, y_pred), dim=-1)
+            #aggregation_output = aggregation_softmax[0].cuda() * expert1 + aggregation_softmax[1].cuda() * expert2 + aggregation_softmax[2].cuda() * expert3
             test_mae = F.l1_loss(aggregation_output, y)
             pred.extend(aggregation_output.cpu().numpy())
             label.extend(y.cpu().numpy())
@@ -275,7 +278,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
-    print(' Prediction Many: All {}  MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
+    print(' Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
     #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
