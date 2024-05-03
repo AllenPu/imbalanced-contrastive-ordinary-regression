@@ -163,7 +163,7 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
             optimizer_maj.step()
             optimizer_med.step()
             optimizer_min.step()
-        validates(model, val_loader, train_labels, e, store_name, write_down=args.write_down)
+        _, _ = validates(model, val_loader, train_labels, e, store_name, write_down=args.write_down)
     
     
     #torch.save(model, f'./{store_name}.pth')
@@ -199,6 +199,7 @@ def validates(model, val_loader, train_labels, e, store_name, write_down=False):
         with open(f'{store_name}.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
+    return mae.avg, shot_pred
 
 
 def find_regressors_index(y, maj_shot, med_shot, min_shot ):
@@ -313,7 +314,12 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
     e = 0
-    validates(model, test_loader, train_labels, e, store_name, write_down=args.write_down)
+    mae_avg, shot_pred = validates(model, test_loader, train_labels, e, store_name, write_down=args.write_down)
+    print(' Prediction All {} Many MAE {} Median: MAE {} Low: MAE {}'.format(mae_avg, shot_pred['many']['l1'],
+                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
+    #
+    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #test_output(model, test_loader1, test_loader, train_labels, args)
     #print('--------------------test best--------------------')
     #model_val_best = torch.load(f'./{store_name}.pth')
