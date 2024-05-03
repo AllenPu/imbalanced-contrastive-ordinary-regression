@@ -24,7 +24,7 @@ from OrdinalEntropy import *
 import numpy  as np
 import datetime
 from loss import *
-
+from elr import *
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -143,15 +143,17 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #
             loss_la = la(cls_pred, g.squeeze().long())
             #
-            pred = F.softmax(cls_pred, dim=-1)
-            cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)
-            loss_aggregate_mse = mse(cls_aggregate, y)
+            #pred = F.softmax(cls_pred, dim=-1)
+            #cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)
+            #loss_aggregate_mse = mse(cls_aggregate, y)
+            #
+            loss_elr = elr(cls_pred, g.squeeze().long())
             #
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
             #
             loss_mse = mse(y_pred, y)
             #
-            loss = loss_mse + loss_la + loss_aggregate_mse
+            loss = loss_mse + loss_la + loss_elr
             #
             loss.backward()
             optimizer_encoder.step()
@@ -215,6 +217,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     #cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     #ce = torch.nn.CrossEntropyLoss()
     #
+    '''
     cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     mse = torch.nn.MSELoss()
     aggregation_weight = torch.nn.Parameter(torch.FloatTensor(2), requires_grad=True)
@@ -250,31 +253,31 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     test_mae_pred = AverageMeter()
     # gmean
     criterion_gmean = nn.L1Loss(reduction='none')
-    pred, label, gmeans = [], [], []
     #
     #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
+    #
+    '''
+    test_mae_pred = AverageMeter()
+    pred, label, gmeans = [], [], []
+    criterion_gmean = nn.L1Loss(reduction='none')
     #
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
             cls_pred, y_pred = model(x)
-            #expert1 = y_pred[:,0]
-            #expert2 = y_pred[:,1]
-            #expert3 = y_pred[:,2]
-            cls = F.softmax(cls_pred, dim=-1)
-            aggregation_output = torch.sum(torch.mul(cls, y_pred), dim=-1)
-            #aggregation_output = aggregation_softmax[0].cuda() * expert1 + aggregation_softmax[1].cuda() * expert2 + aggregation_softmax[2].cuda() * expert3
-            test_mae = F.l1_loss(aggregation_output, y)
-            pred.extend(aggregation_output.cpu().numpy())
+            g_index = torch.argmax(cls_pred, dim=1).unsqueeze(-1)
+            y_hat = torch.gather(y_pred, dim=1, index=g_index)
+            test_mae = F.l1_loss(y_hat, y)
+            pred.extend(y_hat.cpu().numpy())
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
-            loss_gmean = criterion_gmean(aggregation_output, y)
+            loss_gmean = criterion_gmean(y_hat, y)
             gmeans.extend(loss_gmean.cpu().numpy())
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
-    e = 0
+   # e = 0
     #
-    validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False)
+    #validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False)
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
@@ -302,10 +305,11 @@ if __name__ == '__main__':
     train_loader, val_loader, test_loader, test_loader1, group_list, train_labels = get_data_loader(args)
     #
     la = LAloss(group_list)
+    elr = elr_loss(num_examp=sum(group_list))
     model, optimizer = get_model(args)
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
-    test_output(model, test_loader1, test_loader, train_labels, args)
+    test_output(model, test_loader, test_loader, train_labels, args)
 
 
     
