@@ -199,7 +199,7 @@ def validates(model, val_loader, train_labels, e, store_name, write_down=False):
         with open(f'{store_name}.csv', 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
-    return mae.avg, shot_pred
+    return val_mae.avg, shot_pred
 
 
 def find_regressors_index(y, maj_shot, med_shot, min_shot ):
