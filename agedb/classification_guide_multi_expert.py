@@ -269,12 +269,14 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             cls_pred, y_pred = model(x)
             g_index = torch.argmax(cls_pred, dim=1).unsqueeze(-1)
             g_ = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            acc_pred = accuracy(cls_pred, g_)
+            acc = accuracy(cls_pred, g_)
             y_hat = torch.gather(y_pred, dim=1, index=g_index)
             test_mae = F.l1_loss(y_hat, y)
             pred.extend(y_hat.cpu().numpy())
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
+            #
+            acc_pred.update(acc, bsz)
             loss_gmean = criterion_gmean(y_hat, y)
             gmeans.extend(loss_gmean.cpu().numpy())
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
@@ -284,7 +286,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
-    print(' Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
+    print(' Group Acc {} Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(acc_pred.avg, test_mae_pred.avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
     #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
