@@ -265,10 +265,10 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
+            g_ = find_regressors_index(y, maj_shot, med_shot, min_shot)
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
             cls_pred, y_pred = model(x)
             g_index = torch.argmax(cls_pred, dim=1).unsqueeze(-1)
-            g_ = find_regressors_index(y, maj_shot, med_shot, min_shot)
             acc = accuracy(cls_pred, g_)
             y_hat = torch.gather(y_pred, dim=1, index=g_index)
             test_mae = F.l1_loss(y_hat, y)
