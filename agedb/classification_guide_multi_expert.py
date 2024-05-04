@@ -266,7 +266,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
         with torch.no_grad():
             bsz = x.shape[0]
             g_ = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            x, y, g_ = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g_.cuda(non_blocking=True)
             cls_pred, y_pred = model(x)
             g_index = torch.argmax(cls_pred, dim=1).unsqueeze(-1)
             acc = accuracy(cls_pred, g_)
