@@ -258,7 +258,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
     #
     '''
-    test_mae_pred = AverageMeter()
+    test_mae_pred, acc_pred = AverageMeter(), AverageMeter()
     pred, label, gmeans = [], [], []
     criterion_gmean = nn.L1Loss(reduction='none')
     #
@@ -268,6 +268,8 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
             cls_pred, y_pred = model(x)
             g_index = torch.argmax(cls_pred, dim=1).unsqueeze(-1)
+            g_ = find_regressors_index(y, maj_shot, med_shot, min_shot)
+            acc_pred = accuracy(cls_pred, g_)
             y_hat = torch.gather(y_pred, dim=1, index=g_index)
             test_mae = F.l1_loss(y_hat, y)
             pred.extend(y_hat.cpu().numpy())
