@@ -318,8 +318,8 @@ if __name__ == '__main__':
     print(' Prediction All {} Many MAE {} Median: MAE {} Low: MAE {}'.format(mae_avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
     #
-    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
-                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
+    #print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+    #                                                                shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #test_output(model, test_loader1, test_loader, train_labels, args)
     #print('--------------------test best--------------------')
     #model_val_best = torch.load(f'./{store_name}.pth')
