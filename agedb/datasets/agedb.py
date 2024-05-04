@@ -23,7 +23,10 @@ class AgeDB(data.Dataset):
         self.group_range = int(max_age/group_num)
         self.group_list = []
         self.group_num = group_num
+        #
         self.multi_crop = False
+        self.elr_index_return = False
+        #
         if self.split == 'train':
             # set up the three shot 
             maj_shot, med_shot, min_shot = shot_count(self.df['age'])
