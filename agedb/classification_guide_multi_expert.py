@@ -87,6 +87,7 @@ def get_data_loader(args):
     test_dataset1 = AgeDB(data_dir=args.data_dir, df=df_test,
                          img_size=args.img_size, split='test', group_num=args.groups)
     test_dataset1.enable_multi_crop(args.enable)
+    test_dataset.enable_elr_index_return(True)
     #
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.workers, pin_memory=True, drop_last=False)
@@ -128,7 +129,7 @@ def train_epoch(model, train_loader, train_labels, opt, args):
     model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
-        for idx, (x, y, group) in enumerate(train_loader):
+        for idx, (i, x, y, group) in enumerate(train_loader):
             bsz = x.shape[0]
             g = find_regressors_index(y, maj_shot, med_shot, min_shot)
             #print(f'y is {y} and g is {g}')
@@ -147,7 +148,7 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)
             #loss_aggregate_mse = mse(cls_aggregate, y)
             #
-            loss_elr = elr(cls_pred, g.squeeze().long())
+            loss_elr = elr(i, cls_pred, g.squeeze().long())
             #
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
             #
@@ -160,7 +161,7 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             optimizer_maj.step()
             optimizer_med.step()
             optimizer_min.step()
-        validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
+        #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
 
     return model
 

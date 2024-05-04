@@ -51,6 +51,11 @@ class AgeDB(data.Dataset):
         if enable:
             self.multi_crop=True
 
+    
+    def enable_elr_index_return(self, enable=False):
+        if enable:
+            self.elr_index_return=True
+
 
 
     def get_three_shots_num_list(self):
@@ -85,7 +90,10 @@ class AgeDB(data.Dataset):
         group_ = min(math.floor(label/self.group_range), self.group_num-1)
         group = np.asarray([group_]).astype('float32')
         #print(f' size  {img.shape}')
-        return imgs, label, group
+        if self.elr_index_return:
+            return index, imgs, label, group
+        else:
+            return imgs, label, group
 
     def get_transform(self):
         if self.split == 'train':
