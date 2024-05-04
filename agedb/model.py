@@ -259,7 +259,7 @@ class Encoder_regression_guided_multi_regression(nn.Module):
             self.cls_head = torch.nn.utils.weight_norm(nn.Linear(dim_in, 3), name='weight')
             self.regressor_maj = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
             self.regressor_med = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
-            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, ), name='weight')
+            self.regressor_min = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
         else:
             self.cls_head = nn.Sequential(nn.Linear(dim_in, 3))
             self.regressor_maj = nn.Sequential(nn.Linear(dim_in, 1))
