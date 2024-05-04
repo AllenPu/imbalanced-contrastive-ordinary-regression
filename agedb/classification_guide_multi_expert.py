@@ -276,7 +276,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             #
-            acc_pred.update(acc, bsz)
+            acc_pred.update(acc[0].item(), bsz)
             loss_gmean = criterion_gmean(y_hat, y)
             gmeans.extend(loss_gmean.cpu().numpy())
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
