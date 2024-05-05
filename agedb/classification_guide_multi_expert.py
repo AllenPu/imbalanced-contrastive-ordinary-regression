@@ -63,6 +63,8 @@ parser.add_argument('--oe', action='store_true', help='ordinal entropy')
 parser.add_argument('--norm', action='store_true')
 parser.add_argument('--weight_norm', action='store_true')
 parser.add_argument('--enable', action='store_false')
+parser.add_argument('--beta', type=float, default=0.7)
+parser.add_argument('--lambdas', type=float, default=3)
 parser.add_argument('--write_down', action='store_true', help=' write down the validation result to the csv file')
 
 
@@ -311,7 +313,7 @@ if __name__ == '__main__':
     train_loader, val_loader, test_loader, test_loader1, group_list, train_labels = get_data_loader(args)
     #
     la = LAloss(group_list)
-    elr = elr_loss(num_examp=sum(group_list))
+    elr = elr_loss(num_examp=sum(group_list), lambdas=args.lambdas, beta=args.beta)
     model, optimizer = get_model(args)
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
