@@ -151,7 +151,7 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)
             #loss_aggregate_mse = mse(cls_aggregate, y)
             #
-            #loss_elr = elr(i, cls_pred, g.squeeze().long())
+            loss_elr = elr(i, cls_pred, g.squeeze().long())
             #loss_elr = 0
             #
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
@@ -319,6 +319,7 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
+    print(" elr + la ")
 
 
     
