@@ -152,7 +152,7 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #loss_aggregate_mse = mse(cls_aggregate, y)
             #
             #loss_elr = elr(i, cls_pred, g.squeeze().long())
-            loss_elr = 0
+            #loss_elr = 0
             #
             y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
             #
