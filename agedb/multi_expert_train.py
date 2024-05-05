@@ -71,7 +71,8 @@ parser.add_argument('--norm', action='store_true')
 parser.add_argument('--weight_norm', action='store_true')
 parser.add_argument('--enable', action='store_false')
 parser.add_argument('--write_down', action='store_true', help=' write down the validation result to the csv file')
-parser.add_argument('--warm_up', type=int, default=20,
+# set up warm up epoch
+parser.add_argument('--warm_up', type=int, default=0,
                     help='number of epochs to warm up')
 
 
@@ -190,7 +191,8 @@ def validates(model, val_loader, train_labels, e, store_name, write_down=False):
             val_mae.update(mae.item(), bsz)
     shot_pred = shot_metric(pred, label, train_labels)
     maj, med, low = shot_pred['many']['l1'], shot_pred['median']['l1'], shot_pred['low']['l1']
-    if val_mae.avg < best:
+    # if write down we test the best val model
+    if val_mae.avg < best and write_down:
         torch.save(model, f'./{store_name}.pth')
     print(f' In Epoch {e} total validation MAE is {val_mae.avg} Many MAE {maj} Median: MAE {med} Low: MAE {low}')
     _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
