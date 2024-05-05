@@ -144,8 +144,8 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #
             cls_pred, y_output = model(x)
             #
-            #loss_la = la(cls_pred, g.squeeze().long())
-            loss_la = F.cross_entropy(cls_pred, g.squeeze().long())
+            loss_la = la(cls_pred, g.squeeze().long())
+            #loss_la = F.cross_entropy(cls_pred, g.squeeze().long())
             #
             #pred = F.softmax(cls_pred, dim=-1)
             #cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)

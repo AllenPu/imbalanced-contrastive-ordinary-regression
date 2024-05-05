@@ -163,7 +163,7 @@ def train_epoch(model, train_loader, train_labels, optimizer, args):
             optimizer_maj.step()
             optimizer_med.step()
             optimizer_min.step()
-        _, _ = validates(model, val_loader, train_labels, e, store_name, write_down=args.write_down)
+        #_, _ = validates(model, val_loader, train_labels, e, store_name, write_down=args.write_down)
     
     
     #torch.save(model, f'./{store_name}.pth')
