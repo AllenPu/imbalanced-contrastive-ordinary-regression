@@ -144,8 +144,8 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #
             cls_pred, y_output = model(x)
             #
-            loss_la = la(cls_pred, g.squeeze().long())
-            #loss_la = F.cross_entropy(cls_pred, g.squeeze().long())
+            #loss_la = la(cls_pred, g.squeeze().long())
+            loss_la = F.cross_entropy(cls_pred, g.squeeze().long())
             #
             #pred = F.softmax(cls_pred, dim=-1)
             #cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)
@@ -158,7 +158,7 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #
             loss_mse = mse(y_pred, y)
             #
-            loss = loss_mse + loss_la + loss_elr
+            loss = loss_mse + 2*loss_la + loss_elr
             #
             loss.backward()
             optimizer_encoder.step()
@@ -319,7 +319,7 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
-    print(" elr + la + norm ")
+    print(" elr + 2 ce ")
 
 
     
