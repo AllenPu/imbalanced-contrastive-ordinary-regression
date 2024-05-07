@@ -158,7 +158,7 @@ def train_epoch(model, train_loader, train_labels, opt, args):
             #
             loss_mse = mse(y_pred, y)
             #
-            loss = loss_mse + 2*loss_la + loss_elr
+            loss = loss_mse + 3*loss_la + loss_elr
             #
             loss.backward()
             optimizer_encoder.step()
@@ -319,7 +319,7 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
-    print(" elr + 2 ce ")
+    print(" elr + 3 ce ")
 
 
     

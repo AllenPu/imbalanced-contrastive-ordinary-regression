@@ -194,7 +194,7 @@ def validates(model, val_loader, train_labels, e, store_name, write_down=False):
     # if write down we test the best val model
     if val_mae.avg < best and write_down:
         torch.save(model, f'./{store_name}.pth')
-    print(f' In Epoch {e} total validation MAE is {val_mae.avg} Many MAE {maj} Median: MAE {med} Low: MAE {low}')
+        print(f' In Epoch {e} total validation MAE is {val_mae.avg} Many MAE {maj} Median: MAE {med} Low: MAE {low}')
     _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
     print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
     if write_down:
