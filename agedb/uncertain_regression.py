@@ -25,6 +25,8 @@ import numpy  as np
 import datetime
 from loss import *
 from elr import *
+import matplotlib.pyplot as plt
+from collections import Counter
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -120,16 +122,6 @@ def get_model(args):
 
 
 
-def train_epoch(model, train_loader, train_labels, opt, args):
-    model = torch.nn.DataParallel(model).cuda()
-    model.train()
-    optimizer_encoder, optimizer_reg = opt
-    for e in tqdm(range(args.epoch)):
-        for idx, (i, x, y, g) in enumerate(train_loader):
-            x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
-            pred, uncertain = model(x)
-
-
 
 def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     model = torch.nn.DataParallel(model).cuda()
@@ -151,8 +143,6 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             #
             loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * torch.pow(pred-y, 2) + 0.5*uncertain)
             #
-            sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
-            #
             loss = loss_uncertain
             loss.backward()
             optimizer_encoder.step()
@@ -160,6 +150,56 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             #
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
+
+
+
+
+
+def variance_calculation(model, train_loader, sigma):
+    y_gt, y_pred, y_uncertain = [], [], []
+    for idx, (i, x, y, g) in enumerate(train_loader):
+        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+        pred, uncertain = model(x)
+        sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
+        y_gt.extend(y_gt.cpu().numpy())
+        y_pred.extend(pred.cpu().numpy())
+        y_uncertain.extend(sigma.cpu().numpy())
+    #
+    labels = np.unique(y_gt.cpu().numpy()).tolist()
+    #
+    y_gt, y_pred, y_uncertain = np.hstack(y_gt).tolist(), np.hstack(y_pred).tolist(), np.hstack(y_uncertain).tolist()
+    #
+    y_pred = [math.ceil(i) if i%int(i)> 0.5 else math.floor(i) for i in y_pred]
+    #
+    gt_list, uncertain_list, pred_list = count_down(labels, y_gt, y_pred, y_uncertain)
+    #
+    plt.plot(labels, gt_list, 'r--', uncertain_list, 'bs',  pred_list,  'g^' )
+    plt.show()
+    plt.savefig('./variance.png')
+
+
+
+
+def count_down(labels, y_gt, y_pred, y_uncertain):
+    gt_list, pred_list, uncertain_list = [], [], []
+    for i in labels:
+        #
+        indexes = [i for i,x in enumerate(y_pred) if x==i]
+        gt_indexes = [i for i,x in enumerate(y_gt) if x==i]
+        #
+        gt = [y_gt[i] for i in gt_indexes]
+        preds = [y_pred[i] for i in indexes]
+        uncertains = [y_uncertain[i] for i in indexes]
+        #
+        gt_list.append(torch.mean(gt).data)
+        uncertain_list.append(torch.mean(uncertains).data)
+        pred_list.append(torch.mean(preds).data)
+    return gt_list, uncertain_list, pred_list
+    
+    
+
+
+
 
 
 
