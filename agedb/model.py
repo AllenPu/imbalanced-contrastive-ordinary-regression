@@ -276,3 +276,27 @@ class Encoder_regression_guided_multi_regression(nn.Module):
         pred_med = self.regressor_med(feat)
         pred_min = self.regressor_min(feat)
         return cls_pred, torch.cat((pred_maj, pred_med, pred_min), dim=-1)
+    
+
+
+
+
+class Encoder_regression_uncertainty(nn.Module):
+    def __init__(self, name='resnet50', norm=False, weight_norm= False):
+        super(Encoder_regression_uncertainty, self).__init__()
+        backbone, dim_in = model_dict[name]
+        self.encoder = backbone()
+        self.norm = norm
+        self.weight_norm = weight_norm
+        if self.weight_norm:
+            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 2), name='regressor_weight')
+        else:
+            self.regressor = nn.Sequential(nn.Linear(dim_in, 2), name='regressor_weight')
+        
+
+    def forward(self, x):
+        feat = self.encoder(x)
+        if self.norm:
+            feat = F.normalize(feat, dim=-1)
+        pred, uncertain = self.regressor(feat)
+        return pred, uncertain

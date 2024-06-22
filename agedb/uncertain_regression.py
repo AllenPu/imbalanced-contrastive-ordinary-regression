@@ -107,66 +107,58 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression_guided_multi_regression(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
+    model = Encoder_regression_uncertainty(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
     # load pretrained
     optimizer_encoder = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_maj = torch.optim.SGD(model.regressor_maj.parameters(), lr=args.lr,
+    optimizer_reg = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_med = torch.optim.SGD(model.regressor_med.parameters(), lr=args.lr,
-                                momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_min = torch.optim.SGD(model.regressor_min.parameters(), lr=args.lr,
-                                momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer = [optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min]
+    optimizer = [optimizer_encoder, optimizer_reg]
     return model, optimizer
 
 
 
+
+
 def train_epoch(model, train_loader, train_labels, opt, args):
-    store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm) + '_epoch_' +str(args.epoch)
     model = torch.nn.DataParallel(model).cuda()
-    optimizer_encoder, optimizer_maj, optimizer_med, optimizer_min = optimizer
-    #model = model.cuda()
-    mse = nn.MSELoss()
+    model.train()
+    optimizer_encoder, optimizer_reg = opt
+    for e in tqdm(range(args.epoch)):
+        for idx, (i, x, y, g) in enumerate(train_loader):
+            x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
+            pred, uncertain = model(x)
+
+
+
+def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
+    model = torch.nn.DataParallel(model).cuda()
+    optimizer_encoder, optimizer_reg = opt
     model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
-        for idx, (i, x, y, group) in enumerate(train_loader):
+        for idx, (i, x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
-            g = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            #print(f'y is {y} and g is {g}')
+            #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             #
             optimizer_encoder.zero_grad()
-            optimizer_maj.zero_grad()
-            optimizer_med.zero_grad()
-            optimizer_min.zero_grad()
+            optimizer_reg.zero_grad()
             #
-            cls_pred, y_output = model(x)
+            pred, uncertain = model(x)
             #
-            #loss_la = la(cls_pred, g.squeeze().long())
-            loss_la = F.cross_entropy(cls_pred, g.squeeze().long())
+            # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
             #
-            #pred = F.softmax(cls_pred, dim=-1)
-            #cls_aggregate = torch.sum(torch.mul(pred, y_output), dim=-1)
-            #loss_aggregate_mse = mse(cls_aggregate, y)
+            loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * torch.pow(pred-y, 2) + 0.5*uncertain)
             #
-            loss_elr = elr(i, cls_pred, g.squeeze().long())
-            #loss_elr = 0
+            sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
             #
-            y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
-            #
-            loss_mse = mse(y_pred, y)
-            #
-            loss = loss_mse + 3*loss_la + loss_elr
-            #
+            loss = loss_uncertain
             loss.backward()
             optimizer_encoder.step()
-            optimizer_maj.step()
-            optimizer_med.step()
-            optimizer_min.step()
+            optimizer_reg.step()
+            #
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
-
     return model
 
 
@@ -195,7 +187,7 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
             writer = csv.writer(f)
             writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
 
-
+'''
 def find_regressors_index(y, maj_shot, med_shot, min_shot ):
     g_index = torch.Tensor(size=(y.shape[0],1))
     maj = torch.tensor(np.isin(y.numpy(),np.array(maj_shot)))
@@ -211,7 +203,7 @@ def find_regressors_index(y, maj_shot, med_shot, min_shot ):
     if len(min_index) != 0:
         g_index[min_index] = 2
     return g_index
-
+'''
 
 
 
@@ -222,46 +214,6 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     #cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     #ce = torch.nn.CrossEntropyLoss()
     #
-    '''
-    cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
-    mse = torch.nn.MSELoss()
-    aggregation_weight = torch.nn.Parameter(torch.FloatTensor(2), requires_grad=True)
-    aggregation_weight.data.fill_(1/3)
-   # model.cls_head.requires_grad = True
-    opt = torch.optim.SGD(model.cls_head.parameters(), lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
-    #opt = torch.optim.SGD([aggregation_weight], lr= 0.025,momentum=0.9, weight_decay=5e-4, nesterov=True)
-    for idx, (x,y,g) in enumerate(test_loader1):
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-        xx = torch.chunk(x, 2, dim=1)
-        x1, x2 = xx[0].squeeze(1), xx[1].squeeze(1)
-        y1_pred, y1 = model(x1)
-        y2_pred, y2 = model(x2)
-        y1_pred, y2_pred = F.softmax(y1_pred, dim=-1), F.softmax(y2_pred, dim=-1)
-        expert11, expert21 = y1[:,0], y2[:,0]
-        expert12, expert22 = y1[:,1], y2[:,1]
-        expert13, expert23 = y1[:,2], y2[:,2]
-        #print(f' aggregation_weight is {aggregation_weight}')
-        aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
-        loss_ce = cos(y1_pred, y2_pred)
-        #aug_1 = aggregation_softmax[0].cuda() * expert11 + aggregation_softmax[1].cuda() * expert12 + aggregation_softmax[2].cuda() * expert13
-        #aug_2 = aggregation_softmax[0].cuda() * expert21 + aggregation_softmax[1].cuda() * expert22 + aggregation_softmax[2].cuda() * expert23
-        #loss_mse = mse(aug_1, aug_2).mean()
-        #
-        loss = -loss_ce #+ loss_mse
-        opt.zero_grad()
-        loss.backward()
-        opt.step()
-    #
-    model.module.cls_head.requires_grad = False
-    #aggregation_weight.requires_grad = False
-    # mae
-    test_mae_pred = AverageMeter()
-    # gmean
-    criterion_gmean = nn.L1Loss(reduction='none')
-    #
-    #aggregation_softmax = torch.nn.functional.softmax(aggregation_weight)
-    #
-    '''
     test_mae_pred, acc_pred = AverageMeter(), AverageMeter()
     pred, label, gmeans = [], [], []
     criterion_gmean = nn.L1Loss(reduction='none')
