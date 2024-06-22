@@ -173,9 +173,9 @@ def variance_calculation(model, train_loader, sigma):
     #
     gt_list, uncertain_list, pred_list = count_down(labels, y_gt, y_pred, y_uncertain)
     #
-    #plt.plot(labels, gt_list, 'r--', uncertain_list, 'bs',  pred_list,  'g^' )
-    #plt.show()
-    #plt.savefig('./variance.png')
+    plt.plot(labels, gt_list, 'r--', uncertain_list, 'bs',  pred_list,  'g^' )
+    plt.show()
+    plt.savefig('./variance.png')
     data = np.array([gt_list, uncertain_list, pred_list])
     plt.hist(gt_list, bins=len(gt_list),edgecolor = 'w',color = ['c','r', 'b'],  label = ['gt','pred','pred_var'], stacked = True)
     ax = plt.gca() 
