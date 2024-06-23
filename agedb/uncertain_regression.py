@@ -198,9 +198,9 @@ def count_down(labels, y_gt, y_pred, y_uncertain):
         preds = [y_pred[i] for i in indexes]
         uncertains = [y_uncertain[i] for i in indexes]
         #
-        gt_list.append(torch.mean(gt).data)
+        gt_list.append(torch.sum(gt).data)
         uncertain_list.append(torch.mean(uncertains).data)
-        pred_list.append(torch.mean(preds).data)
+        pred_list.append(torch.sum(preds).data)
     return gt_list, uncertain_list, pred_list
     
     
