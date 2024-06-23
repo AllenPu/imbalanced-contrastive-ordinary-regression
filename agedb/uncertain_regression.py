@@ -155,7 +155,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
 
 
 
-def variance_calculation(model, train_loader, sigma):
+def variance_calculation(model, train_loader):
     y_gt, y_pred, y_uncertain = [], [], []
     for idx, (i, x, y, g) in enumerate(train_loader):
         x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
@@ -261,26 +261,21 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     #cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
     #ce = torch.nn.CrossEntropyLoss()
     #
-    test_mae_pred, acc_pred = AverageMeter(), AverageMeter()
+    test_mae_pred = AverageMeter()
     pred, label, gmeans = [], [], []
     criterion_gmean = nn.L1Loss(reduction='none')
     #
     for idx, (x,y,g) in enumerate(test_loader):
         with torch.no_grad():
             bsz = x.shape[0]
-            g_ = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            x, y, g_ = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g_.cuda(non_blocking=True)
-            cls_pred, y_pred = model(x)
-            g_index = torch.argmax(cls_pred, dim=1).unsqueeze(-1)
-            acc = accuracy(cls_pred, g_)
-            y_hat = torch.gather(y_pred, dim=1, index=g_index)
-            test_mae = F.l1_loss(y_hat, y)
-            pred.extend(y_hat.cpu().numpy())
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            pred, uncertain = model(x)
+            test_mae = F.l1_loss(pred, y)
+            pred.extend(pred.cpu().numpy())
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             #
-            acc_pred.update(acc[0].item(), bsz)
-            loss_gmean = criterion_gmean(y_hat, y)
+            loss_gmean = criterion_gmean(pred, y)
             gmeans.extend(loss_gmean.cpu().numpy())
     store_name = 'bias_prediction_' + 'norm_' + str(args.norm) + '_weight_norm_' + str(args.weight_norm)
    # e = 0
@@ -289,7 +284,9 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     shot_pred = shot_metric(pred, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
-    print(' Group Acc {} Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(acc_pred.avg, test_mae_pred.avg, shot_pred['many']['l1'],
+    variance_calculation(model, test_loader)
+    #
+    print(' Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
     #
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
@@ -316,7 +313,7 @@ if __name__ == '__main__':
     elr = elr_loss(num_examp=sum(group_list), lambdas=args.lambdas, beta=args.beta)
     model, optimizer = get_model(args)
     print(f' Start to train !')
-    model = train_epoch(model, train_loader, train_labels, optimizer, args)
+    model = train_epoch_uncertain(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
     print(" elr + 3 ce ")
 
