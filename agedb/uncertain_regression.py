@@ -144,7 +144,10 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             loss.backward()
             opt.step()
             #
-        print(f' In epoch  {e} loss is {loss.item()}')
+            sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
+            var = torch.mean(sigma)
+            #
+        print(f' In epoch  {e} loss is {loss.item()} variance is {var}')
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
 
