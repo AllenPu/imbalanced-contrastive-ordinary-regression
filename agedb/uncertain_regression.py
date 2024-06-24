@@ -262,7 +262,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     #ce = torch.nn.CrossEntropyLoss()
     #
     test_mae_pred = AverageMeter()
-    pred, label, gmeans = [], [], []
+    preds, label, gmeans = [], [], []
     criterion_gmean = nn.L1Loss(reduction='none')
     #
     for idx, (x,y,g) in enumerate(test_loader):
@@ -271,7 +271,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
             pred, uncertain = model(x)
             test_mae = F.l1_loss(pred, y)
-            pred.extend(pred.cpu().numpy())
+            preds.extend(pred.cpu().numpy())
             label.extend(y.cpu().numpy())
             test_mae_pred.update(test_mae,bsz)
             #
