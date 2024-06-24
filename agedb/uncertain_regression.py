@@ -161,7 +161,7 @@ def variance_calculation(model, train_loader):
         x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
         pred, uncertain = model(x)
         sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
-        y_gt.extend(y_gt.cpu().numpy())
+        y_gt.extend(y.cpu().numpy())
         y_pred.extend(pred.cpu().numpy())
         y_uncertain.extend(sigma.cpu().numpy())
     #
