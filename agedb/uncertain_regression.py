@@ -281,7 +281,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
    # e = 0
     #
     #validates(model, test_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False)
-    shot_pred = shot_metric(pred, label, train_labels)
+    shot_pred = shot_metric(preds, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
     variance_calculation(model, test_loader)
