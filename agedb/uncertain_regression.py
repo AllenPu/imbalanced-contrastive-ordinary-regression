@@ -166,7 +166,7 @@ def variance_calculation(model, train_loader):
             y_pred.extend(pred.cpu().numpy())
             y_uncertain.extend(sigma.cpu().numpy())
         #
-    labels = np.unique(y_gt.cpu().numpy()).tolist()
+    labels = np.unique(y_gt).tolist()
     #
     y_gt, y_pred, y_uncertain = np.hstack(y_gt).tolist(), np.hstack(y_pred).tolist(), np.hstack(y_uncertain).tolist()
     #
