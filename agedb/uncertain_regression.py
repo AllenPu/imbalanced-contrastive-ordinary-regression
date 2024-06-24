@@ -137,8 +137,8 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             #
             # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
             #
-            #loss_uncertain = F.mse_loss(pred, y)
-            loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * F.mse_loss(pred, y) + 0.5*uncertain)
+            loss_mse = torch.pow(pred-y,2)
+            loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
             #
             loss = loss_uncertain
             loss.backward()
@@ -146,8 +146,10 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             #
             sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
             var = torch.mean(sigma)
+            mse = torch.mean(loss_mse)
+            uncer = torch.mean(uncertain)
             #
-        print(f' In epoch  {e} loss is {loss.item()} variance is {var}')
+        print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} uncertain is {uncer.item()}')
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
 
