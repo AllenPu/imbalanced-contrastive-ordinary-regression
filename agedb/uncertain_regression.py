@@ -177,8 +177,11 @@ def variance_calculation(model, train_loader):
     plt.plot(labels, gt_list, 'r--', uncertain_list, 'bs',  pred_list,  'g^' )
     #plt.show()
     #plt.savefig('./var_scatter.png')
-    gt_data, uncertain_data, pred_data = np.array(gt_list), np.array(uncertain_list), np.array(pred_list)  
-    plt.hist(data, bins=len(gt_list),edgecolor = 'w',color = ['c','r', 'b'],  label = ['gt','pred','pred_var'], stacked = False)
+    gt_data, uncertain_data, pred_data = np.array(gt_list), np.array(uncertain_list), np.array(pred_list)
+    gt_data, uncertain_data, pred_data = \
+        gt_data.reshape(gt_data.shape[0], 1), uncertain_data.reshape(uncertain_data.shape[0], 1), pred_data.reshape(pred_data.shape[0], 1)
+    datas = np.concatenate((gt_data, uncertain_data, pred_data),axis=1) 
+    plt.hist(datas, bins=len(gt_list),edgecolor = 'w',color = ['c','r', 'b'],  label = ['gt','pred','pred_var'], stacked = False)
     ax = plt.gca() 
     plt.legend()
     #plt.show()
