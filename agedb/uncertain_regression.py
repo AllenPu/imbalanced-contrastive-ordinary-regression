@@ -170,7 +170,7 @@ def variance_calculation(model, train_loader):
     #
     y_gt, y_pred, y_uncertain = np.hstack(y_gt).tolist(), np.hstack(y_pred).tolist(), np.hstack(y_uncertain).tolist()
     #
-    y_pred = [math.ceil(i) if i%int(i)> 0.5 else math.floor(i) for i in y_pred]
+    y_pred = [math.ceil(i) if (i-int(i))> 0.5 else math.floor(i) for i in y_pred]
     #
     gt_list, uncertain_list, pred_list = count_down(labels, y_gt, y_pred, y_uncertain)
     #
