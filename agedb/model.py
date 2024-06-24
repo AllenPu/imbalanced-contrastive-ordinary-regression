@@ -298,5 +298,6 @@ class Encoder_regression_uncertainty(nn.Module):
         feat = self.encoder(x)
         if self.norm:
             feat = F.normalize(feat, dim=-1)
-        pred, uncertain = self.regressor(feat)
-        return pred, uncertain
+        out = self.regressor(feat)
+        out_ = torch.chunk(out,2,dim=1)
+        return out_[0], out_[1]
