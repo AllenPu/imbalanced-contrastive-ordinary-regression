@@ -158,13 +158,14 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
 def variance_calculation(model, train_loader):
     y_gt, y_pred, y_uncertain = [], [], []
     for idx, (x, y, g) in enumerate(train_loader):
-        x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-        pred, uncertain = model(x)
-        sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
-        y_gt.extend(y.cpu().numpy())
-        y_pred.extend(pred.cpu().numpy())
-        y_uncertain.extend(sigma.cpu().numpy())
-    #
+        with torch.no_grad():
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            pred, uncertain = model(x)
+            sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
+            y_gt.extend(y.cpu().numpy())
+            y_pred.extend(pred.cpu().numpy())
+            y_uncertain.extend(sigma.cpu().numpy())
+        #
     labels = np.unique(y_gt.cpu().numpy()).tolist()
     #
     y_gt, y_pred, y_uncertain = np.hstack(y_gt).tolist(), np.hstack(y_pred).tolist(), np.hstack(y_uncertain).tolist()
