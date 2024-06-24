@@ -90,8 +90,8 @@ def get_data_loader(args):
     #
     test_dataset1 = AgeDB(data_dir=args.data_dir, df=df_test,
                          img_size=args.img_size, split='test', group_num=args.groups)
-    test_dataset1.enable_multi_crop(args.enable)
-    train_dataset.enable_elr_index_return(True)
+    #test_dataset1.enable_multi_crop(args.enable)
+    #train_dataset.enable_elr_index_return(True)
     #
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.workers, pin_memory=True, drop_last=False)
@@ -129,7 +129,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
-        for idx, (i, x, y, g) in enumerate(train_loader):
+        for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
@@ -157,7 +157,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
 
 def variance_calculation(model, train_loader):
     y_gt, y_pred, y_uncertain = [], [], []
-    for idx, (i, x, y, g) in enumerate(train_loader):
+    for idx, (x, y, g) in enumerate(train_loader):
         x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
         pred, uncertain = model(x)
         sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
