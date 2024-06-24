@@ -121,7 +121,8 @@ def get_model(args):
 
 
 def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
-    model = torch.nn.DataParallel(model).cuda()
+    #model = torch.nn.DataParallel(model).cuda()
+    model = model.cuda()
     model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
