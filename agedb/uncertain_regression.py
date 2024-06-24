@@ -176,7 +176,8 @@ def variance_calculation(model, train_loader):
     #
     plt.plot(labels, gt_list, 'r--', uncertain_list, 'bs',  pred_list,  'g^' )
     #plt.show()
-    #plt.savefig('./var_scatter.png')
+    plt.savefig('./var_scatter.png')
+    plt.clf()
     gt_data, uncertain_data, pred_data = np.array(gt_list), np.array(uncertain_list), np.array(pred_list)
     gt_data, uncertain_data, pred_data = \
         gt_data.reshape(gt_data.shape[0], 1), uncertain_data.reshape(uncertain_data.shape[0], 1), pred_data.reshape(pred_data.shape[0], 1)
@@ -185,7 +186,7 @@ def variance_calculation(model, train_loader):
     ax = plt.gca() 
     plt.legend()
     #plt.show()
-    #plt.savefig('./var_hist.png')
+    plt.savefig('./var_hist.png')
 
 
 
@@ -319,7 +320,6 @@ if __name__ == '__main__':
     print(f' Start to train !')
     model = train_epoch_uncertain(model, train_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
-    print(" elr + 3 ce ")
 
 
     
