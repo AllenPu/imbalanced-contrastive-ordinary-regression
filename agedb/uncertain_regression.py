@@ -111,11 +111,8 @@ def get_data_loader(args):
 def get_model(args):
     model = Encoder_regression_uncertainty(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
     # load pretrained
-    optimizer_encoder = torch.optim.SGD(model.encoder.parameters(), lr=args.lr,
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_reg = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
-                                momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer = [optimizer_encoder, optimizer_reg]
     return model, optimizer
 
 
@@ -125,7 +122,6 @@ def get_model(args):
 
 def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     model = torch.nn.DataParallel(model).cuda()
-    optimizer_encoder, optimizer_reg = opt
     model.train()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     for e in tqdm(range(args.epoch)):
@@ -134,21 +130,20 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             #
-            optimizer_encoder.zero_grad()
-            optimizer_reg.zero_grad()
+            opt.zero_grad()
             #
             pred, uncertain = model(x)
             #
             # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
             #
-            loss_uncertain = torch.mean(pred - y)
-            #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * torch.pow(pred-y, 2) + 0.5*uncertain)
+            loss_uncertain = F.mse_loss(pred, y)
+            #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * F.mse_loss(pred, y) + 0.5*uncertain)
             #
             loss = loss_uncertain
             loss.backward()
-            optimizer_encoder.step()
-            optimizer_reg.step()
+            opt.step()
             #
+        print(f' In epoch  {e} loss is {loss.item()}')
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
 
@@ -176,6 +171,7 @@ def variance_calculation(model, train_loader):
     gt_list, uncertain_list, pred_list = count_down(labels, y_gt, y_pred, y_uncertain)
     #
     plt.plot(labels, gt_list, 'r--', uncertain_list, 'bs',  pred_list,  'g^' )
+    plt.legend()
     #plt.show()
     plt.savefig('./var_scatter.png')
     plt.clf()
