@@ -141,7 +141,8 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
             #
             loss_mse = torch.pow(pred-y,2)
-            loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
+            #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
+            loss_uncertain = torch.mean(1000* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
             #
             loss = loss_uncertain
             loss.backward()
