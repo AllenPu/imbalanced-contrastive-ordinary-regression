@@ -124,8 +124,9 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
     model.train()
+    reweight=100
     #maj_shot, med_shot, min_shot = shot_count(train_labels)
-    f = open('variance_mse.csv','w',encoding='utf-8')
+    f = open(f'variance_mse_{reweight}.csv','w',encoding='utf-8')
     csv_writer = csv.writer(f)
     csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
     for e in tqdm(range(args.epoch)):
@@ -142,7 +143,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             #
             loss_mse = torch.pow(pred-y,2)
             #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
-            loss_uncertain = torch.mean(1000* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
+            loss_uncertain = torch.mean(reweight* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
             #
             loss = loss_uncertain
             loss.backward()
