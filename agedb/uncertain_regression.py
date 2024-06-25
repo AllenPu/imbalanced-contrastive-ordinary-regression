@@ -126,7 +126,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     model.train()
     reweight=100
     #maj_shot, med_shot, min_shot = shot_count(train_labels)
-    f = open(f'variance_mse_{reweight}.csv','w',encoding='utf-8')
+    f = open(f'variance_mse_reweight_{reweight}.csv','w',encoding='utf-8')
     csv_writer = csv.writer(f)
     csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
     for e in tqdm(range(args.epoch)):
