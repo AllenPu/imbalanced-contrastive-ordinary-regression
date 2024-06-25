@@ -156,8 +156,8 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             scale_mse = torch.mean(0.5* torch.exp(-uncertain) * loss_mse)
             #
         csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
+        print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
     f.close()
-        #print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
 
@@ -300,7 +300,7 @@ def test_output(model, test_loader1, test_loader, train_labels, args):
     shot_pred = shot_metric(preds, label, train_labels)
     gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
     #
-    variance_calculation(model, test_loader)
+    #variance_calculation(model, test_loader)
     #
     print(' Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
                                                                     shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
