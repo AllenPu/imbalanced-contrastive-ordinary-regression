@@ -124,7 +124,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
     model.train()
-    reweight=1
+    reweight=2
     #maj_shot, med_shot, min_shot = shot_count(train_labels)
     #f = open(f'variance_mse_reweight_{reweight}.csv','w',encoding='utf-8')
     #csv_writer = csv.writer(f)
