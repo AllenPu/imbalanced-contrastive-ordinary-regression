@@ -124,11 +124,11 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
     model.train()
-    reweight=100
+    reweight=1
     #maj_shot, med_shot, min_shot = shot_count(train_labels)
-    f = open(f'variance_mse_reweight_{reweight}.csv','w',encoding='utf-8')
-    csv_writer = csv.writer(f)
-    csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
+    #f = open(f'variance_mse_reweight_{reweight}.csv','w',encoding='utf-8')
+    #csv_writer = csv.writer(f)
+    #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
     for e in tqdm(range(args.epoch)):
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
@@ -155,9 +155,9 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             uncer = torch.mean(uncertain)
             scale_mse = torch.mean(0.5* torch.exp(-uncertain) * loss_mse)
             #
-        csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
+        #csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
         print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
-    f.close()
+    #f.close()
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
 
