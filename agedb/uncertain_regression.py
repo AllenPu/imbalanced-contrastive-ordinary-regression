@@ -331,7 +331,7 @@ if __name__ == '__main__':
     elr = elr_loss(num_examp=sum(group_list), lambdas=args.lambdas, beta=args.beta)
     model, optimizer = get_model(args)
     print(f' Start to train !')
-    model = train_epoch_uncertain(model, train_loader, train_labels, optimizer, args)
+    model = train_epoch_uncertain(model, val_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
 
 
