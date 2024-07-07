@@ -121,7 +121,7 @@ def get_model(args):
 def warm_up(model, train_loader, opt):
     model = model.cuda()
     model.train()
-    for e in tqdm(range(20)):
+    for e in tqdm(range(30)):
         for idx, (x, y, g) in enumerate(train_loader):
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             opt.zero_grad()
@@ -348,8 +348,6 @@ if __name__ == '__main__':
     #
     train_loader, val_loader, test_loader, test_loader1, group_list, train_labels = get_data_loader(args)
     #
-    #la = LAloss(group_list)
-    #elr = elr_loss(num_examp=sum(group_list), lambdas=args.lambdas, beta=args.beta)
     model, optimizer = get_model(args)
     print(f' Start to train !')
     model = warm_up(model, train_loader, optimizer)
