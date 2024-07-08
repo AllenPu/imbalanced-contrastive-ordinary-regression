@@ -121,7 +121,7 @@ def get_model(args):
 def warm_up(model, train_loader, opt):
     model = model.cuda()
     model.train()
-    for e in tqdm(range(30)):
+    for e in tqdm(range(50)):
         for idx, (x, y, g) in enumerate(train_loader):
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             opt.zero_grad()
