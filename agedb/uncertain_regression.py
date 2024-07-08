@@ -145,7 +145,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     #f = open(f'variance_mse_reweight_{reweight}.csv','w',encoding='utf-8')
     #csv_writer = csv.writer(f)
     #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
-    flag = True
+    #flag = True
     for e in tqdm(range(args.epoch)):
         #if e%5 == 0 and e != 0:
         #    flag = True
@@ -165,18 +165,18 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             loss.backward()
             opt.step()
             #
-            if flag:
-                opt.zero_grad()
-                pred, uncertain = model(x)
-                loss_mse = torch.pow(pred-y,2).data
+            #if flag:
+            opt.zero_grad()
+            pred, uncertain = model(x)
+            loss_mse = torch.pow(pred-y,2).data
                 #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
-                loss_uncertain = torch.mean(reweight* torch.exp(-uncertain) * loss_mse + 0.5*uncertain) #+ F.mse_loss(pred,y)
+            loss_uncertain = torch.mean(reweight* torch.exp(-uncertain) * loss_mse + 0.5*uncertain) #+ F.mse_loss(pred,y)
             #
             #loss_uncertain = torch.sum(0.5*torch.exp(-uncertain) + 0.5*uncertain + loss_mse)
             #
-                loss_uncertain.backward()
-                opt.step()
-                flag = False
+            loss_uncertain.backward()
+            opt.step()
+            flag = False
             #
             sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
             var = torch.mean(sigma)
