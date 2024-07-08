@@ -147,7 +147,7 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
     #flag = True
     for e in tqdm(range(args.epoch)):
-        if e%5 == 0 and e != 0:
+        if e%5 == 0:
             flag = True
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
