@@ -255,7 +255,7 @@ def count_down(labels, y_gt, y_pred, y_uncertain):
 
 
 
-
+'''
 def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False):
     pred, label, val_mae = [], [], AverageMeter()
     for idx, (x,y,_) in enumerate(val_loader):
@@ -279,7 +279,7 @@ def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, 
             writer = csv.writer(f)
             writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
 
-'''
+
 def find_regressors_index(y, maj_shot, med_shot, min_shot ):
     g_index = torch.Tensor(size=(y.shape[0],1))
     maj = torch.tensor(np.isin(y.numpy(),np.array(maj_shot)))
