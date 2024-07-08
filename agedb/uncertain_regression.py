@@ -147,8 +147,8 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
     #flag = True
     for e in tqdm(range(args.epoch)):
-        #if e%5 == 0 and e != 0:
-        #    flag = True
+        if e%5 == 0 and e != 0:
+            flag = True
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             #
@@ -165,27 +165,27 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             loss.backward()
             opt.step()
             #
-            #if flag:
-            opt.zero_grad()
-            pred, uncertain = model(x)
-            loss_mse = torch.pow(pred-y,2).data
+            if flag:
+                opt.zero_grad()
+                pred, uncertain = model(x)
+                loss_mse = torch.pow(pred-y,2).data
                 #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
-            loss_uncertain = torch.mean(reweight* torch.exp(-uncertain) * loss_mse + 0.5*uncertain) #+ F.mse_loss(pred,y)
+                loss_uncertain = torch.mean(reweight* torch.exp(-uncertain) * loss_mse + 0.5*uncertain) #+ F.mse_loss(pred,y)
             #
             #loss_uncertain = torch.sum(0.5*torch.exp(-uncertain) + 0.5*uncertain + loss_mse)
             #
-            loss_uncertain.backward()
-            opt.step()
-            flag = False
+                loss_uncertain.backward()
+                opt.step()
+                flag = False
             #
-            sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
-            var = torch.mean(sigma)
-            mse = torch.mean(loss_mse)
-            uncer = torch.mean(uncertain)
-            scale_mse = torch.mean(0.5* torch.exp(-uncertain) * loss_mse)
+                sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
+                var = torch.mean(sigma)
+                mse = torch.mean(loss_mse)
+                uncer = torch.mean(uncertain)
+                scale_mse = torch.mean(0.5* torch.exp(-uncertain) * loss_mse)
             #
         #csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
-        print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
+                print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
     #f.close()
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
