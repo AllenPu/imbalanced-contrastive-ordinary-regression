@@ -68,6 +68,7 @@ parser.add_argument('--enable', action='store_false')
 parser.add_argument('--beta', type=float, default=0.7)
 parser.add_argument('--lambdas', type=float, default=3)
 parser.add_argument('--write_down', action='store_true', help=' write down the validation result to the csv file')
+parser.add_argument('--we', type=int, default=10)
 
 
 
@@ -117,11 +118,11 @@ def get_model(args):
 
 
 
-
-def warm_up(model, train_loader, opt):
+# we is warm up epoch
+def warm_up(model, train_loader, opt, we=10):
     model = model.cuda()
     model.train()
-    for e in tqdm(range(50)):
+    for e in tqdm(range(we)):
         for idx, (x, y, g) in enumerate(train_loader):
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             opt.zero_grad()
@@ -144,9 +145,10 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
     #f = open(f'variance_mse_reweight_{reweight}.csv','w',encoding='utf-8')
     #csv_writer = csv.writer(f)
     #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
+    flag = True
     for e in tqdm(range(args.epoch)):
-        if e%5 == 0 and e != 0:
-            flag = True
+        #if e%5 == 0 and e != 0:
+        #    flag = True
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             #
@@ -353,8 +355,11 @@ if __name__ == '__main__':
     train_loader, val_loader, test_loader, test_loader1, group_list, train_labels = get_data_loader(args)
     #
     model, optimizer = get_model(args)
+    print(f' Start to warm up !')
+    model = warm_up(model, train_loader, optimizer, args.we)
+    print('-----------------------------')
+    test_output(model, test_loader, test_loader, train_labels, args)
     print(f' Start to train !')
-    model = warm_up(model, train_loader, optimizer)
     model = train_epoch_uncertain(model, val_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
 
