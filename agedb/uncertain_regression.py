@@ -155,17 +155,18 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             #
             # first update the MSE
-            opt.zero_grad()
-            pred, uncertain = model(x)
+            if flag:
+                opt.zero_grad()
+                pred, uncertain = model(x)
             #
             # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
             #
-            loss_mse = torch.pow(pred-y,2)
-            loss = torch.mean(loss_mse)
-            loss.backward()
-            opt.step()
+                loss_mse = torch.pow(pred-y,2)
+                loss = torch.mean(loss_mse)
+                loss.backward()
+                opt.step()
             #
-            if flag:
+            else:
                 opt.zero_grad()
                 pred, uncertain = model(x)
                 loss_mse = torch.pow(pred-y,2).data
