@@ -173,19 +173,26 @@ def train_epoch_uncertain(model, train_loader, opt, uncer_optimizer, args):
                 pred, uncertain = model(x)
                 loss_mse = torch.pow(pred-y,2).data
                 #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
-                loss_uncertain = torch.mean(reweight* torch.exp(-uncertain) * loss_mse + 0.5*uncertain) #+ F.mse_loss(pred,y)
-                #
-                #loss_uncertain = torch.sum(0.5*torch.exp(-uncertain) + 0.5*uncertain + loss_mse)
-                #
-                loss_uncertain.backward()
-                opt.step()
+                mse_loss = reweight * torch.exp(-uncertain) * loss_mse
+                uncertain_loss = reweight * uncertain
+                 #+ F.mse_loss(pred,y)
                 #
                 sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
                 var = torch.mean(sigma)
                 mse = torch.mean(loss_mse)
-                uncer = torch.mean(uncertain)
-                scale_mse = torch.mean(0.5* torch.exp(-uncertain) * loss_mse)
-                print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
+                scale_mse = torch.mean(mse_loss)
+                uncer = torch.mean(uncertain_loss)
+                #
+                rescale_mse = (1/scale_mse.data) * scale_mse
+                rescale_uncer =  (1/uncer.data) * uncer
+                # rescale by the loss
+                loss = rescale_mse + rescale_uncer
+                #
+                loss.backward()
+                opt.step()
+                #
+                print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} \
+                      uncertain is {uncer.item()} real_mse is {rescale_mse} real_uncertain {rescale_uncer}')
             #
         flag = False
             #
