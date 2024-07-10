@@ -187,7 +187,7 @@ def train_epoch_uncertain(model, train_loader, opt, uncer_optimizer, args):
                 scale_mse = torch.mean(0.5* torch.exp(-uncertain) * loss_mse)
                 print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
             #
-            flag = False
+        flag = False
             #
         #csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
         #f.close()
