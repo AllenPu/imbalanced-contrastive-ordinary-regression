@@ -114,7 +114,9 @@ def get_model(args):
     # load pretrained
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    return model, optimizer
+    uncer_optimizer = torch.optim.SGD(model.parameters(), lr=2*args.lr,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    return model, optimizer, uncer_optimizer
 
 
 
@@ -136,7 +138,7 @@ def warm_up(model, train_loader, opt, we=10):
 
 
 
-def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
+def train_epoch_uncertain(model, train_loader, opt, uncer_optimizer, args):
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
     model.train()
@@ -158,9 +160,9 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
             if flag:
                 opt.zero_grad()
                 pred, uncertain = model(x)
-            #
-            # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
-            #
+                #
+                # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
+                #
                 loss_mse = torch.pow(pred-y,2)
                 loss = torch.mean(loss_mse)
                 loss.backward()
@@ -172,22 +174,23 @@ def train_epoch_uncertain(model, train_loader, train_labels, opt, args):
                 loss_mse = torch.pow(pred-y,2).data
                 #loss_uncertain = torch.mean(0.5* torch.exp(-uncertain) * loss_mse + 0.5*uncertain)
                 loss_uncertain = torch.mean(reweight* torch.exp(-uncertain) * loss_mse + 0.5*uncertain) #+ F.mse_loss(pred,y)
-            #
-            #loss_uncertain = torch.sum(0.5*torch.exp(-uncertain) + 0.5*uncertain + loss_mse)
-            #
+                #
+                #loss_uncertain = torch.sum(0.5*torch.exp(-uncertain) + 0.5*uncertain + loss_mse)
+                #
                 loss_uncertain.backward()
                 opt.step()
-                flag = False
-            #
+                #
                 sigma = torch.sqrt(torch.exp(torch.abs(uncertain)))
                 var = torch.mean(sigma)
                 mse = torch.mean(loss_mse)
                 uncer = torch.mean(uncertain)
                 scale_mse = torch.mean(0.5* torch.exp(-uncertain) * loss_mse)
+                print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
+            #
+            flag = False
             #
         #csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
-                print(f' In epoch  {e} loss is {loss.item()} variance is {var.item()} mse is {mse.item()} mse scale into {scale_mse.item()} uncertain is {uncer.item()}')
-    #f.close()
+        #f.close()
         #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
     return model
 
@@ -355,13 +358,13 @@ if __name__ == '__main__':
     #
     train_loader, val_loader, test_loader, test_loader1, group_list, train_labels = get_data_loader(args)
     #
-    model, optimizer = get_model(args)
+    model, optimizer, uncer_optimizer = get_model(args)
     print(f' Start to warm up !')
     model = warm_up(model, train_loader, optimizer, args.we)
     print('-----------------------------')
     test_output(model, test_loader, test_loader, train_labels, args)
     print(f' Start to train !')
-    model = train_epoch_uncertain(model, val_loader, train_labels, optimizer, args)
+    model = train_epoch_uncertain(model, train_loader, optimizer, uncer_optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
 
 
