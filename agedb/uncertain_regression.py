@@ -181,10 +181,10 @@ def train_epoch_uncertain(model, train_loader, opt, uncer_optimizer, args):
                 var = torch.mean(sigma)
                 mse = torch.mean(loss_mse)
                 scale_mse = torch.mean(mse_loss)
-                uncer = torch.mean(uncertain_loss)
+                scale_uncer = torch.mean(uncertain_loss)
                 # reverse the loss
-                rescale_mse = (uncer.data/scale_mse.data + uncer.data) * scale_mse
-                rescale_uncer =  (scale_mse.data/scale_mse.data + uncer.data) * uncer
+                rescale_mse = (scale_uncer.data/scale_mse.data + scale_uncer.data) * scale_mse
+                rescale_uncer =  (scale_mse.data/scale_mse.data + scale_uncer.data) * scale_uncer
                 # rescale by the loss
                 loss = rescale_mse + rescale_uncer
                 #
