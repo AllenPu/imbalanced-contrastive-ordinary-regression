@@ -89,8 +89,8 @@ def get_data_loader(args):
     test_dataset = AgeDB(data_dir=args.data_dir, df=df_test,
                          img_size=args.img_size, split='test', group_num=args.groups)
     #
-    test_dataset1 = AgeDB(data_dir=args.data_dir, df=df_test,
-                         img_size=args.img_size, split='test', group_num=args.groups)
+    #test_dataset1 = AgeDB(data_dir=args.data_dir, df=df_test,
+    #                     img_size=args.img_size, split='test', group_num=args.groups)
     #test_dataset1.enable_multi_crop(args.enable)
     #train_dataset.enable_elr_index_return(True)
     #
@@ -100,8 +100,8 @@ def get_data_loader(args):
                             num_workers=args.workers, pin_memory=True, drop_last=False)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False,
                              num_workers=args.workers, pin_memory=True, drop_last=False)
-    test_loader1 = DataLoader(test_dataset1, batch_size=args.batch_size, shuffle=False,
-                             num_workers=args.workers, pin_memory=True, drop_last=False)
+    #test_loader1 = DataLoader(test_dataset1, batch_size=args.batch_size, shuffle=False,
+    #                         num_workers=args.workers, pin_memory=True, drop_last=False)
     print(f"Training data size: {len(train_dataset)}")
     print(f"Validation data size: {len(val_dataset)}")
     print(f"Test data size: {len(test_dataset)}")
@@ -166,15 +166,12 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 else:
                     index = torch.LongTensor(indexs)#.cuda()
                     variance = torch.var(y_pred.index_select(0, index)).item()
-                    if l == 5:
-                        print(indexs)
-                        print(y_pred.index_select(0, index))
                 var_dict[l] = variance  
                 var_list.append(variance)  
                 var_tensor = torch.Tensor(var_list) 
-            print('--------')   
-            print(var_dict)
-            print('--------')                  
+            #print('--------')   
+            #print(var_dict)
+            #print('--------')                  
         ######
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
@@ -185,6 +182,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 varianc = var_tensor.index_select(0, index=y.squeeze(-1).to(torch.int32))
             except:
                 print(y.squeeze(-1))
+                assert 1 == 2
             varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
             #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
