@@ -182,12 +182,12 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             #varianc_index = torch.LongTensor(y.squeeze(-1))
             #print(y.dtype)
             try:
-                varianc = var_tensor.index_select(0, index=y.squeeze(-1).to(torch.int32))
+                varianc = var_tensor.index_select(0, index= y.squeeze(-1).to(torch.int32))
             except:
                 print(y.squeeze(-1).to(torch.int32))
                 not_in = []
                 for i in y.squeeze(-1).to(torch.int32):
-                    if i.item() not in var_list:
+                    if i.item() not in aa:
                         not_in.append(i.item())
                 print('====')
                 print(not_in)
