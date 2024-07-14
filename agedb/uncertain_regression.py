@@ -114,9 +114,8 @@ def get_model(args):
     # load pretrained
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    uncer_optimizer = torch.optim.SGD(model.parameters(), lr=2*args.lr,
-                                momentum=args.momentum, weight_decay=args.weight_decay)
-    return model, optimizer, uncer_optimizer
+
+    return model, optimizer
 
 
 
@@ -364,9 +363,9 @@ if __name__ == '__main__':
     #
     train_loader, val_loader, test_loader, test_loader1, group_list, train_labels = get_data_loader(args)
     #
-    model, optimizer, uncer_optimizer = get_model(args)
-    #print(f' Start to warm up !')
-    #model = warm_up(model, train_loader, optimizer, args.we)
+    model, optimizer= get_model(args)
+    print(f' Start to warm up !')
+    model = warm_up(model, train_loader, optimizer, args.we)
     #print('-----------------------------')
     #test_output(model, test_loader, test_loader, train_labels, args)
     print(f' Start to train !')
