@@ -171,7 +171,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 var_list.append(variance)  
                 var_tensor = torch.Tensor(var_list) 
             #print('--------')   
-            #print(var_tensor)
+            print(var_list)
             #print('--------')                  
         ######
         for idx, (x, y, g) in enumerate(train_loader):
@@ -183,9 +183,12 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 varianc = var_tensor.index_select(0, index=y.squeeze(-1).to(torch.int32))
             except:
                 print(y.squeeze(-1))
+                not_in = []
                 for i in y.squeeze(-1).to(torch.int32):
-                    if i not in var_list:
-                        print(i)
+                    if i.item() not in var_list:
+                        not_in.append(i.item())
+                print('====')
+                print(not_in)
                 assert 1 == 2
             varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
             #
