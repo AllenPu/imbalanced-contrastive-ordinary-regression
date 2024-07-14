@@ -185,7 +185,9 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             opt.zero_grad()
             pred, uncertain = model(x)
             #
-            loss = torch.mean( 0.5* torch.exp(-uncertain)*(pred - y)^2 + 0.5*torch.abs(uncertain-varianc))
+            print(type(uncertain))
+            #
+            loss = torch.mean( torch.exp(-uncertain)*(pred - y)^2 + torch.abs(uncertain-varianc))
             #
             #loss_mse = torch.pow(pred-y,2)
             #loss = torch.mean(loss_mse)
