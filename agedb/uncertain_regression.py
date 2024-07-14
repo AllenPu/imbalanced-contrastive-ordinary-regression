@@ -175,6 +175,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             bsz = x.shape[0]
             #
             #varianc_index = torch.LongTensor(y.squeeze(-1))
+            print(y.dtype)
             varianc = var_tensor.index_select(0, index=y.squeeze(-1))
             varianc = varianc.unsqueeze(-1)
             #
