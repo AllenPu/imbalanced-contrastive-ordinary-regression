@@ -141,12 +141,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
     model.train()
-    reweight=0.5
-    #maj_shot, med_shot, min_shot = shot_count(train_labels)
-    #f = open(f'variance_mse_reweight_{reweight}.csv','w',encoding='utf-8')
-    #csv_writer = csv.writer(f)
-    #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
-    #flag = True
+    #
     for e in tqdm(range(args.epoch)):
         #####
         if e % 5 == 0:
@@ -163,6 +158,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 y_pred.extend(pred.data.cpu().numpy())
                 y_gt.extend(y.data.numpy())
             y_pred, y_gt = torch.Tensor(np.hstack(y_pred)), np.hstack(y_gt)
+            print(train_labels)
             for l in np.unique(train_labels):
                 indexs = np.argwhere(y_gt==l).squeeze(-1)
                 if l not in y_gt or len(indexs) == 1:
@@ -207,8 +203,6 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             #loss = torch.mean(loss_mse)
             loss.backward()
             opt.step()
-            #
-        flag = False
             #
         #csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
         #f.close()
@@ -325,7 +319,7 @@ def find_regressors_index(y, maj_shot, med_shot, min_shot ):
 
 
 
-def test_output(model, test_loader1, test_loader, train_labels, args):
+def test_output(model,  test_loader, train_labels, args):
     model.eval()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
     #cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
@@ -377,7 +371,7 @@ if __name__ == '__main__':
     #cudnn.benchmark = True
     setup_seed(args.seed)
     #
-    train_loader, val_loader, test_loader, test_loader1, group_list, train_labels = get_data_loader(args)
+    train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
     #
     model, optimizer= get_model(args)
     print(f' Start to warm up !')
@@ -386,7 +380,7 @@ if __name__ == '__main__':
     #test_output(model, test_loader, test_loader, train_labels, args)
     print(f' Start to train !')
     model = train_epoch_uncertain(model, train_loader, val_loader, train_labels, optimizer, args)
-    test_output(model, test_loader, test_loader, train_labels, args)
+    test_output(model, test_loader, train_labels, args)
 
 
     
