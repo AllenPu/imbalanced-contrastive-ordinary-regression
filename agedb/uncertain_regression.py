@@ -105,7 +105,7 @@ def get_data_loader(args):
     print(f"Training data size: {len(train_dataset)}")
     print(f"Validation data size: {len(val_dataset)}")
     print(f"Test data size: {len(test_dataset)}")
-    return train_loader, val_loader, test_loader, test_loader1, group_list, train_labels
+    return train_loader, val_loader, test_loader, group_list, train_labels
 
 
 
