@@ -148,10 +148,10 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
     #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
     #flag = True
     for e in tqdm(range(args.epoch)):
-        var_dict = {}
-        var_list = []
         #####
         if e % 5 == 0:
+            var_dict = {}
+            var_list = []
             y_pred = []
             y_gt = []
             for idx, (x, y, _) in enumerate(val_loader):         
@@ -187,7 +187,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             #
             loss_mse = torch.pow(pred - y, 2)
             #
-            print(uncertain.dtype, loss_mse.dtype)
+            #print(uncertain.dtype, loss_mse.dtype)
             #
             loss = torch.mean( torch.exp(-uncertain)*loss_mse + torch.abs(uncertain-varianc))
             #
