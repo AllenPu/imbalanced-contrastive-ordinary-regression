@@ -164,10 +164,10 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 y_gt.extend(y.data.numpy())
             y_pred, y_gt = torch.Tensor(np.hstack(y_pred)), np.hstack(y_gt)
             for l in np.unique(train_labels):
-                if l not in y_gt:
+                indexs = np.argwhere(y_gt==l).squeeze(-1)
+                if l not in y_gt or len(indexs) == 1:
                     variance = 0
                 else:
-                    indexs = np.argwhere(y_gt==l).squeeze(-1)
                     index = torch.LongTensor(indexs)#.cuda()
                     variance = torch.var(y_pred.index_select(0, index)).item()
                     if l == 5:
