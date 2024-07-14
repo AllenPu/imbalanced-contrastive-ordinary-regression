@@ -174,8 +174,8 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             #
-            varianc_index = torch.LongTensor(y.squeeze(-1))
-            varianc = var_tensor.index_select(0, index=varianc_index)
+            #varianc_index = torch.LongTensor(y.squeeze(-1))
+            varianc = var_tensor.index_select(0, index=y.squeeze(-1))
             varianc = varianc.unsqueeze(-1)
             #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
