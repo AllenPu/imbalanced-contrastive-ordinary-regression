@@ -138,7 +138,7 @@ def warm_up(model, train_loader, opt, we=10):
 
 
 
-def train_epoch_uncertain(model, train_loader, val_loader, opt, args):
+def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, args):
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
     model.train()
@@ -149,22 +149,36 @@ def train_epoch_uncertain(model, train_loader, val_loader, opt, args):
     #csv_writer.writerow(["epoch","total_loss","mse", "mse scale", "uncertain", "sigma"])
     #flag = True
     for e in tqdm(range(args.epoch)):
-        if e % 5 == 1:
-            y_dict = {}
+        var_dict = {}
+        var_list = []
+        #####
+        if e % 5 == 0:
+            y_pred = []
+            y_gt = []
             for idx, (x, y, _) in enumerate(val_loader):
                 #
-                x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-                print(y.shape)
+                
+                #
+                x = x.cuda(non_blocking=True)
                 #
                 pred, _ = model(x)
                 #
-                
-                
-
-
-
+                y_pred.extend(pred.cpu().numpy())
+                y_gt.extend(y.numpy())
+            y_pred, y_gt = torch.Tensor(np.hstack(y_pred)), torch.Tensor(np.hstack(y_gt))
+            for l in np.unique(train_labels):
+                indexs = y_gt.argwhere(y_gt==l).squeeze(-1)
+                variance = torch.var(y_pred.index_select(0, torch.LongTensor(indexs))).item()
+                var_dict[l] = variance  
+                var_list.append(variance)  
+                var_tensor = torch.Tensor(var_list)                     
+        ######
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
+            #
+            varianc_index = torch.LongTensor(y.squeeze(-1))
+            varianc = var_tensor.index_select(0, index=varianc_index)
+            varianc = varianc.unsqueeze(-1)
             #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             #
@@ -172,10 +186,10 @@ def train_epoch_uncertain(model, train_loader, val_loader, opt, args):
             opt.zero_grad()
             pred, uncertain = model(x)
             #
-            # loss = \sum 1/2 log pi - 1/2 log 1/(2sigma^2) + 1/(2sigma^2)(y_pred - y)^2
+            loss = torch.mean( 0.5* torch.exp(-uncertain)*(y_pred - y)^2 + 0.5*torch.abs(uncertain-varianc))
             #
-            loss_mse = torch.pow(pred-y,2)
-            loss = torch.mean(loss_mse)
+            #loss_mse = torch.pow(pred-y,2)
+            #loss = torch.mean(loss_mse)
             loss.backward()
             opt.step()
             #
