@@ -192,9 +192,9 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 print('====')
                 print(not_in)
                 print('====')
-                print(var_tensor)
+                print(var_tensor.shape)
                 print('====')
-                print(aa)
+                print(len(aa))
                 assert 1 == 2
             varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
             #
