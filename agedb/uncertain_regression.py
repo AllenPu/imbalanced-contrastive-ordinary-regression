@@ -162,7 +162,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 #
                 pred, _ = model(x)
                 #
-                y_pred.extend(pred.cpu().numpy())
+                y_pred.extend(pred.data.cpu().numpy())
                 y_gt.extend(y.numpy())
             y_pred, y_gt = torch.Tensor(np.hstack(y_pred)), torch.Tensor(np.hstack(y_gt))
             for l in np.unique(train_labels):
