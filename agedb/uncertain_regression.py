@@ -158,7 +158,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 y_pred.extend(pred.data.cpu().numpy())
                 y_gt.extend(y.data.numpy())
             y_pred, y_gt = torch.Tensor(np.hstack(y_pred)), np.hstack(y_gt)
-            print(train_labels)
+            #
             for l in np.unique(train_labels):
                 indexs = np.argwhere(y_gt==l).squeeze(-1)
                 if l not in y_gt or len(indexs) == 1:
@@ -170,7 +170,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 var_list.append(variance)  
                 var_tensor = torch.Tensor(var_list) 
             #print('--------')   
-            #print(var_dict)
+            print(var_tensor)
             #print('--------')                  
         ######
         for idx, (x, y, g) in enumerate(train_loader):
