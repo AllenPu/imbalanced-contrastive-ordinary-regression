@@ -370,7 +370,7 @@ if __name__ == '__main__':
     #print('-----------------------------')
     #test_output(model, test_loader, test_loader, train_labels, args)
     print(f' Start to train !')
-    model = train_epoch_uncertain(model, train_loader, val_loader, optimizer, args)
+    model = train_epoch_uncertain(model, train_loader, val_loader, train_labels, optimizer, args)
     test_output(model, test_loader, test_loader, train_labels, args)
 
 
