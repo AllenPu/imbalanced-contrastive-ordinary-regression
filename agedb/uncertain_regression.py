@@ -160,8 +160,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             y_pred, y_gt = torch.Tensor(np.hstack(y_pred)), np.hstack(y_gt)
             #
             aa = []
-            #for l in range(np.max(train_labels)+1):
-            for l in np.unique(train_labels):
+            for l in range(np.max(train_labels)+1):
                 indexs = np.argwhere(y_gt==l).squeeze(-1)
                 aa.append(l)
                 if l not in y_gt or len(indexs) == 1:
@@ -171,31 +170,15 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                     variance = torch.var(y_pred.index_select(0, index)).item()
                 var_dict[l] = variance  
                 var_list.append(variance)  
-                var_tensor = torch.Tensor(var_list) 
-            #print('--------')   
-            print(var_list)
-            #print('--------')                  
+                var_tensor = torch.Tensor(var_list)                  
         ######
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
             #
             #varianc_index = torch.LongTensor(y.squeeze(-1))
             #print(y.dtype)
-            try:
-                varianc = var_tensor.index_select(0, index= y.squeeze(-1).to(torch.int32))
-            except:
-                print(y.squeeze(-1).to(torch.int32))
-                not_in = []
-                for i in y.squeeze(-1).to(torch.int32):
-                    if i.item() not in aa:
-                        not_in.append(i.item())
-                print('====')
-                print(not_in)
-                print('====')
-                print(var_tensor.shape)
-                print('====')
-                print(len(aa))
-                assert 1 == 2
+            varianc = var_tensor.index_select(0, index= y.squeeze(-1).to(torch.int32))
+            #
             varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
             #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
@@ -207,8 +190,9 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             loss_mse = torch.pow(pred - y, 2)
             #
             #print(uncertain.dtype, loss_mse.dtype)
+            sigma = torch.log(varianc)
             #
-            loss = torch.mean( torch.exp(-uncertain)*loss_mse + torch.abs(uncertain-varianc))
+            loss = torch.mean( torch.exp(-uncertain)*loss_mse + torch.abs(uncertain-sigma))
             #
             #loss_mse = torch.pow(pred-y,2)
             #loss = torch.mean(loss_mse)
