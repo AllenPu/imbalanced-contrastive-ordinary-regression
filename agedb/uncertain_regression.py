@@ -170,7 +170,9 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                     variance = torch.var(y_pred.index_select(0, index)).item()
                 var_dict[l] = variance  
                 var_list.append(variance)  
-                var_tensor = torch.Tensor(var_list)                  
+                var_tensor = torch.Tensor(var_list)  
+        if e == 0:
+            var_tensor = torch.zeros(var_tensor.shape)                 
         ######
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
@@ -183,25 +185,28 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             #
             x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
             #
-            # first update the MSE
-            opt.zero_grad()
             pred, uncertain = model(x)
             #
-            loss_mse = torch.pow(pred - y, 2)
+            loss_mse = torch.mean(torch.pow(pred - y, 2))
             #
-            #print(uncertain.dtype, loss_mse.dtype)
-            sigma = torch.log(varianc)
-            #
-            loss = torch.mean( torch.exp(-uncertain)*loss_mse + torch.abs(uncertain-sigma))
-            #
-            #loss_mse = torch.pow(pred-y,2)
-            #loss = torch.mean(loss_mse)
+            opt.zero_grad()
             loss.backward()
             opt.step()
             #
-        #csv_writer.writerow([e, loss.item(), mse.item(), scale_mse.item(), uncer.item(), var.item()])
-        #f.close()
-        #validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=args.write_down)
+            if e % 2 == 0:
+                pred, uncertain = model(x)
+                #
+                loss_mse = torch.pow(pred - y, 2).data
+                #
+                sigma = torch.log(varianc)
+                #
+                loss = torch.mean(torch.exp(-uncertain)*loss_mse + torch.abs(uncertain-sigma))
+                #
+                opt.zero_grad()
+                loss.backward()
+                opt.step()          
+                #
+
     return model
 
 
