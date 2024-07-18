@@ -190,7 +190,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             loss_mse = torch.mean(torch.pow(pred - y, 2))
             #
             opt.zero_grad()
-            loss.backward()
+            loss_mse.backward()
             opt.step()
             #
             if e % 2 == 0:
