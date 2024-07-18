@@ -172,7 +172,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 var_list.append(variance)  
                 var_tensor = torch.Tensor(var_list)  
         else:
-            var_tensor = torch.zeros()              
+            var_tensor = torch.zeros(np.max(train_labels)+1)              
         ######
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
