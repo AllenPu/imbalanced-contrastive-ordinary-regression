@@ -144,7 +144,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
     #
     for e in tqdm(range(args.epoch)):
         #####
-        if e % 5 == 0:
+        if e % 5 == 0 and e != 0:
             var_dict = {}
             var_list = []
             y_pred = []
@@ -171,8 +171,8 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 var_dict[l] = variance  
                 var_list.append(variance)  
                 var_tensor = torch.Tensor(var_list)  
-        if e == 0:
-            var_tensor = torch.zeros(var_tensor.shape)                 
+        else:
+            var_tensor = torch.zeros()              
         ######
         for idx, (x, y, g) in enumerate(train_loader):
             bsz = x.shape[0]
