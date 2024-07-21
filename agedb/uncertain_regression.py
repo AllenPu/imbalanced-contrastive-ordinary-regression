@@ -195,7 +195,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             #
             # the variance update
             #
-            if e % 5 == 0:
+            if e % 2 == 0:
                 pred, uncertain = model(x)
                 #
                 loss_mse = torch.pow(pred - y, 2).data
@@ -274,49 +274,6 @@ def count_down(labels, y_gt, y_pred, y_uncertain):
 
 
 
-
-
-'''
-def validates(model, val_loader, train_labels, maj_shot, med_shot, min_shot, e, store_name, write_down=False):
-    pred, label, val_mae = [], [], AverageMeter()
-    for idx, (x,y,_) in enumerate(val_loader):
-        bsz = x.shape[0]
-        with torch.no_grad():
-            g = find_regressors_index(y, maj_shot, med_shot, min_shot)
-            x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
-            cls_pred, y_output = model(x)
-            y_pred = torch.gather(y_output, dim=1, index=g.to(torch.int64))
-            pred.extend(y_pred.cpu().numpy())
-            label.extend(y.cpu().numpy())
-            mae = F.l1_loss(y_pred, y)
-            val_mae.update(mae, bsz)
-    shot_pred = shot_metric(pred, label, train_labels)
-    maj, med, low = shot_pred['many']['l1'], shot_pred['median']['l1'], shot_pred['low']['l1']
-    print(f' In Epoch {e} total validation MAE is {val_mae.avg} MAE {maj} Median: MAE {med} Low: MAE {low}')
-    _, _, _, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med = shot_reg(label, pred, maj_shot, med_shot, min_shot)
-    print(f'min_to_med {min_to_med}, min_to_maj {min_to_maj}, med_to_maj {med_to_maj}, med_to_min {med_to_min}, maj_to_min {maj_to_min}, maj_to_med {maj_to_med}')
-    if write_down:
-        with open(f'{store_name}.csv', 'a', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow([e, min_to_med, min_to_maj, med_to_maj,med_to_min, maj_to_min,maj_to_med])
-
-
-def find_regressors_index(y, maj_shot, med_shot, min_shot ):
-    g_index = torch.Tensor(size=(y.shape[0],1))
-    maj = torch.tensor(np.isin(y.numpy(),np.array(maj_shot)))
-    maj_index = torch.nonzero(maj == True)[:,0]  
-    if len(maj_index) != 0:
-        g_index[maj_index] = 0
-    med = torch.tensor(np.isin(y.numpy(),np.array(med_shot)))
-    med_index = torch.nonzero(med == True)[:,0]
-    if len(med_index) != 0:
-        g_index[med_index] = 1
-    min = torch.tensor(np.isin(y.numpy(),np.array(min_shot)))
-    min_index = torch.nonzero(min == True)[:,0]
-    if len(min_index) != 0:
-        g_index[min_index] = 2
-    return g_index
-'''
 
 
 
