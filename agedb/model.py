@@ -289,7 +289,7 @@ class Encoder_regression_uncertainty(nn.Module):
         self.norm = norm
         self.weight_norm = weight_norm
         if self.weight_norm:
-            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 2), name='regressor_weight')
+            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 2), name='weight')
         else:
             self.regressor = nn.Linear(dim_in, 2)
         
