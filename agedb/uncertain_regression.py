@@ -89,11 +89,6 @@ def get_data_loader(args):
     test_dataset = AgeDB(data_dir=args.data_dir, df=df_test,
                          img_size=args.img_size, split='test', group_num=args.groups)
     #
-    #test_dataset1 = AgeDB(data_dir=args.data_dir, df=df_test,
-    #                     img_size=args.img_size, split='test', group_num=args.groups)
-    #test_dataset1.enable_multi_crop(args.enable)
-    #train_dataset.enable_elr_index_return(True)
-    #
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
                               num_workers=args.workers, pin_memory=True, drop_last=False)
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False,
