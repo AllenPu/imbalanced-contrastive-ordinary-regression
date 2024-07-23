@@ -169,27 +169,28 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
         else:
             var_tensor = torch.zeros(np.max(train_labels)+1)              
         ######
-        for idx, (x, y, g) in enumerate(train_loader):
-            bsz = x.shape[0]
-            #
-            #varianc_index = torch.LongTensor(y.squeeze(-1))
-            #print(y.dtype)
-            varianc = var_tensor.index_select(0, index= y.squeeze(-1).to(torch.int32))
-            #
-            varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
-            #
-            x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
-            #
-            pred, uncertain = model(x)
-            #
-            loss_mse = torch.mean(torch.pow(pred - y, 2))
-            #
-            opt.zero_grad()
-            loss_mse.backward()
-            opt.step()
-            #
-            # the variance update
-            #
+        if e % 1 == 0:
+            for idx, (x, y, g) in enumerate(train_loader):
+                bsz = x.shape[0]
+                #
+                #varianc_index = torch.LongTensor(y.squeeze(-1))
+                #print(y.dtype)
+                varianc = var_tensor.index_select(0, index= y.squeeze(-1).to(torch.int32))
+                #
+                varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
+                #
+                x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
+                #
+                pred, uncertain = model(x)
+                #
+                loss_mse = torch.mean(torch.pow(pred - y, 2))
+                #
+                opt.zero_grad()
+                loss_mse.backward()
+                opt.step()
+                #
+                # the variance update
+                #
             if e % 2 == 0:
                 pred, uncertain = model(x)
                 #
