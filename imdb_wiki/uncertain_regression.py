@@ -141,7 +141,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             var_list = []
             y_pred = []
             y_gt = []
-            for idx, (x, y, _) in enumerate(val_loader):         
+            for idx, (x, y, _, _) in enumerate(val_loader):         
                 #
                 x = x.cuda(non_blocking=True)
                 #
@@ -167,7 +167,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
             var_tensor = torch.zeros(np.max(train_labels)+1)              
         ######
         if e % 1 == 0:
-            for idx, (x, y, g) in enumerate(train_loader):
+            for idx, (x, y, _, _) in enumerate(train_loader):
                 bsz = x.shape[0]
                 #
                 #varianc_index = torch.LongTensor(y.squeeze(-1))
@@ -176,7 +176,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 #
                 varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
                 #
-                x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
+                x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True))
                 #
                 pred, uncertain = model(x)
                 #
