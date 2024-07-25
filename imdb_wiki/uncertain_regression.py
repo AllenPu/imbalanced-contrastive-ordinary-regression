@@ -30,7 +30,7 @@ print(f" training on ", device)
 parser = argparse.ArgumentParser('argument for training')
 parser.add_argument('--seed', default=3407)
 parser.add_argument('--data_dir', type=str,
-                    default='/home/rpu2/scratch/data/imbalanced-regression/imdb_wiki/data', help='data directory')
+                    default='/home/rpu2/scratch/data/imbalanced-regression//imdb-wiki-dir/data', help='data directory')
 parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate')
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
