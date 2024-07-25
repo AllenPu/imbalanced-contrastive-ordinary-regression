@@ -16,12 +16,11 @@ from collections import OrderedDict
 from loss import *
 from loss_contra import *
 from utils import *
-from train import test, write_log
-from draw_tsne import draw_tsne
+#from train import test_step, write_log
+#from draw_tsne import draw_tsne
 import csv
 import numpy  as np
 import datetime
-from loss import *
 import matplotlib.pyplot as plt
 from collections import Counter
 
