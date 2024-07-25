@@ -204,13 +204,6 @@ class Encoder_regression_single(nn.Module):
             self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 1), name='weight')
         else:
             self.regressor = nn.Sequential(nn.Linear(dim_in, 1))
-        
-        #self.regressor = nn.Sequential(nn.Linear(dim_in, 2048),
-        #                               nn.ReLU(),
-        #                               nn.Linear(2048, 512),
-        #                               nn.ReLU(),
-        #                               nn.Linear(512, self.output_dim))
-        
 
     def forward(self, x):
         feat = self.encoder(x)
