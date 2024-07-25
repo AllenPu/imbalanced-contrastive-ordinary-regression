@@ -70,7 +70,7 @@ parser.add_argument('--we', type=int, default=10)
 
 def get_data_loader(args):
     print('=====> Preparing data...')
-    df = pd.read_csv(os.path.join(args.data_dir, "agedb.csv"))
+    df = pd.read_csv(os.path.join(args.data_dir, "imdb_wiki.csv"))
     df_train, df_val, df_test = df[df['split'] ==
                                    'train'], df[df['split'] == 'val'], df[df['split'] == 'test']
     train_labels = df_train['age']
