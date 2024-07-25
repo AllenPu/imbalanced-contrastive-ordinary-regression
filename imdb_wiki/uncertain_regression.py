@@ -176,7 +176,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 #
                 varianc = varianc.unsqueeze(-1).cuda(non_blocking=True)
                 #
-                x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True))
+                x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
                 #
                 pred, uncertain = model(x)
                 #
