@@ -115,8 +115,8 @@ def warm_up(model, train_loader, opt, we=10):
     model = model.cuda()
     model.train()
     for e in tqdm(range(we)):
-        for idx, (x, y, g) in enumerate(train_loader):
-            x, y, g = x.cuda(non_blocking=True), y.cuda(non_blocking=True), g.cuda(non_blocking=True)
+        for idx, (x, y, _, _) in enumerate(train_loader):
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
             opt.zero_grad()
             pred, uncertain = model(x)
             loss = torch.mean(torch.pow(pred-y,2))
