@@ -187,7 +187,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 #
                 # the variance update
                 #
-            if e % 2 == 0:
+            if e % 5 == 0:
                 pred, uncertain = model(x)
                 #
                 loss_mse = torch.pow(pred - y, 2).data
