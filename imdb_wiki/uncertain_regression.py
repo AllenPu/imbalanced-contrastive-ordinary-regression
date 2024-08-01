@@ -103,9 +103,11 @@ def get_data_loader(args):
 def get_model(args):
     model = Encoder_regression_uncertainty(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
     # load pretrained
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+    optimizer1 = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-
+    optimizer2 = torch.optim.SGD(model.parameters(), lr=2*args.lr,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = [optimizer1, optimizer2]
     return model, optimizer
 
 
@@ -132,6 +134,8 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
     model.train()
+    #
+    opt1, opt2 = opt
     #
     for e in tqdm(range(args.epoch)):
         #####
@@ -181,9 +185,9 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 #
                 loss_mse = torch.mean(torch.pow(pred - y, 2))
                 #
-                opt.zero_grad()
+                opt1.zero_grad()
                 loss_mse.backward()
-                opt.step()
+                opt1.step()
                 #
                 # the variance update
                 #
@@ -196,9 +200,9 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 #
                 loss = torch.mean(torch.exp(-uncertain)*loss_mse + torch.abs(uncertain-sigma))
                 #
-                opt.zero_grad()
+                opt2.zero_grad()
                 loss.backward()
-                opt.step()          
+                opt2.step()          
                 #
 
     return model
