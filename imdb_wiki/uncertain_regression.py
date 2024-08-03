@@ -40,8 +40,8 @@ parser.add_argument('--workers', type=int, default=0,
                     help='number of workers used in data loading')
 parser.add_argument('--groups', type=int, default=10,
                     help='number of split bins to the wole datasets')
-parser.add_argument('--epoch', type=int, default=100,
-                    help='number of epochs to train')
+#parser.add_argument('--epoch', type=int, default=100,
+#                    help='number of epochs to train')
 parser.add_argument('--reweight', type=str, default=None,
                     help='weight : inv or sqrt_inv')
 parser.add_argument('--momentum', type=float, default=0.9,
@@ -65,7 +65,8 @@ parser.add_argument('--beta', type=float, default=0.7)
 parser.add_argument('--lambdas', type=float, default=3)
 parser.add_argument('--write_down', action='store_true', help=' write down the validation result to the csv file')
 parser.add_argument('--we', type=int, default=10)
-
+parser.add_argument('--epoch', type=int, default=100,
+                    help='number of epochs to train')
 
 
 def get_data_loader(args):
