@@ -64,7 +64,9 @@ parser.add_argument('--enable', action='store_false')
 parser.add_argument('--beta', type=float, default=0.7)
 parser.add_argument('--lambdas', type=float, default=3)
 parser.add_argument('--write_down', action='store_true', help=' write down the validation result to the csv file')
-parser.add_argument('--we', type=int, default=10)
+#
+parser.add_argument('--we', type=int, default=10, help='warm up epoch for the model')
+#
 parser.add_argument('--epoch', type=int, default=100,
                     help='number of epochs to train')
 
