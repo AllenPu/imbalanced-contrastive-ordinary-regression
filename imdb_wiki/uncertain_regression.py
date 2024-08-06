@@ -141,6 +141,9 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
     #
     opt1, opt2 = opt
     #
+    mse_upate = 1
+    uncertain_update = 5
+    #
     for e in tqdm(range(args.epoch)):
         #####
         if e % 5 == 0 and e != 0:
@@ -173,7 +176,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
         else:
             var_tensor = torch.zeros(np.max(train_labels)+1)              
         ######
-        if e % 1 == 0:
+        if e % mse_upate == 0:
             for idx, (x, y, _, _) in enumerate(train_loader):
                 bsz = x.shape[0]
                 #
@@ -195,7 +198,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 #
                 # the variance update
                 #
-            if e % 5 == 0:
+            if e % uncertain_update == 0:
                 pred, uncertain = model(x)
                 #
                 loss_mse = torch.pow(pred - y, 2).data
@@ -208,7 +211,8 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 loss.backward()
                 opt2.step()          
                 #
-    print(f'----The we is {args.we} the train is {args.epoch} epochs')
+    print(f'----The we is {args.we} the train is {args.epoch} epochs----')
+    print(f'----The MSE in train is {mse_upate} the uncrtain update in train is {uncertain_update}----')
     return model
 
 
