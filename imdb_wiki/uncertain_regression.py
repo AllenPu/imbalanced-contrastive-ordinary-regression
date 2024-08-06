@@ -208,7 +208,7 @@ def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, ar
                 loss.backward()
                 opt2.step()          
                 #
-
+    print(f'----The we is {args.we} the train is {args.epoch} epochs')
     return model
 
 
