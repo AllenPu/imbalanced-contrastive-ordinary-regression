@@ -246,17 +246,18 @@ class Encoder_regression_uncertainty(nn.Module):
         self.encoder = backbone()
         self.norm = norm
         self.weight_norm = weight_norm
-        if self.weight_norm:
-            self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 2), name='weight')
-        else:
-            self.regressor = nn.Linear(dim_in, 2)
+        #if self.weight_norm:
+        #    self.regressor = torch.nn.utils.weight_norm(nn.Linear(dim_in, 2), name='weight')
+        #else:
+        #   self.regressor = nn.Linear(dim_in, 2)
+        self.guassuann_head = GaussianLikelihoodHead(inp_dim=dim_in, outp_dim=1)
         
 
     def forward(self, x):
         feat = self.encoder(x)
         if self.norm:
             feat = F.normalize(feat, dim=-1)
-        out = self.regressor(feat)
+        out = self.guassuann_head(feat)
         out_ = torch.chunk(out,2,dim=1)
         return out_[0], out_[1]
 
