@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
 parser = argparse.ArgumentParser('argument for training')
@@ -135,6 +136,7 @@ def warm_up(model, train_loader, opt, we=10):
 def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, args):
     #model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
+    #
     model.train()
     #
     for e in tqdm(range(args.epoch)):
