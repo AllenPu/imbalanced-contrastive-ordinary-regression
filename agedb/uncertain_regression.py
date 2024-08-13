@@ -131,6 +131,20 @@ def warm_up(model, train_loader, opt, we=10):
 
 
 
+def train_guassain_likelihood(model, train_loader, val_loader, train_labels, opt, args):
+    model = model.cuda()
+    model.train()
+    for e in tqdm(range(args.epoch)):
+        for idx, (x, y, _) in enumerate(train_loader):
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            pred, uncertain = model(x)
+            loss = beta_nll_loss(pred, uncertain, y)
+            opt.zero_grad()
+            loss.backward()
+            opt.step()
+    return model
+
+
 
 
 def train_epoch_uncertain(model, train_loader, val_loader, train_labels, opt, args):
