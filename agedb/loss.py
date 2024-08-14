@@ -94,5 +94,5 @@ def beta_nll_loss(mean, variance, target, beta=0.5):
 
     if beta > 0:
         loss = loss * (variance.detach() ** beta)
-    
-    return loss.sum(axis=-1)
+    loss = torch.sum(loss)
+    return loss

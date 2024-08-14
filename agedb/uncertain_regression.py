@@ -106,7 +106,8 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression_uncertainty(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
+    model = Regression_guassian_likelihood(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
+    #model = Encoder_regression_uncertainty(name='resnet18', weight_norm=args.weight_norm, norm = args.norm)
     # load pretrained
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
@@ -350,7 +351,8 @@ if __name__ == '__main__':
     #print('-----------------------------')
     #test_output(model, test_loader, test_loader, train_labels, args)
     print(f' Start to train !')
-    model = train_epoch_uncertain(model, train_loader, val_loader, train_labels, optimizer, args)
+    model = train_guassain_likelihood(model, train_loader, val_loader, train_labels, optimizer, args)
+    #model = train_epoch_uncertain(model, train_loader, val_loader, train_labels, optimizer, args)
     test_output(model, test_loader, train_labels, args)
 
 
