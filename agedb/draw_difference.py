@@ -2,12 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-labels_ce = np.load('labels_ce.npy')
-labels_la = np.load('labels_la.npy')
-labels_soft_label = np.load('labels_soft_label.npy')
-pred_ce = np.load('pred_ce.npy')
-pred_la = np.load('pred_la.npy')
-pred_soft_label = np.load('pred_soft_label.npy')
+labels_ce = np.load('./acc/labels_ce.npy')
+labels_la = np.load('./acc/labels_la.npy')
+labels_soft_label = np.load('./acc/labels_soft_label.npy')
+pred_ce = np.load('./acc/pred_ce.npy')
+pred_la = np.load('./acc/pred_la.npy')
+pred_soft_label = np.load('./acc/pred_soft_label.npy')
 
 
 length = labels_ce.shape[0]
