@@ -46,4 +46,5 @@ ax.set_zlabel('Z')
 
 
 ax.set_yticks(yticks)
+plt.savefig('diff.jpg')
 plt.show()
