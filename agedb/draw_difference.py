@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 labels_ce = np.load('./acc/labels_ce.npy')
@@ -26,25 +27,10 @@ list_ce = [diff_ce[key] for key in sorted(diff_ce)]
 list_la = [diff_la[key] for key in sorted(diff_la)]
 
 
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
 
 colors = ['r', 'g', 'b']
 yticks = ['soft','ce', 'la']
-x = [i for i in range(20)]
-for c, k in zip(colors, yticks):
-    xs = x
-    ys = np.array(f'list_{k}')
-    cs = [c] * len(xs)
-    cs[0] = 'c'
-    ax.bar(xs, ys, zs=k, zdir='y', color=cs, alpha=0.8)
-
-
-ax.set_xlabel('groups')
-ax.set_ylabel('criteria')
-ax.set_zlabel('Z')
-
-
-ax.set_yticks(yticks)
+df = pd.DataFrame({'soft': np.array(list_soft), 'ce': np.array(list_ce), 'la':np.array(list_la)}, columns=['soft', 'ce','la'])
+df.plot.hist(alpha=0.8,bins=length)
 plt.savefig('diff.jpg')
-plt.show()
+#plt.show()
