@@ -22,6 +22,9 @@ for i in range(length):
     diff_ce[ce_ab] = diff_ce.get(ce_ab, 0) + 1
     la_ab = int(np.abs(pred_la[i]-labels_la[i]))
     diff_la[la_ab] = diff_la.get(la_ab, 0) + 1
+print(f'soft ab {soft_ab} len : {len(soft_ab)}')
+print(f'ce ab {ce_ab} len : {len(ce_ab)}')
+print(f'la ab {la_ab} len : {len(la_ab)}')
 list_soft = [diff_soft[key] for key in sorted(diff_soft)]
 list_ce = [diff_ce[key] for key in sorted(diff_ce)]
 list_la = [diff_la[key] for key in sorted(diff_la)]
