@@ -284,13 +284,6 @@ def count_down(labels, y_gt, y_pred, y_uncertain):
     
     
 
-
-
-
-
-
-
-
 def test_output(model,  test_loader, train_labels, args):
     model.eval()
     maj_shot, med_shot, min_shot = shot_count(train_labels)
