@@ -152,7 +152,7 @@ def draw_aboslute_difference():
 
 
 
-    colors = ['r', 'g', 'b']
+    #colors = ['r', 'g', 'b']
     yticks = ['soft','ce', 'la']
     df = pd.DataFrame({'soft': np.array(list_soft), 'ce': np.array(list_ce), 'la':np.array(list_la)}, columns=['soft', 'ce','la'])
     df.plot.hist(alpha=0.8,bins=length)
