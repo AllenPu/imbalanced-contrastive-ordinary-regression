@@ -141,7 +141,7 @@ def train_epoch(model, train_loader, opt, args):
                 # remove all non current group index by multiple 0, reverse from above
                 remove_2 = torch.where(mask_1, 0.0, 1.0)
                 remove_non_group_soft = g_soft_label * remove_2
-                #
+                # final is the cumulative of both 
                 g_soft_label = remove_non_group_soft + remove_group_soft
                 #
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
