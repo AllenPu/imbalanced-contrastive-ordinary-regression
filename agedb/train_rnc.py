@@ -16,6 +16,7 @@ from collections import OrderedDict
 from loss import *
 from loss_contra import *
 from utils import *
+#from utils import soft_labeling, SoftCrossEntropy
 from train import test, write_log
 from util_devlove import shot_metrics, train_regressor, validate
 from draw_tsne import draw_tsne
@@ -125,6 +126,10 @@ def train_epoch(model, train_loader, opt, args):
             #
             if args.soft_label:
                 g_soft_label = soft_labeling(g, args).to(device)
+                # rescale the soft label
+                total_num = sum(group_list)
+                rescale_groups = [i/total_num for i in group_list]
+                #
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
                 #print(f' soft label loss is {loss_ce.item()}')
             elif args.ce:
