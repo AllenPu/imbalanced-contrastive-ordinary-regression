@@ -133,7 +133,7 @@ def train_epoch(model, train_loader, opt, args):
                 total_num = sum(group_list)
                 rescale_groups = [1-i/total_num for i in group_list]
                 rescael_tensor = torch.Tensor(rescale_groups).repeat(bsz, 1).to(device)
-                # 
+                ##
                 mask_1 = (g_soft_label == g_soft_label.max(dim=1, keepdim=True)[0])
                 # remove all current group index by multiple 0 (leave the max soft label then process others)
                 remove_1 = torch.where(mask_1, 1.0, 0.0)
