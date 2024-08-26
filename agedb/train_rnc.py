@@ -133,19 +133,7 @@ def train_epoch(model, train_loader, opt, args):
                 g_soft_label = soft_labeling(g, args).to(device)
                 # rescale the soft label
                 if args.asymm:
-                    total_num = sum(group_list)
-                    rescale_groups = [1-i/total_num for i in group_list]
-                    rescael_tensor = torch.Tensor(rescale_groups).repeat(bsz, 1).to(device)
-                    ##
-                    mask_1 = (g_soft_label == g_soft_label.max(dim=1, keepdim=True)[0])
-                    # remove all current group index by multiple 0 (leave the max soft label then process others)
-                    remove_1 = torch.where(mask_1, 1.0, 0.0)
-                    remove_group_soft = g_soft_label * remove_1 * rescael_tensor
-                    # remove all non current group index by multiple 0, reverse from above
-                    remove_2 = torch.where(mask_1, 0.0, 1.0)
-                    remove_non_group_soft = g_soft_label * remove_2
-                    # final is the cumulative of both 
-                    g_soft_label = remove_non_group_soft + remove_group_soft
+                    g_soft_label = asymmetric_soft_labeling(group_list, g_soft_label)
                     #
                 loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
                 #print(f' soft label loss is {loss_ce.item()}')
@@ -190,6 +178,23 @@ def test_group_acc(model, train_loader, prefix):
 
 
 
+
+def asymmetric_soft_labeling(group_list, g_soft_label):
+    bsz = g_soft_label.shape[0]
+    total_num = sum(group_list)
+    rescale_groups = [1-i/total_num for i in group_list]
+    rescale_tensor = torch.Tensor(rescale_groups).repeat(bsz, 1).to(device)
+    ##
+    mask_1 = (g_soft_label == g_soft_label.max(dim=1, keepdim=True)[0])
+    # remove all current group index by multiple 0 (leave the max soft label then process others)
+    remove_1 = torch.where(mask_1, 1.0, 0.0)
+    remove_group_soft = g_soft_label * remove_1 * rescale_tensor
+    # remove all non current group index by multiple 0, reverse from above
+    remove_2 = torch.where(mask_1, 0.0, 1.0)
+    remove_non_group_soft = g_soft_label * remove_2
+    # final is the cumulative of both 
+    g_soft_label = remove_non_group_soft + remove_group_soft
+    return g_soft_label
 
 
 
