@@ -234,6 +234,7 @@ if __name__ == '__main__':
     print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
+    #
     #torch.save(model, f'./checkpoint/{store_name}.pth')
 
 
