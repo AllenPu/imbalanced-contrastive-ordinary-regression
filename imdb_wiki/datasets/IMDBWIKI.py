@@ -45,7 +45,7 @@ class IMDBWIKI(data.Dataset):
             #
             list_group = sorted(group_dict.items(), key = lambda group_dict : group_dict[0])
             self.group_list = [i[1] for i in list_group]
-        #
+            #
             # calculate the number of each age to construct a balanced group, if not in train set, set 0
             if self.group_mode == 'b_g':
                 #for i in range(101):
