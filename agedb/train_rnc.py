@@ -188,10 +188,10 @@ def asymmetric_soft_labeling(group_list, g_soft_label):
     mask_1 = (g_soft_label == g_soft_label.max(dim=1, keepdim=True)[0])
     # remove all current group index by multiple 0 (leave the max soft label then process others)
     remove_1 = torch.where(mask_1, 1.0, 0.0)
-    remove_group_soft = g_soft_label * remove_1 * rescale_tensor
+    remove_group_soft = g_soft_label * remove_1 
     # remove all non current group index by multiple 0, reverse from above
     remove_2 = torch.where(mask_1, 0.0, 1.0)
-    remove_non_group_soft = g_soft_label * remove_2
+    remove_non_group_soft = g_soft_label * remove_2 * rescale_tensor
     # final is the cumulative of both 
     g_soft_label = remove_non_group_soft + remove_group_soft
     return g_soft_label
