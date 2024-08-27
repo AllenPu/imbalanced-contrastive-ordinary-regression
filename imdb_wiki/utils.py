@@ -67,7 +67,7 @@ def euclidean_dist(x, y):
 
     return torch.pow(x - y, 2).sum(2)
 
-
+# shot metric for the MAE and GMean
 def shot_metric(pred, labels, train_labels, many_shot_thr=100, low_shot_thr=20):
     # input of the pred & labels are all numpy.darray
     # train_labels is from csv , e.g. df['age']
@@ -140,7 +140,7 @@ def shot_metric(pred, labels, train_labels, many_shot_thr=100, low_shot_thr=20):
 
     return shot_dict
 
-
+# classification metric shot
 def shot_metric_cls(g_pred, g, train_labels, test_labels, many_shot_thr=100, low_shot_thr=20):
     #
     g_pred = np.hstack(g_pred)
@@ -227,7 +227,7 @@ def balanced_metrics(preds, labels):
     mean_l1 = sum(l1_per_class) / len(l1_per_class)
     return mean_mse, mean_l1
 
-
+# balanaced mse test shot metric
 def shot_metric_balanced(pred, labels, train_labels, many_shot_thr=100, low_shot_thr=20):
     # input of the pred & labels are all numpy.darray
     # train_labels is from csv , e.g. df['age']
@@ -442,6 +442,7 @@ def validate(val_loader, model, regressor, train_labels=None):
               f"L1 {shot_dict['low']['l1']:.3f}\tG-Mean {shot_dict['low']['gmean']:.3f}")
         
 
+# this function is in alignmrnt with the above validation for :  MAE, MSE, GMean
 def shot_metrics(preds, labels, train_labels, many_shot_thr=100, low_shot_thr=20):
     train_labels = np.array(train_labels).astype(int)
 
