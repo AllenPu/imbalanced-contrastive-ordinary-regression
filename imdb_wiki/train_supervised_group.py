@@ -119,7 +119,7 @@ def train_contrastive_epoch(model, train_loader, opt, args):
     for idx, (x, _, g, _) in enumerate(train_loader):
         x, g = x.to(device), g.to(device)
         if args.aug:
-            x = x.reshape(-1, x.shape[-2], x.shape[-1])
+            x = x.reshape(-1,x.shape[-3], x.shape[-2], x.shape[-1])
         print(f'x shape is {x.shape}, g shape is {g.shape}')
         _, z = model(x)
         #split into two parts : first is the group, second is the prediction
