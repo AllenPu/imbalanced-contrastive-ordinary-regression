@@ -25,7 +25,7 @@ from loss import Ranked_Contrastive_Loss
 from loss_contra import RnCLoss, RnCLoss_pairwise
 import time
 from scipy.stats import gmean
-import pickle
+from utils import setup_seed
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f" training on ", device)
