@@ -118,6 +118,8 @@ def train_contrastive_epoch(model, train_loader, opt, args):
     #    args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.soft_label, args.ce
     for idx, (x, _, g, _) in enumerate(train_loader):
         x, g = x.to(device), g.to(device)
+        if args.aug:
+            x = x.reshape(-1, x.shape[-2], x.shape[-1])
         _, z = model(x)
         #split into two parts : first is the group, second is the prediction
         #y_chunk = torch.chunk(y_output, 2, dim=1)

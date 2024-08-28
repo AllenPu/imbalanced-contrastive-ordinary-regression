@@ -187,7 +187,8 @@ def train_one_epoch(model, train_loader, mse_loss, opt, args, e=0):
         y, g, w =  y.to(device), g.to(device), w.to(device)
         #
         if args.aug:
-            x = torch.cat([x[0], x[1]], dim=0)
+            x = x.reshape(-1, x.shape[-2], x.shape[-1])
+            #x = torch.cat([x[0], x[1]], dim=0)
             x = x.to(device)
             repeats = 2
         else:
