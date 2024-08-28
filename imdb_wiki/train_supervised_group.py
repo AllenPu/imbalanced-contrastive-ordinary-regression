@@ -121,7 +121,7 @@ def train_contrastive_epoch(model, train_loader, opt, args):
         bsz = x.shape[0]
         if args.aug:
             x = x.reshape(-1,x.shape[-3], x.shape[-2], x.shape[-1])
-        print(f'x shape is {x.shape}, g shape is {g.shape}')
+        #print(f'x shape is {x.shape}, g shape is {g.shape}')
         _, z = model(x)
         z = z.reshape(bsz,2,-1)
         #split into two parts : first is the group, second is the prediction
