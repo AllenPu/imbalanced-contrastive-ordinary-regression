@@ -146,7 +146,7 @@ if __name__ == '__main__':
     #
     for e in tqdm(range(args.epoch)):
         model = train_contrastive_epoch(model, train_loader, opt, args)
-    torch.save(model, f'{store_names}.pth')
+    torch.save(model, f'./checkpoint/{store_names}.pth')
 
 
 
