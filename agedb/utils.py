@@ -573,6 +573,8 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_s
 
 
 
-def cal_L1_distance():
-    
+def cal_L1_distance(pred, labels, train_labels):
+    # train_labels is from csv , e.g. df['age']
+    preds = np.hstack(pred)
+    labels = np.hstack(labels)
    
