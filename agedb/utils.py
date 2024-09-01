@@ -570,4 +570,9 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_s
         min_shot.update(mi.item(), minority.shape[0])
         min_shot_nuc.update(mi_nuc.item(), minority.shape[0])
     return maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc
+
+
+
+def cal_L1_distance():
+    
    
