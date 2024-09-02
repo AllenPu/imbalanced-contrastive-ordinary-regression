@@ -572,30 +572,15 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_s
     return maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc
 
 
-
-def cal_pred_L1_distance(preds, labels, train_labels):
-    #
-    train_class_count = []
-    #
-    train_labels = np.array(train_labels).astype(int)
+# calculate the prediction variance w.r.t the ground truth labels
+def cal_pred_L1_distance(preds, labels):
     #
     preds = np.hstack(preds)
     labels = np.hstack(labels)
+    preds_tesnor = torch.Tensor(preds)
     #
+    label_to_pred_index = {}
     for l in np.unique(labels):
-        train_class_count.append(len(train_labels[train_labels == l]))
-    #
-    train_many, train_med, train_low = [], [], []
-    test_pred = {}
-    many_shot_thr, low_shot_thr = 100, 20
-    # shot index
-    for i in range(len(train_class_count)):
-        if train_class_count[i] > many_shot_thr:
-            train_many.append(i)
-        elif train_class_count[i] < low_shot_thr:
-            train_med.append(i)
-        else:
-            train_low.append(i)
-    #
-
-            
+        pred_index = np.argwhere(labels==l)[:,0].tolist()
+        label_to_pred_index[l] = torch.index_select(preds_tesnor, dim=0, index=torch.Tensor(pred_index).to(torch.int32)).squeeze(-1).tolist()
+    return label_to_pred_index
