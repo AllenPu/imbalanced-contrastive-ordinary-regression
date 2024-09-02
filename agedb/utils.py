@@ -573,6 +573,7 @@ def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_s
 
 
 # calculate the prediction variance w.r.t the ground truth labels
+# return a dictionary : {key (is the label): prediction list}
 def cal_pred_L1_distance(preds, labels):
     #
     preds = np.hstack(preds)
