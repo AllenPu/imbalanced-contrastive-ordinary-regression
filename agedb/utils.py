@@ -13,6 +13,8 @@ import torch.nn as nn
 softmax = nn.Softmax(dim=-1)
 import torch.nn.functional as F
 from utils import *
+import math
+import statistics
 
 
 class AverageMeter(object):
@@ -589,6 +591,25 @@ def cal_pred_L1_distance(preds, labels):
 
 
 
-def draw_variance_mean(preds, labels, train_labels):
+def variance_mean_cal(preds, labels, train_labels):
     maj, med, low = shot_count(train_labels)
     label_to_pred_index = cal_pred_L1_distance(preds, labels)
+    #
+    index_list = []
+    shot_list = []
+    mean_list = []
+    variance_list = []
+    #
+    for k in label_to_pred_index.keys():
+        if k in maj:
+            shot_list.append(0)
+        elif k in med:
+            shot_list.append(1)
+        else:
+            shot_list.append(1)
+        mean = math.mean(label_to_pred_index[k])
+        variance = statistics.variance(label_to_pred_index[k])
+        index_list.append(k)
+        mean_list.append(mean)
+        variance_list.append(variance)
+    return index_list, mean_list, variance_list
