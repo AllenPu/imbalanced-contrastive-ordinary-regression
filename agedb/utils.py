@@ -442,7 +442,7 @@ def feature_diversity(z, g, args, total_dataset_length=100):
 
 
 
-    
+# calculate the majority, median and low shot labels   
 def shot_count(train_labels, many_shot_thr=100, low_shot_thr=20):
     #
     train_labels = np.array(train_labels).astype(int)
@@ -538,7 +538,7 @@ def int_tensors(pred):
 
 def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc, device):
     bsz = y.shape[0]
-    # calculate the frob norm of test on different shots
+    # calculate the frob norm of test on different shots (frobs and nuc)
     maj_index, med_index, min_index = [], [], []
     for i in range(bsz):
         if y[i] in majs:
@@ -585,3 +585,9 @@ def cal_pred_L1_distance(preds, labels):
         pred_index = np.argwhere(labels==l)[:,0].tolist()
         label_to_pred_index[l] = torch.index_select(preds_tesnor, dim=0, index=torch.Tensor(pred_index).to(torch.int32)).squeeze(-1).tolist()
     return label_to_pred_index
+
+
+
+
+def draw_variance_mean(preds, lables, train_labels):
+    maj, med, low = shot_count(train_labels)
