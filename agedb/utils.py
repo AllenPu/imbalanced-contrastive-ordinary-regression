@@ -597,43 +597,73 @@ def variance_mean_cal(label_to_pred_index, train_labels):
     #label_to_pred_index = cal_pred_L1_distance(preds, labels)
     #
     index_list = []
-    shot_list_mean, shot_list_variance = [], []
-    mean_list = []
-    variance_list = []
+    #shot_list_mean, shot_list_variance = [], []
+    #mean_list = []
+    #variance_list = []
+    maj_mean, med_mean, low_mean = [], [], []
+    maj_var, med_var, low_var =  [], [], []
+    maj_index, med_index, low_index = [], [], []
     #
     for k in label_to_pred_index.keys():
-        if k in maj:
-            shot_list_mean.append('r')
-            shot_list_variance.append('y')
-        elif k in med:
-            shot_list_mean.append('g')
-            shot_list_variance.append('c')
-        else:
-            shot_list_mean.append('b')
-            shot_list_variance.append('w')
         mean = statistics.mean(label_to_pred_index[k])
+        l1 = abs(mean -  k)
         variance = statistics.variance(label_to_pred_index[k])
+        if k in maj:
+            #shot_list_mean.append('r')
+            #shot_list_variance.append('y')
+            maj_mean.append(l1)
+            med_mean.append(0)
+            low_mean.append(0)
+            maj_var.append(variance)
+            med_var.append(0)
+            low_var.append(0)
+        elif k in med:
+            #shot_list_mean.append('g')
+            #shot_list_variance.append('c')
+            maj_mean.append(0)
+            med_mean.append(l1)
+            low_mean.append(0)
+            maj_var.append(0)
+            med_var.append(variance)
+            low_var.append(0)
+        else:
+            #shot_list_mean.append('b')
+            #shot_list_variance.append('w')
+            maj_mean.append(0)
+            med_mean.append(0)
+            low_mean.append(l1)
+            maj_var.append(0)
+            med_var.append(0)
+            low_var.append(variance)
         index_list.append(k)
-        mean_list.append(abs(mean -  k))
-        variance_list.append(variance)
-    return index_list, mean_list, variance_list, shot_list_mean, shot_list_variance
+    mean_list = [maj_mean, med_mean, low_mean]
+    var_list = [maj_var, med_var, low_var]   
+    return index_list, mean_list, var_list
 
 
-def draw_bias_bar(index_list, mean_list, variance_list, shot_list, prefix='ce'):
+def draw_bias_bar(index_list, mean_list, var_list, prefix='ce'):
     xx = [i for i in range(len(index_list))]
-    rect1 = plt.bar(xx, height=mean_list, width=0.2, color= shot_list, label='l1_mean')
-    rect2 = plt.bar([x+0.2 for x in xx], height=variance_list, width=0.2, color= shot_list, label='variance')
-    plt.ylabel("difference")
+    [maj_mean, med_mean, low_mean] = mean_list
+    [maj_var, med_var, low_var] = var_list
+    rect1 = plt.bar(xx, height=maj_mean, width=0.2, label='maj')
+    rect2 = plt.bar(xx, height=med_mean, width=0.2, label='med')
+    rect3 = plt.bar(xx, height=low_mean, width=0.2, label='low')
+    plt.ylabel("mean_difference")
     #
-    plt.xticks([x+0.1 for x in xx], index_list)
+    plt.xticks(xx[::20], index_list[::20])
     plt.xlabel("Age")
     plt.legend()
-    #
-    for rect in rect1:
-        height = rect.get_height()
-    plt.text(rect.get_x() + rect.get_width()/2, height+1, str(height), ha='center', va='bottom')
-    for rect in rect2:
-        height = rect.get_height()
-    plt.text(rect.get_x() + rect.get_width()/2, height+1, str(height), ha='center', va='bottom')
-    plt.savefig(f'./{prefix}.png')
+    plt.savefig(f'./{prefix}_mean.png')
     plt.show()
+    plt.close()
+    rect1 = plt.bar(xx, height=maj_var, width=0.2, label='maj')
+    rect2 = plt.bar(xx, height=med_var, width=0.2, label='med')
+    rect3 = plt.bar(xx, height=low_var, width=0.2, label='low')
+    plt.ylabel("var_difference")
+    #
+    plt.xticks(xx[::20], index_list[::20])
+    plt.xlabel("Age")
+    plt.legend()
+    plt.savefig(f'./{prefix}_var.png')
+    plt.show()
+    plt.close()
