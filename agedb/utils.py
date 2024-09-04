@@ -508,17 +508,17 @@ def check_shot(e, maj, med, min):
     
 # check reditions from min to med, min to maj, med to maj
 def check_pred_shift(k_pred, k_label):
-    if k_pred is 'med' and k_label is 'min':
+    if k_pred == 'med' and k_label == 'min':
         return 'min to med'
-    elif k_pred is 'maj' and k_label is 'min':
+    elif k_pred == 'maj' and k_label == 'min':
         return 'min to maj'
-    elif k_pred is 'maj' and k_label is 'med':
+    elif k_pred == 'maj' and k_label == 'med':
         return 'med to maj'
-    elif k_pred is 'min' and k_label is 'med':
+    elif k_pred == 'min' and k_label == 'med':
         return 'med to min'
-    elif k_pred is 'min' and k_label is 'maj':
+    elif k_pred == 'min' and k_label == 'maj':
         return 'maj to min'
-    elif k_pred is 'med' and k_label is 'maj':
+    elif k_pred == 'med' and k_label == 'maj':
         return 'maj to med'
     else:
         return 'others'
