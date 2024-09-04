@@ -612,4 +612,4 @@ def variance_mean_cal(preds, labels, train_labels):
         index_list.append(k)
         mean_list.append(mean)
         variance_list.append(variance)
-    return index_list, mean_list, variance_list
+    return index_list, mean_list, variance_list, shot_list
