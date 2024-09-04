@@ -592,9 +592,9 @@ def cal_pred_L1_distance(preds, labels):
 
 
 
-def variance_mean_cal(preds, labels, train_labels):
+def variance_mean_cal(label_to_pred_index, train_labels):
     maj, med, low = shot_count(train_labels)
-    label_to_pred_index = cal_pred_L1_distance(preds, labels)
+    #label_to_pred_index = cal_pred_L1_distance(preds, labels)
     #
     index_list = []
     shot_list = []
