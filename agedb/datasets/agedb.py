@@ -49,23 +49,6 @@ class AgeDB(data.Dataset):
         else:
             pass
 
-    
-    def enable_multi_crop(self, enable=False):
-        if enable:
-            self.multi_crop=True
-
-    
-    def enable_elr_index_return(self, enable=False):
-        if enable:
-            self.elr_index_return=True
-
-
-
-    def get_three_shots_num_list(self):
-        l = []
-        for i in  ['maj', 'med', 'min']:
-            l.append(self.three_shots[i])
-        return l
 
 
     def __len__(self):
@@ -97,6 +80,27 @@ class AgeDB(data.Dataset):
             return index, imgs, label, group
         else:
             return imgs, label, group
+        
+
+        
+    def enable_multi_crop(self, enable=False):
+        if enable:
+            self.multi_crop=True
+
+    
+    #def enable_elr_index_return(self, enable=False):
+    #    if enable:
+    #        self.elr_index_return=True
+
+
+
+    #def get_three_shots_num_list(self):
+    #    l = []
+    #    for i in  ['maj', 'med', 'min']:
+    #        l.append(self.three_shots[i])
+    #    return l
+
+    
 
     def get_transform(self):
         if self.split == 'train':
