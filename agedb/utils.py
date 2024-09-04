@@ -603,11 +603,11 @@ def variance_mean_cal(preds, labels, train_labels):
     #
     for k in label_to_pred_index.keys():
         if k in maj:
-            shot_list.append(0)
+            shot_list.append('r')
         elif k in med:
-            shot_list.append(1)
+            shot_list.append('g')
         else:
-            shot_list.append(1)
+            shot_list.append('y')
         mean = math.mean(label_to_pred_index[k])
         variance = statistics.variance(label_to_pred_index[k])
         index_list.append(k)
@@ -618,8 +618,8 @@ def variance_mean_cal(preds, labels, train_labels):
 
 def draw_bias_bar(index_list, mean_list, variance_list, shot_list):
     xx = [i for i in range(len(index_list))]
-    rect1 = plt.bar(xx, height=mean_list, width=0.2, label='l1_mean')
-    rect2 = plt.bar([x+0.2 for x in xx], height=variance_list, width=0.2, label='variance')
+    rect1 = plt.bar(xx, height=mean_list, width=0.2, color= shot_list, label='l1_mean')
+    rect2 = plt.bar([x+0.2 for x in xx], height=variance_list, width=0.2, color= shot_list, label='variance')
     plt.ylabel("difference")
     #
     plt.xticks([x+0.1 for x in xx], index_list)
