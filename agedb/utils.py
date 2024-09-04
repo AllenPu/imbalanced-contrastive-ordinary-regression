@@ -608,7 +608,7 @@ def variance_mean_cal(label_to_pred_index, train_labels):
             shot_list.append('g')
         else:
             shot_list.append('y')
-        mean = math.mean(label_to_pred_index[k])
+        mean = statistics.mean(label_to_pred_index[k])
         variance = statistics.variance(label_to_pred_index[k])
         index_list.append(k)
         mean_list.append(abs(mean -  k))
