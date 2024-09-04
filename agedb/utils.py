@@ -616,7 +616,7 @@ def variance_mean_cal(label_to_pred_index, train_labels):
     return index_list, mean_list, variance_list, shot_list
 
 
-def draw_bias_bar(index_list, mean_list, variance_list, shot_list):
+def draw_bias_bar(index_list, mean_list, variance_list, shot_list, prefix='ce'):
     xx = [i for i in range(len(index_list))]
     rect1 = plt.bar(xx, height=mean_list, width=0.2, color= shot_list, label='l1_mean')
     rect2 = plt.bar([x+0.2 for x in xx], height=variance_list, width=0.2, color= shot_list, label='variance')
@@ -632,4 +632,5 @@ def draw_bias_bar(index_list, mean_list, variance_list, shot_list):
     for rect in rect2:
         height = rect.get_height()
     plt.text(rect.get_x() + rect.get_width()/2, height+1, str(height), ha='center', va='bottom')
+    plt.savefig(f'./{prefix}.png')
     plt.show()
