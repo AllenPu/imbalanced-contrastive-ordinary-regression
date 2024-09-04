@@ -15,6 +15,7 @@ import torch.nn.functional as F
 from utils import *
 import math
 import statistics
+import matplotlib.pyplot as plt
 
 
 class AverageMeter(object):
@@ -613,3 +614,22 @@ def variance_mean_cal(preds, labels, train_labels):
         mean_list.append(abs(mean -  k))
         variance_list.append(variance)
     return index_list, mean_list, variance_list, shot_list
+
+
+def draw_bias_bar(index_list, mean_list, variance_list, shot_list):
+    xx = [i for i in range(len(index_list))]
+    rect1 = plt.bar(xx, height=mean_list, width=0.2, label='l1_mean')
+    rect2 = plt.bar([x+0.2 for x in xx], height=variance_list, width=0.2, label='variance')
+    plt.ylabel("difference")
+    #
+    plt.xticks([x+0.1 for x in xx], index_list)
+    plt.xlabel("Age")
+    plt.legend()
+    #
+    for rect in rect1:
+        height = rect.get_height()
+    plt.text(rect.get_x() + rect.get_width()/2, height+1, str(height), ha='center', va='bottom')
+    for rect in rect2:
+        height = rect.get_height()
+    plt.text(rect.get_x() + rect.get_width()/2, height+1, str(height), ha='center', va='bottom')
+    plt.show()
