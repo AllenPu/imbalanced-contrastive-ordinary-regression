@@ -591,7 +591,8 @@ def cal_pred_L1_distance(preds, labels):
 
 
 
-
+# calculate the l1 distance between the prediction and ground truth
+# calculate variacne of predictions
 def variance_mean_cal(label_to_pred_index, train_labels):
     maj, med, low = shot_count(train_labels)
     #label_to_pred_index = cal_pred_L1_distance(preds, labels)
@@ -640,7 +641,7 @@ def variance_mean_cal(label_to_pred_index, train_labels):
     var_list = [maj_var, med_var, low_var]   
     return index_list, mean_list, var_list
 
-
+# draw the mean and variance given their correpsonding maj, med, and low groups
 def draw_bias_bar(index_list, mean_list, var_list, prefix='ce'):
     xx = [i for i in range(len(index_list))]
     [maj_mean, med_mean, low_mean] = mean_list
