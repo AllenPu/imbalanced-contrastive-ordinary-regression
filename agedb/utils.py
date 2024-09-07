@@ -664,6 +664,6 @@ def draw_bias_bar(index_list, mean_list, var_list, prefix='ce'):
     plt.xticks(xx[::20], index_list[::20])
     plt.xlabel("Age")
     plt.legend()
-    plt.savefig(f'./{prefix}_var.png')
+    plt.savefig(f'./{prefix}_variance.png')
     plt.show()
     plt.close()
