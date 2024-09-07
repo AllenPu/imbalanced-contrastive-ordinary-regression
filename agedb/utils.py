@@ -524,7 +524,7 @@ def check_pred_shift(k_pred, k_label):
     else:
         return 'others'
       
-
+# invert the pred to its closest interger
 def int_tensors(pred):
     pred = torch.Tensor(pred)
     #pred = pred - torch.floor(pred)
@@ -539,9 +539,9 @@ def int_tensors(pred):
     return pred
 
 
+ # calculate the frob norm of test on different shots (frobs norm and nuc norm)
 def cal_frob_norm(y, feat, majs, meds, mino, maj_shot, med_shot, min_shot, maj_shot_nuc, med_shot_nuc, min_shot_nuc, device):
     bsz = y.shape[0]
-    # calculate the frob norm of test on different shots (frobs and nuc)
     maj_index, med_index, min_index = [], [], []
     for i in range(bsz):
         if y[i] in majs:
