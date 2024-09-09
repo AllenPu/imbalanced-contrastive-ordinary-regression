@@ -37,7 +37,7 @@ parser.add_argument('--epoch', default=100, type=int)
 parser.add_argument('--dataset', type=str, default='agedb',
                     choices=['agedb'], help='dataset name')
 parser.add_argument('--data_dir', type=str,
-                    default='/home/rpu2/scratch/data/imbalanced-regression/imdb-wiki-dir/data', help='data directory')
+                    default='/home/rpu2/scratch/data/imbalanced-regression/agedb-dir/data', help='data directory')
                     #default='/home/ruizhipu/scratch/regression/imbalanced-regression/imdb-wiki-dir/data', help='data directory')
 parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
