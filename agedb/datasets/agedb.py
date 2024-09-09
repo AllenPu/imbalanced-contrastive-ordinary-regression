@@ -65,8 +65,8 @@ class AgeDB(data.Dataset):
             self.data_dir, row['path'])).convert('RGB')
         transform = self.get_transform()
         if self.multi_crop:
-            transform1, transform2 = self.aug_transform()
-            img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
+            transform2 = self.aug_transform()
+            img1, img2 = transform(img).unsqueeze(0), transform2(img).unsqueeze(0)
             imgs = torch.cat((img1, img2), dim=0)
             #print(f' size  {img.shape}')
             # shape : bsz, 2,  3， 244， 244
@@ -120,7 +120,7 @@ class AgeDB(data.Dataset):
         return transform
 
 
-
+    # return additioanl transform
     def aug_transform(self):
         train_transform = transforms.Compose([
             transforms.Resize((self.img_size, self.img_size)),
@@ -132,7 +132,7 @@ class AgeDB(data.Dataset):
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.4914, 0.4822, 0.4465],std=[0.2023, 0.1994, 0.2010]),
             ])
-        return train_transform, train_transform
+        return train_transform
     
     
 

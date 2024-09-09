@@ -84,7 +84,7 @@ def get_dataset(args):
     train_labels = df_train['age']
     #
     train_dataset = AgeDB(data_dir=args.data_dir, df=df_train, img_size=args.img_size,
-                          split='train', reweight=args.reweight, group_num=args.groups)
+                          split='train', reweight=args.reweight, group_num=args.groups, aug=args.aug)
     #
     group_list = train_dataset.get_group_list()
     #
