@@ -43,7 +43,7 @@ parser.add_argument('--img_size', type=int, default=224,
                     help='image size used in training')
 parser.add_argument('--groups', type=int, default=10,
                     help='number of split bins to the wole datasets')
-parser.add_argument('--batch_size', type=int, default=128, help='batch size')
+parser.add_argument('--batch_size', type=int, default=256, help='batch size')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
 parser.add_argument('--lr', type=float, default=1e-3,
