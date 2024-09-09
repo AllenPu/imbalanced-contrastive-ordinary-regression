@@ -44,6 +44,7 @@ class AgeDB(data.Dataset):
                 group_dic[min(group_id, group_num-1)] += 1
             list_group = sorted(group_dic.items(),
                                 key=lambda group_dic: group_dic[0])
+            # return how many number of samples in a group
             self.group_list = [i[1] for i in list_group]
             self.three_shots = three_shots
         else:
