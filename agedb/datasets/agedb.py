@@ -15,7 +15,7 @@ import random
 
 
 class AgeDB(data.Dataset):
-    def __init__(self, df, data_dir, img_size, split='train', reweight='none', group_num=10, max_age=100):
+    def __init__(self, df, data_dir, img_size, split='train', reweight='none', group_num=10, max_age=100, aug=False):
         self.df = df
         self.data_dir = data_dir
         self.img_size = img_size
@@ -24,7 +24,7 @@ class AgeDB(data.Dataset):
         self.group_list = []
         self.group_num = group_num
         #
-        self.multi_crop = False
+        self.multi_crop = aug
         self.elr_index_return = False
         #
         if self.split == 'train':
