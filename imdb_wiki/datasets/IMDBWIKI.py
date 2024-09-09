@@ -84,8 +84,8 @@ class IMDBWIKI(data.Dataset):
         if not self.aug:
             img = transform(img)
         else :
-            transform1, transform2 = self.aug_transform()
-            img1, img2 = transform1(img).unsqueeze(0), transform2(img).unsqueeze(0)
+            transform2 = self.aug_transform()
+            img1, img2 = transform(img).unsqueeze(0), transform2(img).unsqueeze(0)
             img = torch.cat((img1, img2), dim=0)
         label = np.asarray([row['age']]).astype('float32')
         # imbalanced each group
@@ -146,9 +146,9 @@ class IMDBWIKI(data.Dataset):
                 transforms.RandomApply([
                     transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
                 ], p=0.8),
-                transforms.RandomApply([
-                    transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
-                ], p=0.8),
+                #transforms.RandomApply([
+                #    transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
+                #], p=0.8),
                 transforms.RandomGrayscale(p=0.2),
             ])
         else:
@@ -159,7 +159,7 @@ class IMDBWIKI(data.Dataset):
             ])
         return transform
     
-
+    # return additional transform
     def aug_transform(self):
         train_transform = transforms.Compose([
             transforms.Resize((self.img_size, self.img_size)),
@@ -171,7 +171,7 @@ class IMDBWIKI(data.Dataset):
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.4914, 0.4822, 0.4465],std=[0.2023, 0.1994, 0.2010]),
             ])
-        return train_transform, train_transform
+        return train_transform
 
 
     def weights_prepare(self, reweight='sqrt_inv', max_target=121, lds=False, lds_kernel='gaussian', lds_ks=5, lds_sigma=2):
