@@ -110,7 +110,7 @@ def train_contrastive_epoch(model, train_loader, opt, args):
     group_loss = RnCLoss_pairwise(temperature=args.temp).to(device)
     #sigma, la, g_dis, gamma, ranked_contra, contra_ratio, soft_label, ce = \
     #    args.sigma, args.la, args.g_dis, args.gamma, args.ranked_contra, args.contra_ratio, args.soft_label, args.ce
-    for idx, (x, _, g, _) in enumerate(train_loader):
+    for idx, (x, _, g) in enumerate(train_loader):
         x, g = x.to(device), g.to(device)
         bsz = x.shape[0]
         if args.aug:
