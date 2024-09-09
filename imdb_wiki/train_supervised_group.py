@@ -152,7 +152,8 @@ if __name__ == '__main__':
     #
     for e in tqdm(range(args.epoch)):
         model = train_contrastive_epoch(model, train_loader, opt, args)
-    torch.save(model, f'./checkpoint/{store_names}.pth')
+    data_sets = args.dataset
+    torch.save(model, f'./checkpoint/{data_sets}_{store_names}.pth')
 
 
 
