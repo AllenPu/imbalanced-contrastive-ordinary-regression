@@ -24,7 +24,7 @@ class AgeDB(data.Dataset):
         self.group_list = []
         self.group_num = group_num
         #
-        self.multi_crop = aug
+        self.aug = aug
         self.elr_index_return = False
         #
         if self.split == 'train':
@@ -65,7 +65,7 @@ class AgeDB(data.Dataset):
         img = Image.open(os.path.join(
             self.data_dir, row['path'])).convert('RGB')
         transform = self.get_transform()
-        if self.multi_crop:
+        if self.aug:
             transform2 = self.aug_transform()
             img1, img2 = transform(img).unsqueeze(0), transform2(img).unsqueeze(0)
             imgs = torch.cat((img1, img2), dim=0)
@@ -86,7 +86,7 @@ class AgeDB(data.Dataset):
         
     def enable_multi_crop(self, enable=False):
         if enable:
-            self.multi_crop=True
+            self.aug=True
 
     
     #def enable_elr_index_return(self, enable=False):
