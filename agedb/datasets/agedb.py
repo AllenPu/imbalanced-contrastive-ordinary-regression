@@ -30,7 +30,7 @@ class AgeDB(data.Dataset):
         if self.split == 'train':
             # set up the three shot 
             maj_shot, med_shot, min_shot = shot_count(self.df['age'])
-            three_shots = {}
+            #three_shots = {}
             #
             group_dic = {x: 0 for x in range(group_num)}
             for i in range(len(self.df)):
@@ -38,7 +38,7 @@ class AgeDB(data.Dataset):
                 age = min(row['age'], 100)
                 #
                 shot_key = check_shot(age, maj_shot, med_shot, min_shot)
-                three_shots[shot_key] = three_shots.get(shot_key, 0) + 1
+                #three_shots[shot_key] = three_shots.get(shot_key, 0) + 1
                 #
                 group_id = math.floor(age/self.group_range)
                 group_dic[min(group_id, group_num-1)] += 1
@@ -46,7 +46,7 @@ class AgeDB(data.Dataset):
                                 key=lambda group_dic: group_dic[0])
             # return how many number of samples in a group
             self.group_list = [i[1] for i in list_group]
-            self.three_shots = three_shots
+            #self.three_shots = three_shots
         else:
             pass
 
