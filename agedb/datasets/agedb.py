@@ -51,7 +51,6 @@ class AgeDB(data.Dataset):
             pass
 
 
-
     def __len__(self):
         return len(self.df)
 
