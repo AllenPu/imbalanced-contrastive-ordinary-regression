@@ -154,7 +154,9 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             mse_loss.update(loss_mse.item(), bsz)
             loss.backward()
             opt.step()
-        #       
+        #
+        # 
+        '''     
         model.eval()
         val_cls_loss = AverageMeter()
         val_mse_loss = AverageMeter()
@@ -181,6 +183,7 @@ def train_epoch(model, train_loader, val_loader, opt, args):
             writer = csv.writer(f)
             writer.writerow([e,cls_loss.avg,mse_loss.avg, val_cls_loss.avg, val_mse_loss.avg, val_mse_loss_gt.avg])
         print(f' At Epoch {e}, cls loss is {cls_loss.avg}, mse loss is {mse_loss.avg} val cls loss is {val_cls_loss.avg} val mse loss is {val_mse_loss.avg}  val mse loss gt is {val_mse_loss_gt.avg}')
+    '''  
     return model
 
 
@@ -243,24 +246,6 @@ def train_epoch_single(model, train_loader, val_loader, train_labels,  opt, args
     return model
 
 
-# test for single output network
-def test_single(model, test_loader, train_labels):
-    model.eval()
-    #
-    test_mae_pred = AverageMeter()
-    pred, label = [], []
-    with torch.no_grad():
-        for idx, (x, y, g) in enumerate(test_loader):
-            bsz = x.shape[0]
-            x, y, g = x.to(device), y.to(device), g.to(device)
-            y_output,_ = model(x.to(torch.float32))
-            test_mae = F.l1_loss(y_output, y)
-            pred.extend(y_output.cpu().numpy())
-            label.extend(y.cpu().numpy())
-            test_mae_pred.update(test_mae,bsz)
-        pred_shot = shot_metric(pred, label, train_labels)
-    many , med, low = pred_shot['many']['l1'], pred_shot['median']['l1'], pred_shot['low']['l1']
-    print(f' the mae of prediction is {test_mae_pred.avg}, the many shot is {many} median is {med} minority is {low}')
 
 
 
@@ -310,12 +295,9 @@ if __name__ == '__main__':
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
-    if args.single_output:
-        model = train_epoch_single(model, train_loader,val_loader, train_labels, optimizer, args)
-        test_single(model, test_loader, train_labels)
-    else:
-        model = train_epoch(model, train_loader, val_loader, optimizer, args)
-        test_output(model, test_loader, train_labels, args)
+    #
+    model = train_epoch(model, train_loader, val_loader, optimizer, args)
+    test_output(model, test_loader, train_labels, args)
 
 
     
