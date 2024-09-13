@@ -248,7 +248,7 @@ def get_model(args):
 
 
 
-
+# generating asummetric soft label (apart from symmetric)
 def asymmetric_soft_labeling(group_list, g_soft_label):
     bsz = g_soft_label.shape[0]
     total_num = sum(group_list)
