@@ -292,6 +292,7 @@ if __name__ == '__main__':
             save_model(model, optimizer, args, save_file= f'./checkpoint/ckpt_{str(args.aug)}_lr_{str(args.lr)}.pth')
     #
     '''
+    # this section is omitied by modulized them into functions
     # start to train
     model, optimizer = get_model(args)
     for e in tqdm(range(args.epoch)):
