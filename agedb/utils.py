@@ -670,7 +670,7 @@ def draw_bias_bar(index_list, mean_list, var_list, prefix='ce'):
     plt.close()
 
 
-
+# pearson correlation between two lists
 def pearson(vector1, vector2):
     n = len(vector1)
     #simple sums
