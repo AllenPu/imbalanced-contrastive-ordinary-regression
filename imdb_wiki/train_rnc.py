@@ -279,19 +279,6 @@ if __name__ == '__main__':
     model = Encoder('resnet50').to(device)
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,momentum=0.9, weight_decay=1e-4)
     losses = AverageMeter()
-    if args.aug == 'sample':
-        # sample wise contrastive
-        criterion = RnCLoss_pairwise(temperature=args.temp, label_diff='l1', feature_sim='l2').to(device)
-    else:
-        # group wise contrastive
-        criterion = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2').to(device)    
-    for e in tqdm(range(args.epoch)):
-        model, losses  = train_encoder_one_epoch(model, optimizer, e, criterion, losses, args)
-        if e%20 == 0:
-            print(f' In epoch {e} losses is {losses.avg}')
-            save_model(model, optimizer, args, save_file= f'./checkpoint/ckpt_{str(args.aug)}_lr_{str(args.lr)}.pth')
-    #
-    '''
     # this section is omitied by modulized them into functions
     # start to train
     model, optimizer = get_model(args)
@@ -320,7 +307,7 @@ if __name__ == '__main__':
             print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_dict_pred['many']['gmean'],
                                                                          shot_dict_pred['median']['gmean'], shot_dict_pred['low']['gmean'])+ "\n")                                                       
         #
-    '''
+    
     
 
 
