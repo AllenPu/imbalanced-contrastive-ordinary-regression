@@ -54,7 +54,6 @@ parser.add_argument('--la', action='store_true')
 parser.add_argument('--norm', action='store_true')
 parser.add_argument('--best', action='store_true')
 #
-
 parser.add_argument('--asymm', action='store_true', help='if use the asymmetric soft label')
 
 
