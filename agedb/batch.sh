@@ -3,5 +3,5 @@
 #done
 
 for i in 0.5 0.7 0.9 1 1.25 1.5 2 4; do
-    python train_rnc.py --soft_label --symm --step $i
+    python train_rnc.py --soft_label --step $i
 done
