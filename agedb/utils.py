@@ -340,8 +340,9 @@ def cal_ensemble_reg(output_cls, output_reg, args, topk=3, mode = 'train'):
     return reg
 
 
-#
-def soft_labeling(g, args):
+###########################################################################################
+# soft label and loss
+def soft_labeling(g, args, beta=1):
     step = args.step
     groups = args.groups
     soft_group = []
@@ -368,7 +369,7 @@ def SoftCrossEntropy(inputs, target, reduction='sum'):
     else:
         loss = torch.sum(torch.mul(log_likelihood, target))
     return loss
-
+###########################################################################################
 
 #
 def topk_uncertain(y_out, g,  top_k = 3):
