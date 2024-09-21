@@ -50,7 +50,7 @@ parser.add_argument('--scale', type=float, default=1, help='scale of the sharpne
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 # margin of the groups , .e.g. for a 10 groups label, step = 2 [...,6,8,10,8,6,...]
-parser.add_argument('--step', type=int, default=1)
+parser.add_argument('--step', type=float, default=1)
 parser.add_argument('--la', action='store_true')
 parser.add_argument('--norm', action='store_true')
 parser.add_argument('--best', action='store_true')
