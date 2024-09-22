@@ -190,57 +190,14 @@ def train_epoch(model, train_loader, opt, args):
 
 
 
-def train_encoder_one_epoch(model, optimizer, e, criterion, losses, args):
-    #
-    for idx, (x, y, g, _) in enumerate(train_loader):
-        #
-        bsz = y.shape[0]
-        #adjust_learning_rate(args, optimizer, e)
-        y, g = y.to(device), g.to(device)
-        optimizer.zero_grad()
-        #
-        if args.aug == 'sample':
-            images = torch.cat([x[0], x[1]], dim=0).to(device)
-            align = y
-            features = model(images)
-            f1, f2 = torch.split(features, [bsz, bsz], dim=0)
-            features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
-        else:
-            images = x.to(device)
-            align = g
-            features = model(images)
-        #features = model(images)
-        #f1, f2 = torch.split(features, [bsz, bsz], dim=0)
-        #features = torch.cat([f1.unsqueeze(1), f2.unsqueeze(1)], dim=1)
 
-        loss = criterion(features, align)
-        losses.update(loss.item(), bsz)
-
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-    return model, losses
             
 
 
 def get_model(args):
     model = Encoder_regression(groups=args.groups, name='resnet50')
     # load pretrained
-    if args.aug_model:
-        ckpt = torch.load('ckpt_aug_sample.pth')
-    else:
-        ckpt = torch.load('ckpt_aug_group.pth')
-    #
-    #ckpt = torch.load('last.pth')
-    new_state_dict = OrderedDict()
-    for k,v in ckpt['model'].items():
-        key = k.replace('module.','')
-        keys = key.replace('encoder.','')
-        new_state_dict[keys]=v
-    model.encoder.load_state_dict(new_state_dict)
-    # freeze the pretrained part
-    for (name, param) in model.encoder.named_parameters():
-        param.requires_grad = False
+    model.load_state_dict(args.model_name)
     #
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
@@ -276,8 +233,6 @@ if __name__ == '__main__':
     train_loader, test_loader, val_loader, train_group_cls_num, train_labels = get_dataset(args)
     #
     # start to the train encoder only
-    model = Encoder('resnet50').to(device)
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,momentum=0.9, weight_decay=1e-4)
     losses = AverageMeter()
     # this section is omitied by modulized them into functions
     # start to train
