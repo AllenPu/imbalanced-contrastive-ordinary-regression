@@ -92,7 +92,7 @@ parser.add_argument('--weight_decay', type=float,
                     default=1e-4, help='optimizer weight decay')
 #
 parser.add_argument('--asymm', action='store_true', help='if use the asymmetric soft label')
-
+parser.add_argument('--model_name', type=str, help='path to the pretrained model')
 
 
 
