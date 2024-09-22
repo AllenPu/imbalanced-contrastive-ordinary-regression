@@ -160,7 +160,7 @@ def train_epoch(model, train_loader, opt, args):
     model = model.to(device)
     model.train()
     mse = nn.MSELoss()
-    
+    loss_ce = 0
     for idx, (x, y, g, _) in enumerate(train_loader):
         x, y, g = x.to(device), y.to(device), g.to(device)
         opt.zero_grad()
@@ -182,7 +182,6 @@ def train_epoch(model, train_loader, opt, args):
             loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
 
         loss_mse = mse(y_pred, y)
-
         loss = loss_mse + loss_ce
         loss.backward()
         opt.step()
