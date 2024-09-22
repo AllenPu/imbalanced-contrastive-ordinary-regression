@@ -244,7 +244,7 @@ if __name__ == '__main__':
         test_step(model, test_loader, train_labels, args)
     results_test = [acc_gt, acc_pred, g_pred, mae_gt, mae_pred, gmean_gt, gmean_pred ]
     #if e%5 == 0 or e == args.epoch-1:
-    print(' current epoch is {}'.format(e))
+    #print(' current epoch is {}'.format(e))
     print(' mse of gt is {}, mse of pred is {}, acc of the group assinment is {}, \
                     mae of gt is {}, mae of pred is {}'.format(acc_gt, acc_pred, g_pred, mae_gt, mae_pred)+"\n")
     #
