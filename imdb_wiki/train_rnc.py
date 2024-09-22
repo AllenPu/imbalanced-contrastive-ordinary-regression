@@ -197,7 +197,8 @@ def train_epoch(model, train_loader, opt, args):
 def get_model(args):
     model = Encoder_regression(groups=args.groups, name='resnet50')
     # load pretrained
-    model.load_state_dict(args.model_name)
+    state_dict = torch.load(args.model_name)
+    model.load_state_dict(state_dict)
     #
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
