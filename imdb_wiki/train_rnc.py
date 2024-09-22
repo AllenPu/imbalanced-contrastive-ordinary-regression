@@ -80,7 +80,8 @@ parser.add_argument('--temp', type=float, help='temperature for contrastive loss
 parser.add_argument('--contra_ratio', type=float, help='ratio fo contrastive loss', default=1)
 parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
-parser.add_argument('--aug', default='sample',type=str, choices=['sample','group'])
+#
+parser.add_argument('--aug',action='store_true')
 parser.add_argument('--aug_model', action='store_true')
 parser.add_argument('--epoch_cls', default=80,type=int)
 parser.add_argument('--epoch_reg', default=0, type=int)
