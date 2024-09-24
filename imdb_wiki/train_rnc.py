@@ -52,7 +52,7 @@ parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
 #####
-parser.add_argument('--lr', type=float, default=1e-9,
+parser.add_argument('--lr', type=float, default=1e-10,
                     help='initial learning rate')
 #####
 parser.add_argument('--tau', default=1, type=float,
