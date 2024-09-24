@@ -173,7 +173,7 @@ def train_epoch(model, train_loader, opt, args):
         if args.soft_label:
             g_soft_label = soft_labeling(g, args).to(device)
             if args.asymm:
-                    g_soft_label = asymmetric_soft_labeling(group_list, g_soft_label)
+                    g_soft_label = asymmetric_soft_labeling(train_group_cls_num, g_soft_label)
                 #print(f' g hat is {g_hat[:8]} soft label {g_soft_label[:8]}')
                 #assert 1== 2
             loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
