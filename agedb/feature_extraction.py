@@ -17,7 +17,7 @@ from loss import *
 from loss_contra import *
 from utils import *
 #from utils import soft_labeling, SoftCrossEntropy
-from train import test, write_log
+from train import test
 from util_devlove import shot_metrics, train_regressor, validate
 from draw_tsne import draw_tsne
 
@@ -112,50 +112,6 @@ def get_model(args):
 
 
 
-def train_epoch(model, train_loader, opt, args):
-    model = model.to(device)
-    model.train()
-    mse = nn.MSELoss()
-    for e in tqdm(range(args.epoch)):
-        for idx, (x, y, g) in enumerate(train_loader):
-            x, y, g = x.to(device), y.to(device), g.to(device)
-            #
-            bsz = x.shape[0]
-            #
-            opt.zero_grad()
-            y_output,  z = model(x)
-            #
-            y_ =  torch.chunk(y_output,2,dim=-1)
-            #print(f' y shape {y_output.shape}')
-            g_hat, y_hat = y_[0], y_[1]
-            y_pred = torch.gather(y_hat, dim=1, index=g.to(torch.int64)) 
-            #
-            if args.soft_label:
-                g_soft_label = soft_labeling(g, args).to(device)
-                # rescale the soft label
-                if args.asymm:
-                    g_soft_label = asymmetric_soft_labeling(group_list, g_soft_label)
-                    #
-                loss_ce = SoftCrossEntropy(g_hat, g_soft_label)
-                #print(f' soft label loss is {loss_ce.item()}')
-            elif args.ce:
-                loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='sum')
-            elif args.la :
-                loss_la = LAloss(group_list)
-                loss_ce = loss_la(g_hat, g.squeeze().long())
-            else:
-                loss_ce = 0
-                #print(f' ce loss is {loss_ce.item()}')
-            #if torch.isnan(loss_ce):
-            #    print(f' g_hat is {g_hat[:10]} g is {g[:10]} z is {z[:10]}')
-            #    assert 1==0
-            # print(f' loss ce is  {loss_ce.item()}')
-            loss_mse = mse(y_pred, y)
-            loss = loss_mse + loss_ce
-            loss.backward()
-            opt.step()
-    return model
-
 
 def concate_feature_representation(current_z, current_y, previous_z, previous_y):
     z = torch.cat((current_z, previous_z), 0)
@@ -163,45 +119,31 @@ def concate_feature_representation(current_z, current_y, previous_z, previous_y)
     return z, y
 
 
-
-def test_group_acc(model, train_loader, prefix):
-    model = Encoder_regression(groups=args.groups, name='resnet18')
-    model = torch.load(f'./models/best_{prefix}.pth')
+def test(model, test_loader, train_labels, args):
     model.eval()
-    pred, labels = [], []
-    for idx, (x, y, g) in enumerate(train_loader):
-        x, y, g = x.to(device), y.to(device), g.to(device)
-        with torch.no_grad():
-            y_output,  z = model(x)
-            y_chunk = torch.chunk(y_output, 2, dim=1)
-            g_hat, y_pred = y_chunk[0], y_chunk[1]
-            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
-            pred.extend(g_index.data.cpu().numpy())
-            labels.extend(g.data.cpu().numpy())
-    pred = np.array(pred)
-    labels = np.array(labels)
-    np.save(f'./acc/pred{prefix}.npy', pred)
-    np.save(f'./acc/labels{prefix}.npy', labels)
+    #
+    with torch.no_grad():
+        for idx, (x, y, g) in enumerate(test_loader):
+            bsz = x.shape[0]
+            feature, label = [], []
+            x, y = x.to(device), y.to(device)
+            #
+            _, z = model(x)
+            #
+            feature.extend(z.data.cpu().numpy())
+            label.extend(y.data.cpu().numpy())
+            #
+    features = np.hstack(feature)
+    labels = np.hstack(label)
+
+            
 
 
+           
+            
 
+    return z_tesnor, y_tensor
 
-def asymmetric_soft_labeling(group_list, g_soft_label):
-    bsz = g_soft_label.shape[0]
-    total_num = sum(group_list)
-    rescale_groups = [1-i/total_num for i in group_list]
-    rescale_tensor = torch.Tensor(rescale_groups).repeat(bsz, 1).to(device)
-    ##
-    mask_1 = (g_soft_label == g_soft_label.max(dim=1, keepdim=True)[0])
-    # remove all current group index by multiple 0 (leave the max soft label then process others)
-    remove_1 = torch.where(mask_1, 1.0, 0.0)
-    remove_group_soft = g_soft_label * remove_1 
-    # remove all non current group index by multiple 0, reverse from above
-    remove_2 = torch.where(mask_1, 0.0, 1.0)
-    remove_non_group_soft = g_soft_label * remove_2 * rescale_tensor
-    # final is the cumulative of both 
-    g_soft_label = remove_non_group_soft + remove_group_soft
-    return g_soft_label
 
 
 
@@ -221,33 +163,11 @@ if __name__ == '__main__':
         print(f'no classification criterion specified !!!')
         prefix = 'original_'
     store_name = store_name + prefix
-    #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
-    #validate(val_loader, encoder, regressor, train_labels=train_labels)
-    print(f' Start to train !')
-    model = train_epoch(model, train_loader, optimizer, args)
-    #torch.save(model, f'./models/best_{prefix}.pth')
+    #
     acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
         model, test_loader, train_labels, args)
     results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
-    #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
-    #test_group_acc(model, train_loader, prefix)
-    print(' acc of the group assinment is {}, \
-            mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
-        #
-    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
-                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
-        #
-    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred_gt['many']['l1'],
-                                                                    shot_pred_gt['median']['l1'], shot_pred_gt['low']['l1']) + "\n")
-        #
-    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_pred_gt['many']['gmean'],
-                                                                    shot_pred_gt['median']['gmean'], shot_pred_gt['low']['gmean'])+ "\n")                                                       
-        #
-    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
-                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
-    #
-    #
-    #torch.save(model, f'./checkpoint/{store_name}.pth')
+
 
 
     
