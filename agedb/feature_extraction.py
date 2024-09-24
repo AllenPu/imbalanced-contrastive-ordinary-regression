@@ -135,9 +135,9 @@ def test(model, test_loader):
     features = np.hstack(feature)
     labels = np.hstack(label)
     #         
-    z_tesnor, y_tensor = torch.Tensor(features), torch.Tensor(labels)
-    print(f'')
-    return z_tesnor, y_tensor
+    z_tensor, y_tensor = torch.Tensor(features), torch.Tensor(labels)
+    print(f' z_tesnot shape is {z_tensor.shape} y shape is {y_tensor.shape}')
+    return z_tensor, y_tensor
 
 
 
