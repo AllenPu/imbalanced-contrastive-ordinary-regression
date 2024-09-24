@@ -182,7 +182,6 @@ def train_epoch(model, train_loader, opt, args):
             loss_ce = F.cross_entropy(g_hat, g.squeeze().long(), reduction='mean')
 
         loss_mse = mse(y_pred, y)
-        print(f' ce loss is {loss_ce.item()}, mse {mse.loss()}')
         loss = loss_mse + loss_ce
         loss.backward()
         opt.step()
