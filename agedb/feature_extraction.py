@@ -132,11 +132,11 @@ def test(model, test_loader):
             feature.extend(z.data.cpu().numpy())
             label.extend(y.data.cpu().numpy())
             #
-    features = np.hstack(feature)
-    labels = np.hstack(label)
+    features = np.hstack(feature).reshape(-1,1)
+    labels = np.hstack(label).reshape(-1,1)
     #         
     z_tensor, y_tensor = torch.Tensor(features), torch.Tensor(labels)
-    print(f' z_tesnot shape is {z_tensor.shape} y shape is {y_tensor.shape}')
+    #print(f' z_tesnot shape is {z_tensor.shape} y shape is {y_tensor.shape}')
     return z_tensor, y_tensor
 
 
