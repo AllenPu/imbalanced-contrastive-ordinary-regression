@@ -357,6 +357,10 @@ def test_step(model, test_loader, train_labels, args):
             acc_mae_pred.update(mae_loss_pred.item(), bsz)
         # gmean
         gmean_gt = gmean(np.hstack(gmean_loss_all_gt), axis=None).astype(float)
+        print('-------------')
+        shapes = np.hstack(gmean_loss_all_gt).shape
+        print(f' shape is {shapes}')
+        print('-------------')
         gmean_pred = gmean(np.hstack(gmean_loss_all_pred), axis=None).astype(float)
         # shot metric for predictions
         shot_dict_pred = shot_metric(pred, labels, train_labels)
