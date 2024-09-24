@@ -185,7 +185,7 @@ def train_epoch(model, train_loader, opt, args):
         loss = loss_mse + loss_ce
         loss.backward()
         opt.step()
-    print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
+        print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
     return model
 
 
