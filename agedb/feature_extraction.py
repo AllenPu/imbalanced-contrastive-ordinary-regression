@@ -17,7 +17,6 @@ from loss import *
 from loss_contra import *
 from utils import *
 #from utils import soft_labeling, SoftCrossEntropy
-from train import test
 from util_devlove import shot_metrics, train_regressor, validate
 from draw_tsne import draw_tsne
 
@@ -119,7 +118,7 @@ def concate_feature_representation(current_z, current_y, previous_z, previous_y)
     return z, y
 
 
-def test(model, test_loader, train_labels, args):
+def test(model, test_loader):
     model.eval()
     #
     with torch.no_grad():
@@ -135,13 +134,9 @@ def test(model, test_loader, train_labels, args):
             #
     features = np.hstack(feature)
     labels = np.hstack(label)
-
-            
-
-
-           
-            
-
+    #         
+    z_tesnor, y_tensor = torch.Tensor(features), torch.Tensor(labels)
+    print(f'')
     return z_tesnor, y_tensor
 
 
