@@ -172,6 +172,7 @@ def train_epoch(model, train_loader, opt, args):
         #
         if args.soft_label:
             g_soft_label = soft_labeling(g, args).to(device)
+            print(f' before g_soft_label  is {g_soft_label[:10]}  g is {g[:20]}')
             if args.asymm:
                     g_soft_label = asymmetric_soft_labeling(train_group_cls_num, g_soft_label)
                 #print(f' g hat is {g_hat[:8]} soft label {g_soft_label[:8]}')
