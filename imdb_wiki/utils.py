@@ -298,8 +298,9 @@ def soft_labeling(g, args, step = 1):
         for j in range(1, groups-label):
             soft_label[j+label] = groups - step - j
         soft_group.append(soft_label)
+        print(soft_group)
     soft_groups = torch.Tensor(soft_group)
-    soft_group = torch.clamp(soft_groups, 0, args.groups-1)
+    soft_groups = torch.clamp(soft_groups, 0, groups-1)
     soft_groups = softmax(soft_groups)
     print(f' soft groups {soft_groups[:5]}, g {g[:5]}')
     assert 3 ==2
