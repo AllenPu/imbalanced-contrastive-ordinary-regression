@@ -54,7 +54,7 @@ parser.add_argument('--workers', type=int, default=32,
 #####
 parser.add_argument('--encoder_lr', type=float, default=1e-10,
                     help='initial learning rate')
-parser.add_argument('--lr', type=float, default=1e-3,
+parser.add_argument('--lr', type=float, default=1e-7,
                     help='initial learning rate')
 #####
 parser.add_argument('--tau', default=1, type=float,
