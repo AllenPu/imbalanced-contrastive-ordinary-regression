@@ -6,3 +6,4 @@
 #done
 #python train_rnc.py --model_name ./checkpoint/Supervised_group_lr_0.001_epoch_300_bs_128_groups_10.pth --lr 5e-8 --encoder_lr 1e-10 --soft_label --asymm
 python train_rnc.py --model_name ./checkpoint/Supervised_group_lr_0.001_epoch_300_bs_128_groups_10.pth --lr 1e-8 --encoder_lr 1e-10 --soft_label --asymm
+echo 'lr 1e-8 encoder 1e-10'
