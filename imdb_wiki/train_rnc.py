@@ -165,9 +165,13 @@ def train_epoch(model, train_loader, opt, args):
     model.train()
     mse = nn.MSELoss()
     loss_ce = 0
+    opt_encoder, opt_linear = opt
     for idx, (x, y, g, _) in enumerate(train_loader):
         x, y, g = x.to(device), y.to(device), g.to(device)
-        opt.zero_grad()
+        #
+        opt_encoder.zero_grad()
+        opt_linear.zero_grad()
+        #
         y_output, z = model(x)
         #
         y_ =  torch.chunk(y_output,2,dim=-1)
@@ -185,7 +189,9 @@ def train_epoch(model, train_loader, opt, args):
         loss_mse = mse(y_pred, y)
         loss = loss_mse + loss_ce
         loss.backward()
-        opt.step()
+        #
+        opt_encoder.step()
+        opt_linear.step()
         #print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
     return model
 
@@ -203,7 +209,7 @@ def get_model(args):
     #
     optimizer_encoder = torch.optim.SGD(model.model_extractor.parameters(), lr=args.encoder_lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
-    optimizer_linear = torch.optim.SGD(model.linear.parameters(), lr=args.lr,
+    optimizer_linear = torch.optim.SGD(model.model_linear.parameters(), lr=args.lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer = [optimizer_encoder, optimizer_linear]
     return model, optimizer
