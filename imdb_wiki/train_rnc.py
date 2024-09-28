@@ -52,7 +52,9 @@ parser.add_argument('--batch_size', type=int, default=128, help='batch size')
 parser.add_argument('--workers', type=int, default=32,
                     help='number of workers used in data loading')
 #####
-parser.add_argument('--lr', type=float, default=1e-10,
+parser.add_argument('--encoder_lr', type=float, default=1e-10,
+                    help='initial learning rate')
+parser.add_argument('--lr', type=float, default=1e-3,
                     help='initial learning rate')
 #####
 parser.add_argument('--tau', default=1, type=float,
@@ -199,8 +201,11 @@ def get_model(args):
     model= torch.load(args.model_name)
     #model.load_state_dict(state_dict)
     #
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+    optimizer_encoder = torch.optim.SGD(model.model_extractor.parameters(), lr=args.encoder_lr,
                             momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer_linear = torch.optim.SGD(model.linear.parameters(), lr=args.lr,
+                            momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = [optimizer_encoder, optimizer_linear]
     return model, optimizer
 
 
