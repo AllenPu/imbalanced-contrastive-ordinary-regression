@@ -192,7 +192,7 @@ def train_epoch(model, train_loader, opt, args):
         #
         opt_encoder.step()
         opt_linear.step()
-        #print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
+        print(f' mse is {loss_mse.item()}, ce is {loss_ce.item()}')
     return model
 
 
