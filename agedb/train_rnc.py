@@ -247,7 +247,7 @@ if __name__ == '__main__':
                                                                     shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
     #
     #
-    #torch.save(model, f'./checkpoint/{store_name}.pth')
+    torch.save(model, f'./checkpoint/{store_name}.pth')
 
 
     

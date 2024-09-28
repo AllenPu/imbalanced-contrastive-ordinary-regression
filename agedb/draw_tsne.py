@@ -40,6 +40,7 @@ parser.add_argument('--soft_label', action='store_true')
 parser.add_argument('--ce', action='store_true',  help='if use the cross_entropy /la or not')
 parser.add_argument('--step', type=int, default=1)
 parser.add_argument('--la', action='store_true')
+parser.add_argument('--model_name', type=str, help='path to the pretrained model')
 #parser.add_argument('--names', type=str, required=True, help='names of the draw picture')
 
 def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
@@ -98,6 +99,7 @@ def get_data_loader(args):
 
 
 def get_model(args):
+    '''
     if args.soft_label:
         prefix = '_soft_label'
     elif args.ce:
@@ -111,6 +113,10 @@ def get_model(args):
     # load pretrained
     model_dir =  'groups_' + str(args.groups) + '_lr_' + str(args.lr) + '_epoch_' + str(args.epoch) + prefix
     ckpt = torch.load(f'./checkpoint/{model_dir}.pth')
+    '''
+    #
+    model = Encoder_regression(groups=args.groups, name='resnet18')
+    ckpt = torch.load(args.model_name)
     #
     model.load_state_dict(ckpt.state_dict())
     # freeze the pretrained part
