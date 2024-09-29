@@ -56,7 +56,7 @@ parser.add_argument('--norm', action='store_true')
 parser.add_argument('--best', action='store_true')
 #
 parser.add_argument('--asymm', action='store_true', help='if use the asymmetric soft label')
-
+parser.add_argument('--single', action='store_true', help='if single output')
 
 
 def get_data_loader(args):
@@ -90,7 +90,10 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression(groups=args.groups, name='resnet18', norm=args.norm)
+    if args.single:
+        model = Encoder_regression_single(groups=args.groups, name='resnet18')
+    else:
+        model = Encoder_regression(groups=args.groups, name='resnet18', norm=args.norm)
     # load pretrained
     #if args.best:
     #    model.load_state_dict(torch.load('./checkpoint/groups_20_lr_0.001_epoch_40_soft_label.pth'))  
@@ -100,8 +103,7 @@ def get_model(args):
         key = k.replace('module.','')
         keys = key.replace('encoder.','')
         new_state_dict[keys] =  v
-    model.encoder.load_state_dict(new_state_dict)
-    
+    model.encoder.load_state_dict(new_state_dict)   
     # freeze the pretrained part
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
@@ -183,6 +185,61 @@ def test_group_acc(model, train_loader, prefix):
 
 
 
+# test the single output model
+def test_single(model, test_loader, train_labels, args):
+    model.eval()
+    test_mae_pred = AverageMeter()
+    preds, label, gmeans = [], [], []
+    criterion_gmean = nn.L1Loss(reduction='none')
+    #
+    for idx, (x,y,g) in enumerate(test_loader):
+        with torch.no_grad():
+            bsz = x.shape[0]
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            pred = model(x)
+            test_mae = F.l1_loss(pred, y)
+            preds.extend(pred.cpu().numpy())
+            label.extend(y.cpu().numpy())
+            test_mae_pred.update(test_mae,bsz)
+            #
+            loss_gmean = criterion_gmean(pred, y)
+            gmeans.extend(loss_gmean.cpu().numpy())
+    shot_pred = shot_metric(preds, label, train_labels)
+    gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
+    #
+    #variance_calculation(model, test_loader)
+    #
+    print(' Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
+                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
+    #
+    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n")
+
+
+
+# test the multi output model
+def test_multiple(model, test_loader, train_labels, args):
+    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
+        model, test_loader, train_labels, args)
+    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
+    #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
+    #test_group_acc(model, train_loader, prefix)
+    print(' acc of the group assinment is {}, \
+            mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
+        #
+    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
+                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
+        #
+    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred_gt['many']['l1'],
+                                                                    shot_pred_gt['median']['l1'], shot_pred_gt['low']['l1']) + "\n")
+        #
+    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_pred_gt['many']['gmean'],
+                                                                    shot_pred_gt['median']['gmean'], shot_pred_gt['low']['gmean'])+ "\n")                                                       
+        #
+    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
+
+
 def asymmetric_soft_labeling(group_list, g_soft_label):
     bsz = g_soft_label.shape[0]
     total_num = sum(group_list)
@@ -220,32 +277,22 @@ if __name__ == '__main__':
         prefix = '_ce'
     else:
         print(f'no classification criterion specified !!!')
-        prefix = 'original_'
+        prefix = '_no_cls'
+    ################################
+    if args.single:
+        prefix = prefix + '_single'
+    else:
+        prefix = prefix + '_multi_expert'
     store_name = store_name + prefix
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
     model = train_epoch(model, train_loader, optimizer, args)
     #torch.save(model, f'./models/best_{prefix}.pth')
-    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
-        model, test_loader, train_labels, args)
-    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
-    #write_log('./output/'+store_name, results, shot_pred, shot_pred_gt, args)
-    #test_group_acc(model, train_loader, prefix)
-    print(' acc of the group assinment is {}, \
-            mae of gt is {}, mae of pred is {}'.format(acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
-        #
-    print(' Prediction Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred['many']['l1'],
-                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
-        #
-    print(' Gt Many: MAE {} Median: MAE {} Low: MAE {}'.format(shot_pred_gt['many']['l1'],
-                                                                    shot_pred_gt['median']['l1'], shot_pred_gt['low']['l1']) + "\n")
-        #
-    print(' G-mean Gt {}, Many :  G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_gt, shot_pred_gt['many']['gmean'],
-                                                                    shot_pred_gt['median']['gmean'], shot_pred_gt['low']['gmean'])+ "\n")                                                       
-        #
-    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
-                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n") 
+    if args.single:
+        test_single(model, test_loader, train_labels, args)
+    else:
+        test_multiple(model, test_loader, train_labels, args)
     #
     #
     print(f' store name is {store_name}')
