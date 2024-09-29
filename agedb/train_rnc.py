@@ -91,7 +91,7 @@ def get_data_loader(args):
 
 def get_model(args):
     if args.single:
-        model = Encoder_regression_single(groups=args.groups, name='resnet18')
+        model = Encoder_regression_single(name='resnet18')
     else:
         model = Encoder_regression(groups=args.groups, name='resnet18', norm=args.norm)
     # load pretrained
