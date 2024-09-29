@@ -7,7 +7,7 @@
 #python train_rnc.py --model_name ./checkpoint/Supervised_group_lr_0.001_epoch_300_bs_128_groups_10.pth --lr 5e-8 --encoder_lr 1e-10 --soft_label --asymm
 #CUDA_VISIBLE_DEVICES=2 python train_rnc.py --model_name ./checkpoint/Supervised_group_lr_0.001_epoch_300_bs_128_groups_10.pth --lr 5e-8 --encoder_lr 1e-9 --soft_label --asymm
 #echo ' linear lr 5e-8 encoder 1e-9'
-python draw_tsne.py --model_name groups_10_lr_0.001_epoch_100_soft_label_asymm.pth
-python draw_tsne.py --model_name groups_10_lr_0.001_epoch_100_soft_label_symm.pth
-python draw_tsne.py --model_name groups_10_lr_0.001_epoch_100_ce.pth
+python draw_tsne.py --model_name ./checkpoint/groups_10_lr_0.001_epoch_100_soft_label_asymm.pth
+python draw_tsne.py --model_name ./checkpoint/groups_10_lr_0.001_epoch_100_soft_label_symm.pth
+python draw_tsne.py --model_name ./checkpoint/groups_10_lr_0.001_epoch_100_ce.pth
 #imdb_wiki_Supervised_group_lr_0.001_epoch_100_bs_128_groups_20.pth
