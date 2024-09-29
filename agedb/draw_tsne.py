@@ -165,7 +165,7 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_loader, test_loader, val_loader,  cls_num_list, train_labels = get_data_loader(args)
     #
-    model = get_model(args)
+    model, _ = get_model(args)
     model = model.to(device)
     tsne_z_pred = torch.Tensor(0)
     tsne_g_pred = torch.Tensor(0)
