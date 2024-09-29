@@ -117,11 +117,15 @@ def get_model(args):
     #    model.load_state_dict(torch.load('./checkpoint/groups_20_lr_0.001_epoch_40_soft_label.pth'))  
     ckpt = torch.load(args.model_name)
     new_state_dict = OrderedDict()
-    for k,v in ckpt['model'].items():
-        key = k.replace('module.','')
-        keys = key.replace('encoder.','')
-        new_state_dict[keys] =  v
-    model.encoder.load_state_dict(new_state_dict)
+    try:
+        for k,v in ckpt['model'].items():
+            key = k.replace('module.','')
+            keys = key.replace('encoder.','')
+            new_state_dict[keys] =  v
+        model.encoder.load_state_dict(new_state_dict)
+    except:
+        model = ckpt
+        print('load ckpt as model')
     
     # freeze the pretrained part
     #for (name, param) in model.encoder.named_parameters():
