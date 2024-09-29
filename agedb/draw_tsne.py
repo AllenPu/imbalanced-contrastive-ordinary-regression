@@ -54,6 +54,7 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     elif args.la :
         prefix = 'la'
     else:
+        prefix = 'none'
         print(" no prefix")
     tsne = TSNE(n_components=2, init='pca', random_state=0)
     X_tsne_pred = tsne.fit_transform(tsne_z_pred)
