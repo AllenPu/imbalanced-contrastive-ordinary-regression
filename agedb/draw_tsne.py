@@ -42,7 +42,7 @@ parser.add_argument('--step', type=int, default=1)
 parser.add_argument('--la', action='store_true')
 parser.add_argument('--model_name', type=str, help='path to the pretrained model')
 parser.add_argument('--store_name', type=str, help='path to the pretrained model', default='none')
-
+parser.add_argument('--single', action='store_true', help='if single output')
 #parser.add_argument('--names', type=str, required=True, help='names of the draw picture')
 
 def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
@@ -112,7 +112,10 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression(groups=args.groups, name='resnet18')
+    if args.single:
+        model = Encoder_regression_single(name='resnet18')
+    else:
+        model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
     #if args.best:
     #    model.load_state_dict(torch.load('./checkpoint/groups_20_lr_0.001_epoch_40_soft_label.pth'))  
@@ -195,10 +198,13 @@ if __name__ == '__main__':
         #
         with torch.no_grad():
             y_output, z = model(inputs.to(torch.float32))
-            y_chunk = torch.chunk(y_output, 2, dim=1)
-            g_hat, y_hat = y_chunk[0], y_chunk[1]
-            # draw tsne
-            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+            if args.single:
+                y_chunk = torch.chunk(y_output, 2, dim=1)
+                g_hat, y_hat = y_chunk[0], y_chunk[1]
+                # draw tsne
+                g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+            else:
+                g_index = targets
             tsne_z_pred = torch.cat((tsne_z_pred, z.data.cpu()), dim=0)
             #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
             tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
