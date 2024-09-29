@@ -64,6 +64,7 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     X_tsne_pred = tsne.fit_transform(tsne_z_pred)
     #
     model_name = args.model_name
+    print(model_name)
     model_name = model_name.split('.')[0]
     print(model_name)
     #
