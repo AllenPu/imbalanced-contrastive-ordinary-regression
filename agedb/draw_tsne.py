@@ -49,6 +49,10 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     # tsne_g_gt : the ground truth group
     if args.soft_label:
         prefix = 'soft_label'
+        if args.asymm:
+            prefix = prefix + '_asymm'
+        else:
+            prefix = prefix + '_symm'
     elif args.ce:
         prefix = 'ce'
     elif args.la :

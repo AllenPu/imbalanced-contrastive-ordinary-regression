@@ -210,6 +210,10 @@ if __name__ == '__main__':
     store_name = 'groups_' + str(args.groups) + '_lr_' + str(args.lr) + '_epoch_' + str(args.epoch)
     if args.soft_label:
         prefix = '_soft_label'
+        if args.asymm:
+            prefix = prefix + '_asymm'
+        else:
+            prefix = prefix + '_symm'
     elif args.la:
         prefix = '_la'
     elif args.ce:
