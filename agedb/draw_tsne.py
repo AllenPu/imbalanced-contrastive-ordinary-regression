@@ -62,17 +62,24 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
         print(" no prefix")
     tsne = TSNE(n_components=2, init='pca', random_state=0)
     X_tsne_pred = tsne.fit_transform(tsne_z_pred)
+    #
+    model_name = args.model_name
+    model_name = model_name.split('.')[0]
+    #
     plt.figure(figsize=(10, 5))
     plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
                     c=tsne_g_gt, label="t-SNE true label")
     plt.legend()
-    plt.savefig(f'./images/tsne_x_gt_group_{args.groups}_epoch_{args.epoch}_{prefix}__true_label.png', dpi=120)
+    #plt.savefig(f'./images/tsne_x_gt_group_{args.groups}_epoch_{args.epoch}_{prefix}__true_label.png', dpi=120)
+    plt.savefig(f'{model_name}_gt.png', dpi=120)
     plt.figure(figsize=(10, 5))
     plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
                     c=tsne_g_pred, label="t-SNE pred label")
     plt.legend()
-    plt.savefig(f'./images/tsne_x_pred_group_{args.groups}_epoch_{args.epoch}_{prefix}_pred_label.png', dpi=120)
-    
+    #plt.savefig(f'./images/tsne_x_pred_group_{args.groups}_epoch_{args.epoch}_{prefix}_pred_label.png', dpi=120)
+    plt.savefig(f'{model_name}_pred.png', dpi=120)
+
+
 
 def get_data_loader(args):
     print('=====> Preparing data...')
