@@ -157,10 +157,7 @@ def train_epoch(model, train_loader, opt, args):
     return model
 
 
-def concate_feature_representation(current_z, current_y, previous_z, previous_y):
-    z = torch.cat((current_z, previous_z), 0)
-    y = torch.cat((current_y, previous_y), 0)
-    return z, y
+
 
 
 
