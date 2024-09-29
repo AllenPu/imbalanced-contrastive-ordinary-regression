@@ -210,7 +210,7 @@ def test_single(model, test_loader, train_labels, args):
         with torch.no_grad():
             bsz = x.shape[0]
             x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-            pred = model(x)
+            pred, _ = model(x)
             test_mae = F.l1_loss(pred, y)
             preds.extend(pred.cpu().numpy())
             label.extend(y.cpu().numpy())
