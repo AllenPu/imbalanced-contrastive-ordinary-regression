@@ -6,6 +6,6 @@
 #    python train_rnc.py --soft_label --step $i
 #done
 
-python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_asymm.pth
-python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_symm.pth
-python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_ce.pth
+python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_asymm.pth --store_name soft_asymm
+python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_symm.pth --store_name soft_symm
+python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_ce.pth --store_name ce
