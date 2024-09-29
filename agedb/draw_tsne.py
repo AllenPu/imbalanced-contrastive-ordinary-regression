@@ -65,6 +65,7 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     #
     model_name = args.model_name
     model_name = model_name.split('.')[0]
+    print(model_name)
     #
     plt.figure(figsize=(10, 5))
     plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
