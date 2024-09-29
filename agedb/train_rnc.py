@@ -123,6 +123,7 @@ def train_epoch_single(model, train_loader, opt, args):
             x, y, g = x.to(device), y.to(device), g.to(device)
             opt.zero_grad()
             y_pred = model(x)
+            print(y_pred.shape)
             loss = mse(y_pred, y)
             loss.backward()
             opt.step()
