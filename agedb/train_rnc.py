@@ -159,10 +159,7 @@ def train_epoch(model, train_loader, opt, args):
     return model
 
 
-
-
-
-
+# no currently used
 def test_group_acc(model, train_loader, prefix):
     model = Encoder_regression(groups=args.groups, name='resnet18')
     model = torch.load(f'./models/best_{prefix}.pth')
