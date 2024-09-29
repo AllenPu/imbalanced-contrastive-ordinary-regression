@@ -99,7 +99,7 @@ def get_data_loader(args):
 
 
 def get_model(args):
-    model = Encoder_regression(groups=args.groups, name='resnet18', norm=args.norm)
+    model = Encoder_regression(groups=args.groups, name='resnet18')
     # load pretrained
     #if args.best:
     #    model.load_state_dict(torch.load('./checkpoint/groups_20_lr_0.001_epoch_40_soft_label.pth'))  
