@@ -108,7 +108,7 @@ def get_model(args):
     # load pretrained
     #if args.best:
     #    model.load_state_dict(torch.load('./checkpoint/groups_20_lr_0.001_epoch_40_soft_label.pth'))  
-    ckpt = torch.load('last.pth')
+    ckpt = torch.load(args.model_name)
     new_state_dict = OrderedDict()
     for k,v in ckpt['model'].items():
         key = k.replace('module.','')
