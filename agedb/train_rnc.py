@@ -113,7 +113,23 @@ def get_model(args):
     return model, optimizer
 
 
+# train the model with single output
+def train_epoch_single(model, train_loader, opt, args):
+    model = model.to(device)
+    model.train()
+    mse = nn.MSELoss()
+    for e in tqdm(range(args.epoch)):
+        for idx, (x, y, g) in enumerate(train_loader):
+            x, y, g = x.to(device), y.to(device), g.to(device)
+            opt.zero_grad()
+            y_pred = model(x)
+            loss = mse(y_pred, y)
+            loss.backward()
+            opt.step()
+    return model
 
+
+# train the model with the multiple experts
 def train_epoch(model, train_loader, opt, args):
     model = model.to(device)
     model.train()
@@ -284,11 +300,12 @@ if __name__ == '__main__':
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
-    model = train_epoch(model, train_loader, optimizer, args)
     #torch.save(model, f'./models/best_{prefix}.pth')
     if args.single:
+        model = train_epoch_single(model, train_loader, optimizer, args)
         test_single(model, test_loader, train_labels, args)
     else:
+        model = train_epoch(model, train_loader, optimizer, args)
         test_multiple(model, test_loader, train_labels, args)
     #
     #
