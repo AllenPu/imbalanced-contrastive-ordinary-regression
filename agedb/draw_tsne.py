@@ -206,7 +206,8 @@ if __name__ == '__main__':
                 # draw tsne
                 g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
             else:
-                g_index = targets
+                y_pred = torch.floor(y_output)
+                g_index = y_pred
             tsne_z_pred = torch.cat((tsne_z_pred, z.data.cpu()), dim=0)
             #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
             tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
