@@ -133,9 +133,9 @@ def train_epoch_single(model, train_loader, opt, args):
 # train the model with the multiple experts
 def train_epoch(model, train_loader, opt, args):
     model = model.to(device)
-    model.train()
     mse = nn.MSELoss()
     for e in tqdm(range(args.epoch)):
+        model.train()
         for idx, (x, y, g) in enumerate(train_loader):
             x, y, g = x.to(device), y.to(device), g.to(device)
             #
@@ -173,6 +173,9 @@ def train_epoch(model, train_loader, opt, args):
             loss = loss_mse + loss_ce
             loss.backward()
             opt.step()
+        if e% 10:
+            print(f' e peoch at {e}')
+            test_multiple(model, test_loader, train_labels, args)
     return model
 
 
