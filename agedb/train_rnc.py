@@ -315,7 +315,7 @@ if __name__ == '__main__':
     #
     print(f' store name is {store_name}')
     #
-    torch.save(model, f'./checkpoint/{store_name}.pth')
+    #torch.save(model, f'./checkpoint/{store_name}.pth')
 
 
     
