@@ -173,9 +173,9 @@ def train_epoch(model, train_loader, opt, args):
             loss = loss_mse + loss_ce
             loss.backward()
             opt.step()
-        if e% 10 == 0:
-            print(f' e peoch at {e}')
-            test_multiple(model, test_loader, train_labels, args)
+        #if e% 10 == 0:
+        #    print(f' e peoch at {e}')
+        #    test_multiple(model, test_loader, train_labels, args)
     return model
 
 
