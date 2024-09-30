@@ -78,7 +78,7 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
                     c=tsne_g_pred, label="t-SNE pred label")
     plt.legend()
     #plt.savefig(f'./images/tsne_x_pred_group_{args.groups}_epoch_{args.epoch}_{prefix}_pred_label.png', dpi=120)
-    plt.savefig(f'./images{model_name}_pred.png', dpi=120)
+    plt.savefig(f'./images/{model_name}_pred.png', dpi=120)
 
 
 
