@@ -198,7 +198,7 @@ if __name__ == '__main__':
         #
         with torch.no_grad():
             y_output, z = model(inputs.to(torch.float32))
-            if args.single:
+            if not args.single:
                 y_chunk = torch.chunk(y_output, 2, dim=1)
                 g_hat, y_hat = y_chunk[0], y_chunk[1]
                 # draw tsne
