@@ -73,12 +73,14 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
     plt.legend()
     #plt.savefig(f'./images/tsne_x_gt_group_{args.groups}_epoch_{args.epoch}_{prefix}__true_label.png', dpi=120)
     plt.savefig(f'./images/{model_name}_gt.png', dpi=120)
+    plt.close()
     plt.figure(figsize=(10, 5))
     plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
                     c=tsne_g_pred, label="t-SNE pred label")
     plt.legend()
     #plt.savefig(f'./images/tsne_x_pred_group_{args.groups}_epoch_{args.epoch}_{prefix}_pred_label.png', dpi=120)
     plt.savefig(f'./images/{model_name}_pred.png', dpi=120)
+    plt.close()
 
 
 
@@ -208,6 +210,7 @@ if __name__ == '__main__':
             tsne_z_pred = torch.cat((tsne_z_pred, z.data.cpu()), dim=0)
             #tsne_x_gt = torch.cat((tsne_x_gt, inputs.data.cpu()), dim=0)
             tsne_g_pred = torch.cat((tsne_g_pred, g_index.data.cpu()), dim=0)
-            tsne_g_gt = torch.cat((tsne_g_gt, group.data.cpu()), dim=0)
+            y_pred = torch.floor(y_output, dim=-1)
+            tsne_g_gt = torch.cat((tsne_g_gt, y_pred.data.cpu()), dim=0)
     # draw tsne
     draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args)
