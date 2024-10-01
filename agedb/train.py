@@ -90,6 +90,7 @@ parser.add_argument('--output_file', type=str, default='result_')
 parser.add_argument('--scale', type=float, default=1, help='scale of the sharpness in soft label')
 #parser.add_argument('--diversity', type=float, default=0, help='scale of the diversity loss in regressor output')
 parser.add_argument('--fd_ratio', type=float, default=0, help='scale of the diversity loss in z')
+parser.add_argument('--asymm', action='store_true', help='if use the asymmetric soft label')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -147,7 +148,7 @@ def get_data_loader(args):
     return train_loader, val_loader, test_loader, group_list, train_labels
 
 
-def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
+def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args, group_list):
     sigma, ranked_contra, contra_ratio, temp, g_dis, gamma = \
             args.sigma, args.ranked_contra, args.contra_ratio, args.temp, args.g_dis, args.gamma
     model.train()
@@ -198,6 +199,8 @@ def train_one_epoch(model, train_loader, ce_loss, mse_loss, opt, args):
         # add soft label based loss
         if args.soft_label:
             g_soft_label = soft_labeling(g, args).to(device)
+            if args.asymm:
+                 g_soft_label = asymmetric_soft_labeling(group_list, g_soft_label)
             loss_ce_soft = SoftCrossEntropy(g_pred, g_soft_label)
             loss += loss_ce_soft
         #
@@ -373,7 +376,7 @@ if __name__ == '__main__':
     #
     for e in tqdm(range(args.epoch)):
         model = train_one_epoch(model, train_loader,
-                                loss_ce, loss_mse, opt, args)
+                                loss_ce, loss_mse, opt, args, cls_num_list)
         if e % 20 == 0 or e == (args.epoch - 1):
             reg_mae,  mean_L1_pred,  mean_L1_gt, shot_dict_val_pred, shot_dict_val_pred_gt = validate(
                 model, val_loader, train_labels)
