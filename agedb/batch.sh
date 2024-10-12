@@ -11,9 +11,9 @@
 #python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_asymm.pth --store_name soft_asymm
 #python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_symm.pth --store_name soft_symm
 #python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_ce.pth --store_name ce
-pyrhon train_rnc.py --fine_tune False 
-pyrhon train_rnc.py --fine_tune True 
-pyrhon train_rnc.py --fine_tune False --soft_label
-pyrhon train_rnc.py --fine_tune True --soft_label
-pyrhon train_rnc.py --fine_tune False --soft_label --asymm
-pyrhon train_rnc.py --fine_tune True --soft_label --asymm
+python train_rnc.py --fine_tune False 
+python train_rnc.py --fine_tune True 
+python train_rnc.py --fine_tune False --soft_label
+python train_rnc.py --fine_tune True --soft_label
+python train_rnc.py --fine_tune False --soft_label --asymm
+python train_rnc.py --fine_tune True --soft_label --asymm
