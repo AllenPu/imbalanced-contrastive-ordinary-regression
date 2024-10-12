@@ -213,6 +213,7 @@ class Encoder_regression_single(nn.Module):
         return pred, feat
     
 
+# three expert 1) maj 2) med  and 3) low
 class Encoder_regression_multi_expert(nn.Module):
     def __init__(self, name='resnet50', norm=False, weight_norm= False):
         super(Encoder_regression_multi_expert, self).__init__()
