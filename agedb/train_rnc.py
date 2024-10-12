@@ -5,7 +5,7 @@ import time
 import argparse
 from tqdm import tqdm
 import pandas as pd
-from network import *
+#from network import *
 from model import *
 from scipy.stats import gmean
 import torch.nn as nn
@@ -57,6 +57,10 @@ parser.add_argument('--best', action='store_true')
 #
 parser.add_argument('--asymm', action='store_true', help='if use the asymmetric soft label')
 parser.add_argument('--single', action='store_true', help='if single output')
+parser.add_argument('--fine_tune', default=True, help='if fine tune (True) of linear prob (False)')
+
+
+
 
 
 def get_data_loader(args):
@@ -108,7 +112,15 @@ def get_model(args):
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
     # 
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+    # DFT
+    if args.fine_tune:
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
+                                momentum=args.momentum, weight_decay=args.weight_decay)
+    # linear prob
+    else:
+        for (name, param) in model.encoder.named_parameters():
+            param.requires_grad = False
+        optimizer = torch.optim.SGD(model.regressor.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
@@ -316,7 +328,18 @@ if __name__ == '__main__':
     print(f' store name is {store_name}')
     #
     #torch.save(model, f'./checkpoint/{store_name}.pth')
-
+    regressor_weight = model.regressor[0].weight.data
+    name = ''
+    if args.fine_tune:
+        name = name + 'sft_'
+    if args.soft_label and not args.asymm:
+        name = name + 'symm_'
+    if args.soft_label and args.asymm:
+        name = name + 'asymm_'
+    if not args.fine_tune:
+        name = name + 'linear_prob_'
+    #
+    torch.save(regressor_weight, f'./{name}_weight.pt')
 
     
     
