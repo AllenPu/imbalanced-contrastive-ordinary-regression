@@ -316,13 +316,17 @@ if __name__ == '__main__':
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
+    print('--------------------')
+    print(args.fine_tune)
     #torch.save(model, f'./models/best_{prefix}.pth')
+    '''
     if args.single:
         model = train_epoch_single(model, train_loader, optimizer, args)
         test_single(model, test_loader, train_labels, args)
     else:
         model = train_epoch(model, train_loader, optimizer, args)
         test_multiple(model, test_loader, train_labels, args)
+    '''
     #
     #
     print(f' store name is {store_name}')
