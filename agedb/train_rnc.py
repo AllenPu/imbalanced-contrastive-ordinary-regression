@@ -57,7 +57,7 @@ parser.add_argument('--best', action='store_true')
 #
 parser.add_argument('--asymm', action='store_true', help='if use the asymmetric soft label')
 parser.add_argument('--single', action='store_true', help='if single output')
-parser.add_argument('--fine_tune', default=True, help='if fine tune (True) of linear prob (False)')
+parser.add_argument('--fine_tune', action='store_false')
 
 
 
