@@ -291,10 +291,6 @@ def asymmetric_soft_labeling(group_list, g_soft_label):
 if __name__ == '__main__':
     args = parser.parse_args()
     setup_seed(args.seed)
-
-    #
-    print(f" =========the arg is {args.fine_tune}")
-    #
     train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
     store_name = 'groups_' + str(args.groups) + '_lr_' + str(args.lr) + '_epoch_' + str(args.epoch)
@@ -343,6 +339,7 @@ if __name__ == '__main__':
     if not args.fine_tune:
         name = name + 'linear_prob_'
     #
+    print(f'store name is {name}')
     torch.save(regressor_weight, f'./{name}_weight.pt')
 
     
