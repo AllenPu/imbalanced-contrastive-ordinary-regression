@@ -112,11 +112,11 @@ def get_model(args):
     #for (name, param) in model.encoder.named_parameters():
     #    param.requires_grad = False
     # 
-    # DFT
+    # SFT
     if args.fine_tune:
         optimizer = torch.optim.SGD(model.parameters(), lr=args.lr,
                                 momentum=args.momentum, weight_decay=args.weight_decay)
-    # linear prob
+    # Linear prob
     else:
         for (name, param) in model.encoder.named_parameters():
             param.requires_grad = False
