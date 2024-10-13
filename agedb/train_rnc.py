@@ -342,7 +342,7 @@ if __name__ == '__main__':
         name = name + 'linear_prob_'
     #
     print(f'store name is {name}')
-    #torch.save(regressor_weight, f'./{name}_weight.pt')
+    torch.save(regressor_weight, f'./{name}_weight.pt')
 
     
     

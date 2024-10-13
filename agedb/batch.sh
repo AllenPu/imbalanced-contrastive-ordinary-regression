@@ -13,7 +13,7 @@
 #python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_ce.pth --store_name ce
 python train_rnc.py --fine_tune --single
 python train_rnc.py --single
-#python train_rnc.py --fine_tune False --soft_label
-#python train_rnc.py --fine_tune True --soft_label --single
-#python train_rnc.py --fine_tune False --soft_label --asymm
-#python train_rnc.py --fine_tune True --soft_label --asymm --single
+python train_rnc.py --fine_tune --soft_label
+python train_rnc.py --soft_label
+python train_rnc.py --fine_tune  --soft_label --asymm
+python train_rnc.py --soft_label --asymm 
