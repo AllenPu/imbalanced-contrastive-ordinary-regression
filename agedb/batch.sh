@@ -17,16 +17,5 @@
 #python train_rnc.py --soft_label
 #python train_rnc.py --fine_tune  --soft_label --asymm
 #python train_rnc.py --soft_label --asymm 
-    regressor_weight = model.regressor[0].weight.data
-    name = ''
-    if args.fine_tune:
-        name = name + 'sft_'
-    if args.soft_label and not args.asymm:
-        name = name + 'symm_'
-    if args.soft_label and args.asymm:
-        name = name + 'asymm_'
-    if not args.fine_tune:
-        name = name + 'linear_prob_'
-    #
-    print(f'store name is {name}')
-    torch.save(regressor_weight, f'./{name}_weight.pt')
+python train_rnc.py --fine_tune --single
+python train_rnc.py --single
