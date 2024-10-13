@@ -16,6 +16,7 @@ from utils import *
 import statistics
 import matplotlib.pyplot as plt
 import math
+from model import *
 
 
 class AverageMeter(object):
@@ -688,3 +689,26 @@ def pearson(vector1, vector2):
     if den == 0:
         return 0.0
     return num/den
+
+
+
+# no currently used
+def test_group_acc(model, train_loader, prefix, args):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = Encoder_regression(groups=args.groups, name='resnet18')
+    model = torch.load(f'./models/best_{prefix}.pth')
+    model.eval()
+    pred, labels = [], []
+    for idx, (x, y, g) in enumerate(train_loader):
+        x, y, g = x.to(device), y.to(device), g.to(device)
+        with torch.no_grad():
+            y_output,  z = model(x)
+            y_chunk = torch.chunk(y_output, 2, dim=1)
+            g_hat, y_pred = y_chunk[0], y_chunk[1]
+            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
+            pred.extend(g_index.data.cpu().numpy())
+            labels.extend(g.data.cpu().numpy())
+    pred = np.array(pred)
+    labels = np.array(labels)
+    np.save(f'./acc/pred{prefix}.npy', pred)
+    np.save(f'./acc/labels{prefix}.npy', labels)

@@ -58,7 +58,7 @@ parser.add_argument('--best', action='store_true')
 parser.add_argument('--asymm', action='store_true', help='if use the asymmetric soft label')
 parser.add_argument('--single', action='store_true', help='if single output')
 parser.add_argument('--fine_tune', action='store_false')
-
+parser.add_argument('--model_name', type=str, default='last.pth')
 
 
 
@@ -94,6 +94,7 @@ def get_data_loader(args):
 
 
 def get_model(args):
+    # model_name = '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/last.pth'
     if args.single:
         model = Encoder_regression_single(name='resnet18')
     else:
@@ -101,7 +102,7 @@ def get_model(args):
     # load pretrained
     #if args.best:
     #    model.load_state_dict(torch.load('./checkpoint/groups_20_lr_0.001_epoch_40_soft_label.pth'))  
-    ckpt = torch.load('last.pth')
+    ckpt = torch.load(args.model_name)
     new_state_dict = OrderedDict()
     for k,v in ckpt['model'].items():
         key = k.replace('module.','')
@@ -124,7 +125,7 @@ def get_model(args):
                                 momentum=args.momentum, weight_decay=args.weight_decay)
     return model, optimizer
 
-
+######################################################################
 # train the model with single output
 def train_epoch_single(model, train_loader, opt, args):
     model = model.to(device)
@@ -141,7 +142,39 @@ def train_epoch_single(model, train_loader, opt, args):
             opt.step()
     return model
 
+# test the single output model
+def test_single(model, test_loader, train_labels, args):
+    model.eval()
+    test_mae_pred = AverageMeter()
+    preds, label, gmeans = [], [], []
+    criterion_gmean = nn.L1Loss(reduction='none')
+    #
+    for idx, (x,y,g) in enumerate(test_loader):
+        with torch.no_grad():
+            bsz = x.shape[0]
+            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
+            pred, _ = model(x)
+            test_mae = F.l1_loss(pred, y)
+            preds.extend(pred.cpu().numpy())
+            label.extend(y.cpu().numpy())
+            test_mae_pred.update(test_mae,bsz)
+            #
+            loss_gmean = criterion_gmean(pred, y)
+            gmeans.extend(loss_gmean.cpu().numpy())
+    shot_pred = shot_metric(preds, label, train_labels)
+    gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
+    #
+    #variance_calculation(model, test_loader)
+    #
+    print(' Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
+                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
+    #
+    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
+                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n")
 
+#########################################################################
+
+######################################################################### multiple expert
 # train the model with the multiple experts
 def train_epoch(model, train_loader, opt, args):
     model = model.to(device)
@@ -191,60 +224,6 @@ def train_epoch(model, train_loader, opt, args):
     return model
 
 
-# no currently used
-def test_group_acc(model, train_loader, prefix):
-    model = Encoder_regression(groups=args.groups, name='resnet18')
-    model = torch.load(f'./models/best_{prefix}.pth')
-    model.eval()
-    pred, labels = [], []
-    for idx, (x, y, g) in enumerate(train_loader):
-        x, y, g = x.to(device), y.to(device), g.to(device)
-        with torch.no_grad():
-            y_output,  z = model(x)
-            y_chunk = torch.chunk(y_output, 2, dim=1)
-            g_hat, y_pred = y_chunk[0], y_chunk[1]
-            g_index = torch.argmax(g_hat, dim=1).unsqueeze(-1)
-            pred.extend(g_index.data.cpu().numpy())
-            labels.extend(g.data.cpu().numpy())
-    pred = np.array(pred)
-    labels = np.array(labels)
-    np.save(f'./acc/pred{prefix}.npy', pred)
-    np.save(f'./acc/labels{prefix}.npy', labels)
-
-
-
-
-# test the single output model
-def test_single(model, test_loader, train_labels, args):
-    model.eval()
-    test_mae_pred = AverageMeter()
-    preds, label, gmeans = [], [], []
-    criterion_gmean = nn.L1Loss(reduction='none')
-    #
-    for idx, (x,y,g) in enumerate(test_loader):
-        with torch.no_grad():
-            bsz = x.shape[0]
-            x, y = x.cuda(non_blocking=True), y.cuda(non_blocking=True)
-            pred, _ = model(x)
-            test_mae = F.l1_loss(pred, y)
-            preds.extend(pred.cpu().numpy())
-            label.extend(y.cpu().numpy())
-            test_mae_pred.update(test_mae,bsz)
-            #
-            loss_gmean = criterion_gmean(pred, y)
-            gmeans.extend(loss_gmean.cpu().numpy())
-    shot_pred = shot_metric(preds, label, train_labels)
-    gmean_pred = gmean(np.hstack(gmeans), axis=None).astype(float)
-    #
-    #variance_calculation(model, test_loader)
-    #
-    print(' Prediction All {}  Many: MAE {} Median: MAE {} Low: MAE {}'.format(test_mae_pred.avg, shot_pred['many']['l1'],
-                                                                    shot_pred['median']['l1'], shot_pred['low']['l1']) + "\n")
-    #
-    print(' G-mean Prediction {}, Many : G-Mean {}, Median : G-Mean {}, Low : G-Mean {}'.format(gmean_pred, shot_pred['many']['gmean'],
-                                                                    shot_pred['median']['gmean'], shot_pred['low']['gmean'])+ "\n")
-
-
 
 # test the multi output model
 def test_multiple(model, test_loader, train_labels, args):
@@ -287,6 +266,21 @@ def asymmetric_soft_labeling(group_list, g_soft_label):
     return g_soft_label
 
 
+def store_last_layer(model, args):
+    regressor_weight = model.regressor[0].weight.data
+    name = ''
+    if args.fine_tune:
+        name = name + 'sft_'
+    if args.soft_label and not args.asymm:
+        name = name + 'symm_'
+    if args.soft_label and args.asymm:
+        name = name + 'asymm_'
+    if not args.fine_tune:
+        name = name + 'linear_prob_'
+    #
+    print(f'store name is {name}')
+    torch.save(regressor_weight, f'./{name}_weight.pt')
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -319,9 +313,11 @@ if __name__ == '__main__':
     #torch.save(model, f'./models/best_{prefix}.pth')
     
     if args.single:
+        # train and test on the single
         model = train_epoch_single(model, train_loader, optimizer, args)
         test_single(model, test_loader, train_labels, args)
     else:
+        # train and test on the multi-expert
         model = train_epoch(model, train_loader, optimizer, args)
         test_multiple(model, test_loader, train_labels, args)
     
@@ -330,19 +326,6 @@ if __name__ == '__main__':
     print(f' store name is {store_name}')
     #
     #torch.save(model, f'./checkpoint/{store_name}.pth')
-    regressor_weight = model.regressor[0].weight.data
-    name = ''
-    if args.fine_tune:
-        name = name + 'sft_'
-    if args.soft_label and not args.asymm:
-        name = name + 'symm_'
-    if args.soft_label and args.asymm:
-        name = name + 'asymm_'
-    if not args.fine_tune:
-        name = name + 'linear_prob_'
-    #
-    print(f'store name is {name}')
-    torch.save(regressor_weight, f'./{name}_weight.pt')
 
     
     

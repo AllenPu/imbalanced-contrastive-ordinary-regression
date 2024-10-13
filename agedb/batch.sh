@@ -11,9 +11,22 @@
 #python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_asymm.pth --store_name soft_asymm
 #python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_soft_label_symm.pth --store_name soft_symm
 #python draw_tsne.py --model_name checkpoint/groups_10_lr_0.001_epoch_100_ce.pth --store_name ce
-python train_rnc.py --fine_tune --single
-python train_rnc.py --single
-python train_rnc.py --fine_tune --soft_label
-python train_rnc.py --soft_label
-python train_rnc.py --fine_tune  --soft_label --asymm
-python train_rnc.py --soft_label --asymm 
+#python train_rnc.py --fine_tune --single
+#python train_rnc.py --single
+#python train_rnc.py --fine_tune --soft_label
+#python train_rnc.py --soft_label
+#python train_rnc.py --fine_tune  --soft_label --asymm
+#python train_rnc.py --soft_label --asymm 
+    regressor_weight = model.regressor[0].weight.data
+    name = ''
+    if args.fine_tune:
+        name = name + 'sft_'
+    if args.soft_label and not args.asymm:
+        name = name + 'symm_'
+    if args.soft_label and args.asymm:
+        name = name + 'asymm_'
+    if not args.fine_tune:
+        name = name + 'linear_prob_'
+    #
+    print(f'store name is {name}')
+    torch.save(regressor_weight, f'./{name}_weight.pt')
