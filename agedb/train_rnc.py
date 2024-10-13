@@ -316,8 +316,6 @@ if __name__ == '__main__':
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
     print(f' Start to train !')
-    print('--------------------')
-    print(args.fine_tune)
     #torch.save(model, f'./models/best_{prefix}.pth')
     
     if args.single:
