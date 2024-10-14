@@ -116,7 +116,7 @@ def get_data_loader(args):
 def get_model(args):
     #model_name = args.model_name
     #
-    model_name = 'rnc_sft_lr_0.001_epoch_100_no_cls_single.pth;
+    model_name = 'rnc_sft_lr_0.001_epoch_100_no_cls_single.pth'
     #
     # fully trained imbalance regression RnC (SFT)
     #model_name = '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/last.pth'
