@@ -114,6 +114,8 @@ def get_data_loader(args):
 
 
 def get_model(args):
+    #model_name = args.model_name
+    model_name = '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/last.pth'
     if args.single:
         model = Encoder_regression_single(name='resnet18')
     else:
@@ -121,7 +123,7 @@ def get_model(args):
     # load pretrained
     #if args.best:
     #    model.load_state_dict(torch.load('./checkpoint/groups_20_lr_0.001_epoch_40_soft_label.pth'))  
-    ckpt = torch.load(args.model_name)
+    ckpt = torch.load(model_name)
     new_state_dict = OrderedDict()
     try:
         for k,v in ckpt['model'].items():
