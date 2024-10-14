@@ -72,14 +72,14 @@ def draw_tsne(tsne_z_pred, tsne_g_pred, tsne_g_gt, args):
                     c=tsne_g_gt, label="t-SNE true label")
     plt.legend()
     #plt.savefig(f'./images/tsne_x_gt_group_{args.groups}_epoch_{args.epoch}_{prefix}__true_label.png', dpi=120)
-    plt.savefig(f'./images/{model_name}_gt.png', dpi=300)
+    plt.savefig(f'./images/rnc_{model_name}_gt.png', dpi=300)
     plt.close()
     plt.figure(figsize=(10, 5))
     plt.scatter(X_tsne_pred[:, 0], X_tsne_pred[:, 1],
                     c=tsne_g_pred, label="t-SNE pred label")
     plt.legend()
     #plt.savefig(f'./images/tsne_x_pred_group_{args.groups}_epoch_{args.epoch}_{prefix}_pred_label.png', dpi=120)
-    plt.savefig(f'./images/{model_name}_pred.png', dpi=300)
+    plt.savefig(f'./images/rnc_{model_name}_pred.png', dpi=300)
     plt.close()
 
 
