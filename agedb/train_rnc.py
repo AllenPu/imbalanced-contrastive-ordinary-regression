@@ -288,7 +288,7 @@ if __name__ == '__main__':
     setup_seed(args.seed)
     train_loader, val_loader, test_loader, group_list, train_labels = get_data_loader(args)
     model, optimizer = get_model(args)
-    store_name = 'groups_' + str(args.groups) + '_lr_' + str(args.lr) + '_epoch_' + str(args.epoch)
+    store_name =  'lr_' + str(args.lr) + '_epoch_' + str(args.epoch)
     if args.soft_label:
         prefix = '_soft_label'
         if args.asymm:
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     if args.single:
         prefix = prefix + '_single'
     else:
-        prefix = prefix + '_multi_expert'
+        prefix = prefix + '_groups_' + str(args.groups) + '_multi_expert'
     store_name = store_name + prefix
     #encoder, regressor = train_regressor(train_loader, model.encoder, model.regressor, optimizer, args)
     #validate(val_loader, encoder, regressor, train_labels=train_labels)
