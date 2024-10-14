@@ -279,7 +279,7 @@ def store_last_layer(model, args):
         name = name + 'linear_prob_'
     #
     print(f'store name is {name}')
-    torch.save(regressor_weight, f'./{name}_rnc_single__weight.pt')
+    torch.save(regressor_weight, f'./{name}_rnc_weight.pt')
 
 
 if __name__ == '__main__':
