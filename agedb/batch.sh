@@ -17,5 +17,9 @@
 #python train_rnc.py --soft_label
 #python train_rnc.py --fine_tune  --soft_label --asymm
 #python train_rnc.py --soft_label --asymm 
-python train_rnc.py --fine_tune --single
-python train_rnc.py --single
+python train_rnc.py --groups 10 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_100.pth'
+python train_rnc.py --groups 10 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_150.pth'
+python train_rnc.py --groups 10 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_200.pth'
+python train_rnc.py --groups 20 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_100.pth'
+python train_rnc.py --groups 20 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_150.pth'
+python train_rnc.py --groups 20 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_200.pth'
