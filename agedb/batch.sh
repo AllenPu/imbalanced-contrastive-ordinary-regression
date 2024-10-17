@@ -17,15 +17,15 @@
 #python train_rnc.py --soft_label
 #python train_rnc.py --fine_tune  --soft_label --asymm
 #python train_rnc.py --soft_label --asymm 
-echo ' groups 10 fine tune pre-trained epoch 100 asymm soft_label'
-CUDA_VISIBLE_DEVICES=1 python train_rnc.py --soft_label --asymm --groups 10 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_100.pth'
-echo ' groups 10 fine tune pre-trained epoch 150 asymm soft_label'
-CUDA_VISIBLE_DEVICES=1 python train_rnc.py --soft_label --asymm --groups 10 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_150.pth'
-echo ' groups 10 fine tune pre-trained epoch 200 asymm soft_label'
-CUDA_VISIBLE_DEVICES=1 python train_rnc.py --soft_label --asymm --groups 10 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_200.pth'
-echo ' groups 20 fine tune pre-trained epoch 100 asymm soft_label'
-CUDA_VISIBLE_DEVICES=1 python train_rnc.py --soft_label --asymm --groups 20 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_100.pth'
-echo ' groups 20 fine tune pre-trained epoch 150 asymm soft_label'
-CUDA_VISIBLE_DEVICES=1 python train_rnc.py --soft_label --asymm --groups 20 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_150.pth'
-echo ' groups 20 fine tune pre-trained epoch 200 asymm soft_label'
-CUDA_VISIBLE_DEVICES=1 python train_rnc.py --soft_label --asymm --groups 20 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_200.pth'#
+echo ' groups 10 fine tune pre-trained epoch 100 soft_label'
+CUDA_VISIBLE_DEVICES=2 python train_rnc.py --soft_label --groups 10 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_100.pth'
+echo ' groups 10 fine tune pre-trained epoch 150 oft_label'
+CUDA_VISIBLE_DEVICES=2 python train_rnc.py --soft_label --groups 10 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_150.pth'
+echo ' groups 10 fine tune pre-trained epoch 200 soft_label'
+CUDA_VISIBLE_DEVICES=2 python train_rnc.py --soft_label --groups 10 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_200.pth'
+echo ' groups 20 fine tune pre-trained epoch 100 soft_label'
+CUDA_VISIBLE_DEVICES=2 python train_rnc.py --soft_label --groups 20 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_100.pth'
+echo ' groups 20 fine tune pre-trained epoch 150 soft_label'
+CUDA_VISIBLE_DEVICES=2 python train_rnc.py --soft_label --groups 20 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_150.pth'
+echo ' groups 20 fine tune pre-trained epoch 200 soft_label'
+CUDA_VISIBLE_DEVICES=2 python train_rnc.py --soft_label --groups 20 --epoch 100 --model_name '/home/rpu2/scratch/code/Rank-N-Contrast/save/AgeDB_models/RnC_AgeDB_resnet18_ep_400_lr_0.5_d_0.1_wd_0.0001_mmt_0.9_bsz_256_aug_crop,flip,color,grayscale_temp_2_label_l1_feature_l2_trial_0/ckpt_epoch_200.pth'#
