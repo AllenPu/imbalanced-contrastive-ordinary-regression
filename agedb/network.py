@@ -39,9 +39,3 @@ class ResNet_regression(nn.Module):
         return y_hat, z
     
 
-def opts(self, model, args, split_opt=False):
-    opt_list = []
-    if split_opt:
-        opt = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)
-    else:
-        opt_all = optim.Adam(model.parameters(), lr=args.lr, weight_decay=5e-4)
