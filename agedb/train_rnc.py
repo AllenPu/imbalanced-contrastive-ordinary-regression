@@ -331,7 +331,7 @@ if __name__ == '__main__':
     
     #
     #
-    print(f' store name is {store_name}')
+    #print(f' store name is {store_name}')
     #
     #torch.save(model, f'./rnc_{store_name}.pth')
     #store_last_layer(model, args)
