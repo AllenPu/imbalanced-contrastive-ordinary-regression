@@ -273,7 +273,7 @@ def asymmetric_soft_labeling(group_list, g_soft_label):
     g_soft_label = remove_non_group_soft + remove_group_soft
     return g_soft_label
 
-
+# train and store the last layer
 def store_last_layer(model, args):
     regressor_weight = model.regressor[0].weight.data
     name = ''
