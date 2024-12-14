@@ -241,7 +241,7 @@ class Encoder_regression_multi_expert(nn.Module):
         return torch.cat((pred_maj, pred_med, pred_min), dim=-1)
     
 
-
+# three expert 1) maj 2) med  and 3) low + cls head
 class Encoder_regression_guided_multi_regression(nn.Module):
     def __init__(self, name='resnet50', norm=False, weight_norm= False):
         super(Encoder_regression_guided_multi_regression, self).__init__()

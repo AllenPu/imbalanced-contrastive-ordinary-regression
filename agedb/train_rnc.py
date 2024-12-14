@@ -220,12 +220,12 @@ def train_epoch(model, train_loader, opt, args):
             loss.backward()
             opt.step()
         #############################
-        if e % 10 == 0:
-            acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
-                model, test_loader, train_labels, args)
-            results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
-            print('Epoch {} acc of the group assinment is {}, \
-                mae of gt is {}, mae of pred is {}'.format(e, acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
+        #if e % 10 == 0:
+        #    acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, shot_pred, shot_pred_gt, gmean_gt, gmean_pred = test(
+        #        model, test_loader, train_labels, args)
+        #    results = [acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg, gmean_gt, gmean_pred]
+        #    print('Epoch {} acc of the group assinment is {}, \
+        #        mae of gt is {}, mae of pred is {}'.format(e, acc_g_avg, acc_mae_gt_avg, acc_mae_pred_avg)+"\n")
         #if e% 10 == 0:
         #    print(f' e peoch at {e}')
         #    test_multiple(model, test_loader, train_labels, args)
@@ -331,7 +331,7 @@ if __name__ == '__main__':
     
     #
     #
-    print(f' store name is {store_name}')
+    #print(f' store name is {store_name}')
     #
     #torch.save(model, f'./rnc_{store_name}.pth')
     #store_last_layer(model, args)
