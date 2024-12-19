@@ -39,7 +39,8 @@ def build_tasks(args):
     for task in tasks:
         train, val, test = process_task(task, token_indexer, vocab)
         task.train_data = train
-        task.val_data = val
+        #task.val_data = val
+        task.val_data = test
         task.test_data = test
         del_field_tokens(task)
     logging.info("\tFinished indexing tasks")

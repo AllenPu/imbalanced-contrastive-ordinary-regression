@@ -229,6 +229,7 @@ class SamplingMultiTaskTrainer():
                                         f"Number {task_metrics[shot.lower()]['num_samples']}")
                 # Validate
                 logging.info("\nValidating...")
+                #print('ftasks is ====== {tasks} ========')
                 all_val_metrics, should_save, task_infos, metric_infos = \
                         self._validate(real_epoch, val_check, tasks, task_infos, metric_infos, iterator)
 
@@ -288,6 +289,7 @@ class SamplingMultiTaskTrainer():
         n_examples_overall = 0.0
 
         for task in tasks:
+            #print(f'----{task}-------')
             n_examples = 0.0
             task_info = task_infos[task.name]
             val_generator = iterator(task.val_data, num_epochs=1, shuffle=False)
