@@ -41,7 +41,7 @@ def build_tasks(args):
         task.train_data = train
         #task.val_data = val
         task.val_data = test
-        task.test_data = test
+        task.test_data = val
         del_field_tokens(task)
     logging.info("\tFinished indexing tasks")
 
