@@ -152,6 +152,9 @@ class STSShotAverage:
             pred_shot[shot] = np.array(self._pred)[label_category == shot] * 5. if shot != 'overall' else np.array(self._pred) * 5.
             #print(f' shot is {shot} num is {len(pred_shot[shot])}')
             label_shot[shot] = np.array(self._label)[label_category == shot] if shot != 'overall' else np.array(self._label)
+            print('------------------------')
+            l = len(label_shot[shot])
+            print(f' current shot is {shot} len is {l}')
             if 'mse' in self._metric:
                 metric[shot]['mse'] = np.mean((pred_shot[shot] - label_shot[shot]) ** 2) if pred_shot[shot].size > 0 else 0.
             if 'l1' in self._metric:
