@@ -16,7 +16,7 @@ from collections import OrderedDict
 from loss import *
 from loss_contra import *
 from utils import *
-#from utils import soft_labeling, SoftCrossEntropy
+from utils import soft_labeling, SoftCrossEntropy
 from train import test, write_log
 from util_devlove import shot_metrics, train_regressor, validate
 from draw_tsne import draw_tsne
